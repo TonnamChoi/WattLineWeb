@@ -2,6 +2,11 @@ import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { handleExtractRequest } from "./providers/handleExtractRequest";
+import {
+  listPruningPhotos,
+  uploadPruningPhoto,
+  deletePruningPhoto,
+} from "./providers/handlePruningRequest";
 
 const app = express();
 const PORT = 3000;
@@ -13,6 +18,20 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 // API Routes (mirrors api/extract.ts, which Vercel uses in production)
 app.post("/api/extract", async (req, res) => {
   const { status, body } = await handleExtractRequest(req.body);
+  res.status(status).json(body);
+});
+
+// API Routes (mirrors api/pruning.ts, which Vercel uses in production)
+app.get("/api/pruning", async (req, res) => {
+  const { status, body } = await listPruningPhotos();
+  res.status(status).json(body);
+});
+app.post("/api/pruning", async (req, res) => {
+  const { status, body } = await uploadPruningPhoto(req.body);
+  res.status(status).json(body);
+});
+app.delete("/api/pruning", async (req, res) => {
+  const { status, body } = await deletePruningPhoto(req.body);
   res.status(status).json(body);
 });
 
