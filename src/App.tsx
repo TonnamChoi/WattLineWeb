@@ -220,7 +220,7 @@ export default function App() {
         {/* Main Workspace Layout */}
         <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-5">
           {view === "about" && <AboutPlate />}
-          {view === "pruning" && <PruningWork />}
+          {view === "pruning" && <PruningWork settings={settings} onNeedSettings={() => setIsSettingsOpen(true)} />}
           {view === "main" && (
           <>
           {/* Upload */}

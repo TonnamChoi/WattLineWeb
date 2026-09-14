@@ -7,6 +7,7 @@ import {
   uploadPruningPhoto,
   deletePruningPhoto,
 } from "./providers/handlePruningRequest";
+import { handlePruningExtractRequest } from "./providers/handlePruningExtractRequest";
 
 const app = express();
 const PORT = 3000;
@@ -32,6 +33,12 @@ app.post("/api/pruning", async (req, res) => {
 });
 app.delete("/api/pruning", async (req, res) => {
   const { status, body } = await deletePruningPhoto(req.body);
+  res.status(status).json(body);
+});
+
+// API Routes (mirrors api/pruning-extract.ts, which Vercel uses in production)
+app.post("/api/pruning-extract", async (req, res) => {
+  const { status, body } = await handlePruningExtractRequest(req.body);
   res.status(status).json(body);
 });
 
