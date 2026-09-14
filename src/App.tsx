@@ -1,20 +1,71 @@
 import React, { useState } from "react";
 import DropZone from "./components/DropZone";
-import PoleList from "./components/PoleList";
 import PoleDetail from "./components/PoleDetail";
-import SummaryTable from "./components/SummaryTable";
+import PoleTable from "./components/PoleTable";
 import SettingsPanel from "./components/SettingsPanel";
 import AboutPlate from "./components/AboutPlate";
 import { PoleImage } from "./types";
-import { AppSettings, loadSettings, saveSettings } from "./lib/settings";
+import { AppSettings, ProviderId, loadSettings, saveSettings } from "./lib/settings";
+import { runWithConcurrency } from "./lib/asyncQueue";
 import {
   Sparkles, ShieldCheck, Zap, Server,
   Play, Trash2, Layers, Cpu, Loader2, Settings, ExternalLink, Menu
 } from "lucide-react";
 
+// 대량 업로드 시 API 요청이 한꺼번에 몰리지 않도록 동시 처리 개수를 제한한다.
+const ANALYSIS_CONCURRENCY = 5;
+
+// 429(요청 한도 초과)·5xx(서버 오류/과부하)처럼 일시적인 오류만 자동 재시도 대상으로 삼는다.
+// 401(키 오류) 등은 재시도해도 결과가 같으므로 바로 실패 처리해 수동 재시도로 넘긴다.
+const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504]);
+const MAX_ATTEMPTS = 3;
+const RETRY_BASE_DELAY_MS = 1500;
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function requestExtraction(targetPole: PoleImage, provider: ProviderId, apiKey: string) {
+  const response = await fetch("/api/extract", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      provider,
+      apiKey,
+      image: targetPole.url,
+      mimeType: targetPole.mimeType,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const error = new Error(errorData.error || "서버 응답 오류가 발생했습니다.") as Error & { status?: number };
+    error.status = response.status;
+    throw error;
+  }
+
+  return response.json();
+}
+
+async function requestExtractionWithRetry(targetPole: PoleImage, provider: ProviderId, apiKey: string) {
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      return await requestExtraction(targetPole, provider, apiKey);
+    } catch (err: any) {
+      const isRetryable = RETRYABLE_STATUSES.has(err.status);
+      if (!isRetryable || attempt === MAX_ATTEMPTS) {
+        throw err;
+      }
+      await sleep(RETRY_BASE_DELAY_MS * attempt + Math.random() * 500);
+    }
+  }
+  throw new Error("분석에 실패했습니다.");
+}
+
 export default function App() {
   const [poles, setPoles] = useState<PoleImage[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [isBulkProcessing, setIsBulkProcessing] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -26,15 +77,13 @@ export default function App() {
     saveSettings(next);
   };
 
-  // Add uploaded pole images and immediately start analyzing each one
+  // Add uploaded pole images and immediately start analyzing each one (동시 처리 개수 제한)
   const handleImagesAdded = (newImages: PoleImage[]) => {
     setPoles((prev) => [...prev, ...newImages]);
     if (newImages.length > 0) {
       setSelectedId(newImages[newImages.length - 1].id);
     }
-    newImages.forEach((image) => {
-      analyzePole(image);
-    });
+    runWithConcurrency<PoleImage>(newImages, ANALYSIS_CONCURRENCY, (image) => analyzePole(image));
   };
 
   // Remove a single pole image from list
@@ -86,25 +135,7 @@ export default function App() {
     );
 
     try {
-      const response = await fetch("/api/extract", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          provider: settings.selectedProvider,
-          apiKey,
-          image: targetPole.url,
-          mimeType: targetPole.mimeType,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "서버 응답 오류가 발생했습니다.");
-      }
-
-      const data = await response.json();
+      const data = await requestExtractionWithRetry(targetPole, settings.selectedProvider, apiKey);
 
       // Update with extracted data
       setPoles((prev) =>
@@ -156,13 +187,13 @@ export default function App() {
 
     setIsBulkProcessing(true);
 
-    // Run parallel analysis
-    await Promise.all(pendingPoles.map((p) => handleAnalyzePole(p.id)));
+    // 동시 처리 개수를 제한하며 순차적으로 큐 처리
+    await runWithConcurrency<PoleImage>(pendingPoles, ANALYSIS_CONCURRENCY, (p) => handleAnalyzePole(p.id));
 
     setIsBulkProcessing(false);
   };
 
-  const selectedPole = poles.find((p) => p.id === selectedId) || null;
+  const detailPole = poles.find((p) => p.id === detailId) || null;
 
   // Stat calculations
   const totalCount = poles.length;
@@ -251,7 +282,7 @@ export default function App() {
             <h2 className="font-bold text-gray-800 text-sm">이미지 업로드</h2>
             <p className="text-xs text-gray-400 mt-0.5">전주번호찰 이미지를 선택하거나 드롭 하세요</p>
           </div>
-          <DropZone onImagesAdded={handleImagesAdded} previewImage={selectedPole} />
+          <DropZone onImagesAdded={handleImagesAdded} uploadedCount={poles.length} />
         </div>
 
         {/* Action bar */}
@@ -306,39 +337,17 @@ export default function App() {
           </div>
         )}
 
-        {/* Detail: right below upload */}
+        {/* 분석 대상 목록 + 추출 결과 테이블 통합 */}
         {totalCount > 0 && (
           <div className="w-full">
-            <PoleDetail
-              pole={selectedPole}
-              onAnalyze={handleAnalyzePole}
-              onUpdateInfo={handleUpdatePoleInfo}
-            />
-          </div>
-        )}
-
-        {/* Summary */}
-        {totalCount > 0 && (
-          <div className="w-full">
-            <SummaryTable
+            <PoleTable
               poles={poles}
               selectedId={selectedId}
               onSelect={setSelectedId}
               onRemove={handleRemovePole}
               onClearAll={handleClearAll}
-            />
-          </div>
-        )}
-
-        {/* List: pushed to the very bottom */}
-        {totalCount > 0 && (
-          <div className="w-full">
-            <PoleList
-              poles={poles}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-              onRemove={handleRemovePole}
               onAnalyze={handleAnalyzePole}
+              onOpenDetail={setDetailId}
             />
           </div>
         )}
@@ -356,6 +365,26 @@ export default function App() {
         onSave={handleSaveSettings}
         onClose={() => setIsSettingsOpen(false)}
       />
+
+      {/* 상세 및 수정: 별도 모달 창으로 표시 */}
+      {detailPole && (
+        <div
+          className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
+          onClick={() => setDetailId(null)}
+        >
+          <div
+            className="w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <PoleDetail
+              pole={detailPole}
+              onAnalyze={handleAnalyzePole}
+              onUpdateInfo={handleUpdatePoleInfo}
+              onClose={() => setDetailId(null)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

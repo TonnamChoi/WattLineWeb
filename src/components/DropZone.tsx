@@ -4,7 +4,7 @@ import { PoleImage } from "../types";
 
 interface DropZoneProps {
   onImagesAdded: (images: PoleImage[]) => void;
-  previewImage?: PoleImage | null;
+  uploadedCount: number;
 }
 
 // Vercel Serverless Function의 요청 본문 제한(4.5MB)을 넘지 않도록,
@@ -53,7 +53,7 @@ function resizeImageFile(file: File): Promise<{ url: string; mimeType: string }>
   });
 }
 
-export default function DropZone({ onImagesAdded, previewImage }: DropZoneProps) {
+export default function DropZone({ onImagesAdded, uploadedCount }: DropZoneProps) {
   const [isDragActive, setIsDragActive] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -155,7 +155,7 @@ export default function DropZone({ onImagesAdded, previewImage }: DropZoneProps)
         onChange={handleFileChange}
       />
 
-      {previewImage ? (
+      {uploadedCount > 0 ? (
         <div
           id="dropzone-container"
           onDragEnter={handleDrag}
@@ -166,15 +166,9 @@ export default function DropZone({ onImagesAdded, previewImage }: DropZoneProps)
             isDragActive ? "border-blue-500 bg-blue-50/50" : "border-gray-300 bg-gray-50/60"
           }`}
         >
-          <img
-            src={previewImage.url}
-            alt={previewImage.name}
-            className="w-16 h-20 object-cover rounded border border-gray-200 shrink-0 bg-white"
-            referrerPolicy="no-referrer"
-          />
           <div className="min-w-0 flex-1">
-            <p className="text-gray-800 font-bold text-xs truncate" title={previewImage.name}>
-              {previewImage.name}
+            <p className="text-gray-800 font-bold text-xs">
+              {uploadedCount}개의 이미지가 업로드 되었습니다.
             </p>
             <p className="text-gray-400 text-[11px] mt-0.5">
               드래그 앤 드롭으로도 다른 이미지를 추가할 수 있습니다.
@@ -185,7 +179,7 @@ export default function DropZone({ onImagesAdded, previewImage }: DropZoneProps)
             className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 rounded-lg transition-colors"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            변경
+            이미지 업로드
           </button>
         </div>
       ) : (

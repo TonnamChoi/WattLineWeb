@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+/* 화면의 모든 텍스트 크기를 '이미지 업로드' 제목 크기(text-sm, 14px)로 통일 */
+.text-\[7px\],
+.text-\[9px\],
+.text-\[10px\],
+.text-\[11px\],
+.text-\[12px\],
+.text-xs,
+.text-sm,
+.text-base,
+.text-lg {
+  font-size: 0.875rem;
+}

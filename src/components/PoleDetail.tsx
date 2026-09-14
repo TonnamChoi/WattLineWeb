@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { PoleImage } from "../types";
-import { 
-  Sparkles, Loader2, Play, CheckCircle2, AlertCircle, Save, 
-  MapPin, HelpCircle, ShieldAlert, Zap
+import { cropToBoundingBox } from "../lib/cropImage";
+import {
+  Sparkles, Loader2, Play, CheckCircle2, AlertCircle, Save,
+  MapPin, HelpCircle, ShieldAlert, Zap, X
 } from "lucide-react";
 
 interface PoleDetailProps {
   pole: PoleImage | null;
   onAnalyze: (id: string) => void;
   onUpdateInfo: (id: string, updatedFields: Partial<PoleImage>) => void;
+  onClose?: () => void;
 }
 
-export default function PoleDetail({ pole, onAnalyze, onUpdateInfo }: PoleDetailProps) {
+export default function PoleDetail({ pole, onAnalyze, onUpdateInfo, onClose }: PoleDetailProps) {
   const [lineName, setLineName] = useState("");
   const [computerizedNumber, setComputerizedNumber] = useState("");
   const [lineNumber, setLineNumber] = useState("");
@@ -39,35 +41,13 @@ export default function PoleDetail({ pole, onAnalyze, onUpdateInfo }: PoleDetail
     }
 
     let cancelled = false;
-    const img = new Image();
-    img.onload = () => {
-      if (cancelled) return;
-      const naturalWidth = img.naturalWidth;
-      const naturalHeight = img.naturalHeight;
-
-      // Pad the detected box slightly so the crop isn't flush against the plate's edge
-      const padX = box.width * 0.06;
-      const padY = box.height * 0.06;
-      const x = Math.max(0, box.x - padX / 2);
-      const y = Math.max(0, box.y - padY / 2);
-      const width = Math.min(box.width + padX, 1 - x);
-      const height = Math.min(box.height + padY, 1 - y);
-
-      const sx = x * naturalWidth;
-      const sy = y * naturalHeight;
-      const sw = width * naturalWidth;
-      const sh = height * naturalHeight;
-      if (sw <= 0 || sh <= 0) return;
-
-      const canvas = document.createElement("canvas");
-      canvas.width = sw;
-      canvas.height = sh;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
-      setCroppedUrl(canvas.toDataURL("image/jpeg", 0.92));
-    };
-    img.src = pole.url;
+    cropToBoundingBox(pole.url, box)
+      .then((url) => {
+        if (!cancelled) setCroppedUrl(url);
+      })
+      .catch(() => {
+        if (!cancelled) setCroppedUrl(null);
+      });
 
     return () => {
       cancelled = true;
@@ -134,11 +114,22 @@ export default function PoleDetail({ pole, onAnalyze, onUpdateInfo }: PoleDetail
           </h3>
           <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mt-0.5">상세 분석 및 수기 검증</p>
         </div>
-        {pole.isSample && (
-          <span className="text-[10px] bg-blue-50 text-blue-700 border border-blue-100 px-2 py-0.5 rounded font-bold">
-            샘플 이미지
-          </span>
-        )}
+        <div className="flex items-center gap-2 shrink-0">
+          {pole.isSample && (
+            <span className="text-[10px] bg-blue-50 text-blue-700 border border-blue-100 px-2 py-0.5 rounded font-bold">
+              샘플 이미지
+            </span>
+          )}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-700 p-1 hover:bg-gray-100 rounded"
+              title="닫기"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Main Split Layout: Left Image, Right Text */}
