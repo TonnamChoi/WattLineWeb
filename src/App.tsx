@@ -72,7 +72,7 @@ export default function App() {
   const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [view, setView] = useState<ViewId>("main");
+  const [view, setView] = useState<ViewId>("pruning");
 
   const handleSaveSettings = (next: AppSettings) => {
     setSettings(next);
@@ -218,7 +218,11 @@ export default function App() {
 
       <div className="flex-1 flex flex-col min-w-0">
         {/* Main Workspace Layout */}
-        <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-5">
+        <main
+          className={`flex-1 w-full mx-auto space-y-5 ${
+            view === "pruning" ? "px-1 py-4 md:px-2 md:py-6" : "max-w-7xl p-4 md:p-6"
+          }`}
+        >
           {view === "about" && <AboutPlate />}
           {view === "pruning" && <PruningWork settings={settings} onNeedSettings={() => setIsSettingsOpen(true)} />}
           {view === "main" && (

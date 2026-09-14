@@ -72,7 +72,7 @@ export default function Sidebar({ view, onNavigate, onOpenSettings, isMobileOpen
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex md:flex-col w-60 shrink-0 bg-white border-r border-gray-200 h-screen sticky top-0">
+      <aside className="hidden md:flex md:flex-col w-[168px] shrink-0 bg-white border-r border-gray-200 h-screen sticky top-0">
         <SidebarContent view={view} onNavigate={onNavigate} onOpenSettings={onOpenSettings} />
       </aside>
 

@@ -67,8 +67,13 @@ export default function PruningWork({ settings, onNeedSettings }: PruningWorkPro
       .then((res) => res.json())
       .then((data) => {
         const photos = data.photos || [];
-        setRecords(
-          photos.map((p: { url: string; pathname: string; uploadedAt: string }) => ({
+        // 조회가 끝나기 전에 사용자가 이미 업로드했을 수 있으므로, 기존 목록을 덮어쓰지 않고
+        // 아직 없는 사진만 뒤에 추가한다 (URL 기준 중복 제거).
+        setRecords((prev) => {
+          const existingUrls = new Set(prev.map((r) => r.url));
+          const loaded = photos
+            .filter((p: { url: string }) => !existingUrls.has(p.url))
+            .map((p: { url: string; pathname: string; uploadedAt: string }) => ({
             id: p.url,
             name: p.pathname.split("/").pop() || p.pathname,
             url: p.url,
@@ -93,8 +98,9 @@ export default function PruningWork({ settings, onNeedSettings }: PruningWorkPro
               minute: "2-digit",
               second: "2-digit",
             }),
-          }))
-        );
+          }));
+          return [...prev, ...loaded];
+        });
       })
       .catch(() => {})
       .finally(() => setIsLoadingList(false));

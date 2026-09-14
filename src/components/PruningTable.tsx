@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { PruningRecord } from "../types";
+import React, { useEffect, useState } from "react";
+import { PruningRecord, BoundingBox } from "../types";
 import { cropToBoundingBox } from "../lib/cropImage";
-import { Search, Download, Clipboard, Trash2, CheckCircle2, Play, Loader2, Eye } from "lucide-react";
+import { Search, Download, Clipboard, Trash2, CheckCircle2, Play, Loader2, Eye, ImageOff } from "lucide-react";
 
 interface PruningTableProps {
   records: PruningRecord[];
@@ -12,6 +12,56 @@ interface PruningTableProps {
   onAnalyze: (id: string) => void;
   onOpenDetail: (id: string) => void;
 }
+
+// boundingBox를 이용해 나무 부분만 잘라낸 "크롭된 사진" 썸네일. 계산이 끝나기 전에는 원본을 보여준다.
+function CroppedThumb({ url, boundingBox }: { url: string; boundingBox: BoundingBox | null }) {
+  const [croppedUrl, setCroppedUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!boundingBox) {
+      setCroppedUrl(null);
+      return;
+    }
+    let cancelled = false;
+    cropToBoundingBox(url, boundingBox)
+      .then((result) => {
+        if (!cancelled) setCroppedUrl(result);
+      })
+      .catch(() => {
+        if (!cancelled) setCroppedUrl(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [url, boundingBox?.x, boundingBox?.y, boundingBox?.width, boundingBox?.height]);
+
+  if (!boundingBox) {
+    return <span className="text-gray-300">-</span>;
+  }
+
+  return (
+    <div className="w-8 h-11 rounded bg-gray-100 border border-gray-200 overflow-hidden inline-flex items-center justify-center">
+      <img src={croppedUrl || url} alt="크롭된 사진" className="object-cover w-full h-full" referrerPolicy="no-referrer" />
+    </div>
+  );
+}
+
+function PhotoThumb({ url }: { url?: string | null }) {
+  if (!url) {
+    return (
+      <div className="w-8 h-11 inline-flex items-center justify-center text-gray-300">
+        <ImageOff className="w-3.5 h-3.5" />
+      </div>
+    );
+  }
+  return (
+    <div className="w-8 h-11 rounded bg-gray-100 border border-gray-200 overflow-hidden inline-flex items-center justify-center">
+      <img src={url} alt="참고 사진" className="object-cover w-full h-full" referrerPolicy="no-referrer" />
+    </div>
+  );
+}
+
+const TH = "py-2 px-3 text-center border-r border-b border-green-200 bg-green-50 whitespace-nowrap";
 
 export default function PruningTable({
   records,
@@ -24,27 +74,8 @@ export default function PruningTable({
 }: PruningTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isCopied, setIsCopied] = useState(false);
-
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [hoverPos, setHoverPos] = useState<{ top: number; left: number } | null>(null);
-  const [cropCache, setCropCache] = useState<Record<string, string>>({});
-
-  const handlePreviewEnter = (record: PruningRecord, e: React.MouseEvent<HTMLElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setHoverPos({ top: rect.top, left: rect.left + rect.width / 2 });
-    setHoveredId(record.id);
-
-    if (!cropCache[record.id] && record.boundingBox) {
-      cropToBoundingBox(record.url, record.boundingBox)
-        .then((url) => setCropCache((prev) => ({ ...prev, [record.id]: url })))
-        .catch(() => {});
-    }
-  };
-
-  const handlePreviewLeave = () => setHoveredId(null);
-  const hoveredRecord = hoveredId ? records.find((r) => r.id === hoveredId) : null;
-
   const [copiedErrorId, setCopiedErrorId] = useState<string | null>(null);
+
   const handleCopyError = (record: PruningRecord, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!record.error) return;
@@ -70,13 +101,11 @@ export default function PruningTable({
 
     let csvContent = "﻿";
     csvContent +=
-      "No,파일명,전주번호(시작),전주번호(끝),수목종류,10cm미만,10cm이상,20cm이상,30cm이상,40cm이상,합계,비고,작업강도,나무분류,경간구분,작업내용,신뢰도(%),분석상태,등록시간\n";
+      "전주번호(시작),전주번호(끝),수목종류,10cm미만,10cm이상,20cm이상,30cm이상,40cm이상,합계,비고,작업강도,나무분류,경간구분,작업내용,기타 세부정보,신뢰도(%),판독상태\n";
 
-    records.forEach((record, index) => {
+    records.forEach((record) => {
       const d = record.diameterCounts;
       const row = [
-        index + 1,
-        `"${record.name.replace(/"/g, '""')}"`,
         `"${(record.poleStart || "미검출").replace(/"/g, '""')}"`,
         `"${(record.poleEnd || "미검출").replace(/"/g, '""')}"`,
         `"${(record.treeSpecies || "미검출").replace(/"/g, '""')}"`,
@@ -91,9 +120,9 @@ export default function PruningTable({
         `"${(record.treeClassification || "").replace(/"/g, '""')}"`,
         `"${(record.spanDescription || "").replace(/"/g, '""')}"`,
         `"${(record.workContent || "").replace(/"/g, '""')}"`,
+        `"${(record.reasoning || "").replace(/"/g, '""')}"`,
         record.confidence || 0,
         record.status === "completed" ? "성공" : record.status === "failed" ? "실패" : "대기중",
-        record.uploadedAt,
       ];
       csvContent += row.join(",") + "\n";
     });
@@ -112,10 +141,10 @@ export default function PruningTable({
     if (records.length === 0) return;
 
     let tsvText =
-      "No\t파일명\t전주번호(시작)\t전주번호(끝)\t수목종류\t10cm미만\t10cm이상\t20cm이상\t30cm이상\t40cm이상\t합계\t비고\t작업강도\t나무분류\t경간구분\t작업내용\t신뢰도(%)\t등록시간\n";
-    records.forEach((record, index) => {
+      "전주번호(시작)\t전주번호(끝)\t수목종류\t10cm미만\t10cm이상\t20cm이상\t30cm이상\t40cm이상\t합계\t비고\t작업강도\t나무분류\t경간구분\t작업내용\t기타 세부정보\t신뢰도(%)\n";
+    records.forEach((record) => {
       const d = record.diameterCounts;
-      tsvText += `${index + 1}\t${record.name}\t${record.poleStart || "미검출"}\t${record.poleEnd || "미검출"}\t${record.treeSpecies || "미검출"}\t${d?.under10 ?? 0}\t${d?.over10 ?? 0}\t${d?.over20 ?? 0}\t${d?.over30 ?? 0}\t${d?.over40 ?? 0}\t${d?.total ?? 0}\t${record.note || ""}\t${record.workIntensity || ""}\t${record.treeClassification || ""}\t${record.spanDescription || ""}\t${record.workContent || ""}\t${record.confidence || 0}\t${record.uploadedAt}\n`;
+      tsvText += `${record.poleStart || "미검출"}\t${record.poleEnd || "미검출"}\t${record.treeSpecies || "미검출"}\t${d?.under10 ?? 0}\t${d?.over10 ?? 0}\t${d?.over20 ?? 0}\t${d?.over30 ?? 0}\t${d?.over40 ?? 0}\t${d?.total ?? 0}\t${record.note || ""}\t${record.workIntensity || ""}\t${record.treeClassification || ""}\t${record.spanDescription || ""}\t${record.workContent || ""}\t${record.reasoning || ""}\t${record.confidence || 0}\n`;
     });
 
     navigator.clipboard.writeText(tsvText).then(() => {
@@ -189,33 +218,50 @@ export default function PruningTable({
 
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 font-bold text-[10px] uppercase tracking-wider">
-              <th className="py-2 px-3 text-center w-12 border-r border-gray-200">번호</th>
-              <th className="py-2 px-3 w-14 text-center border-r border-gray-200">미리보기</th>
-              <th className="py-2 px-3 border-r border-gray-200">전주번호</th>
-              <th className="py-2 px-3 border-r border-gray-200">수목종류</th>
-              <th className="py-2 px-3 text-center border-r border-gray-200 w-16">합계</th>
-              <th className="py-2 px-3 border-r border-gray-200">작업강도</th>
-              <th className="py-2 px-3 border-r border-gray-200">나무분류</th>
-              <th className="py-2 px-3 border-r border-gray-200">경간구분</th>
-              <th className="py-2 px-3 border-r border-gray-200">작업내용</th>
-              <th className="py-2 px-3 text-center border-r border-gray-200 w-24">정확도</th>
-              <th className="py-2 px-3 text-center border-r border-gray-200 w-24">판독 상태</th>
-              <th className="py-2 px-3 text-center border-r border-gray-200 w-32">작업</th>
-              <th className="py-2 px-3 text-center w-16">삭제</th>
+          <thead className="text-gray-600 font-bold text-[10px] uppercase tracking-wider">
+            <tr>
+              <th className={TH} colSpan={2} rowSpan={1}>전주번호</th>
+              <th className={TH} rowSpan={2}>수목종류</th>
+              <th className={TH} colSpan={6}>준공내역</th>
+              <th className={TH} rowSpan={2}>비고</th>
+              <th className={TH} rowSpan={2}>작업<br />강도</th>
+              <th className={TH} rowSpan={2}>나무<br />분류</th>
+              <th className={TH} rowSpan={2}>경간구분</th>
+              <th className={TH} rowSpan={2}>작업내용</th>
+              <th className={TH} colSpan={4}>사진</th>
+              <th className={TH} rowSpan={2}>기타 세부<br />정보</th>
+              <th className={TH} rowSpan={2}>정확도</th>
+              <th className={TH} rowSpan={2}>판독<br />상태</th>
+              <th className={TH} rowSpan={2}>작업</th>
+              <th className={TH} rowSpan={2}>삭제</th>
+            </tr>
+            <tr>
+              <th className={TH}>시작</th>
+              <th className={TH}>끝</th>
+              <th className={`${TH} w-14`}>10cm<br />미만</th>
+              <th className={`${TH} w-14`}>10cm<br />이상</th>
+              <th className={`${TH} w-14`}>20cm<br />이상</th>
+              <th className={`${TH} w-14`}>30cm<br />이상</th>
+              <th className={`${TH} w-14`}>40cm<br />이상</th>
+              <th className={`${TH} w-12`}>합계</th>
+              <th className={TH}>미리보기</th>
+              <th className={TH}>크롭된<br />사진</th>
+              <th className={TH}>사진3</th>
+              <th className={TH}>사진4</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 font-medium">
             {filteredRecords.length === 0 ? (
               <tr>
-                <td colSpan={13} className="py-12 text-center text-gray-400 text-[11px]">
+                <td colSpan={23} className="py-12 text-center text-gray-400 text-[11px]">
                   {searchTerm ? "검색 결과와 일치하는 데이터가 없습니다." : "표시할 분석 결과 데이터가 없습니다."}
                 </td>
               </tr>
             ) : (
-              filteredRecords.map((record, index) => {
+              filteredRecords.map((record) => {
                 const isSelected = record.id === selectedId;
+                const d = record.diameterCounts;
+                const isCompleted = record.status === "completed";
                 return (
                   <tr
                     key={record.id}
@@ -224,41 +270,51 @@ export default function PruningTable({
                       isSelected ? "bg-blue-50/30 font-bold" : ""
                     }`}
                   >
-                    <td className="py-2 px-3 text-center text-gray-400 font-mono border-r border-gray-100">
-                      {String(index + 1).padStart(3, "0")}
-                    </td>
-                    <td className="py-1 px-3 text-center border-r border-gray-100">
-                      <div
-                        className="w-8 h-11 rounded bg-gray-100 border border-gray-200 overflow-hidden inline-flex items-center justify-center cursor-zoom-in"
-                        onMouseEnter={(e) => handlePreviewEnter(record, e)}
-                        onMouseLeave={handlePreviewLeave}
-                      >
-                        <img src={record.url} alt="preview" className="object-cover w-full h-full" referrerPolicy="no-referrer" />
-                      </div>
-                    </td>
-                    <td className="py-2 px-3 text-gray-700 border-r border-gray-100 font-mono">
-                      {record.status === "completed" ? `${record.poleStart || "-"} ~ ${record.poleEnd || "-"}` : "-"}
-                    </td>
+                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono">{isCompleted ? record.poleStart || "-" : "-"}</td>
+                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono">{isCompleted ? record.poleEnd || "-" : "-"}</td>
                     <td className="py-2 px-3 border-r border-gray-100">
-                      {record.status === "completed" ? (
+                      {isCompleted ? (
                         <span className="font-extrabold text-blue-700 font-sans">{record.treeSpecies || "-"}</span>
                       ) : (
                         <span className="text-gray-400 italic font-mono">-</span>
                       )}
                     </td>
-                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono">
-                      {record.status === "completed" ? record.diameterCounts?.total ?? "-" : "-"}
+                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono">{isCompleted ? d?.under10 ?? 0 : "-"}</td>
+                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono">{isCompleted ? d?.over10 ?? 0 : "-"}</td>
+                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono">{isCompleted ? d?.over20 ?? 0 : "-"}</td>
+                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono">{isCompleted ? d?.over30 ?? 0 : "-"}</td>
+                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono">{isCompleted ? d?.over40 ?? 0 : "-"}</td>
+                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono font-extrabold">{isCompleted ? d?.total ?? 0 : "-"}</td>
+                    <td className="py-2 px-3 text-gray-500 truncate max-w-[100px] border-r border-gray-100" title={record.note || ""}>
+                      {isCompleted ? record.note || "-" : "-"}
                     </td>
-                    <td className="py-2 px-3 border-r border-gray-100">{record.status === "completed" ? record.workIntensity || "-" : "-"}</td>
-                    <td className="py-2 px-3 border-r border-gray-100">{record.status === "completed" ? record.treeClassification || "-" : "-"}</td>
+                    <td className="py-2 px-3 text-center border-r border-gray-100">{isCompleted ? record.workIntensity || "-" : "-"}</td>
+                    <td className="py-2 px-3 text-center border-r border-gray-100">{isCompleted ? record.treeClassification || "-" : "-"}</td>
                     <td className="py-2 px-3 text-gray-500 truncate max-w-[140px] border-r border-gray-100" title={record.spanDescription || ""}>
-                      {record.status === "completed" ? record.spanDescription || "-" : "-"}
+                      {isCompleted ? record.spanDescription || "-" : "-"}
                     </td>
-                    <td className="py-2 px-3 text-gray-500 truncate max-w-[180px] border-r border-gray-100" title={record.workContent || ""}>
-                      {record.status === "completed" ? record.workContent || "-" : "-"}
+                    <td className="py-2 px-3 text-gray-500 truncate max-w-[160px] border-r border-gray-100" title={record.workContent || ""}>
+                      {isCompleted ? record.workContent || "-" : "-"}
+                    </td>
+                    <td className="py-1 px-3 text-center border-r border-gray-100">
+                      <div className="w-8 h-11 rounded bg-gray-100 border border-gray-200 overflow-hidden inline-flex items-center justify-center">
+                        <img src={record.url} alt="미리보기" className="object-cover w-full h-full" referrerPolicy="no-referrer" />
+                      </div>
+                    </td>
+                    <td className="py-1 px-3 text-center border-r border-gray-100">
+                      <CroppedThumb url={record.url} boundingBox={record.boundingBox} />
+                    </td>
+                    <td className="py-1 px-3 text-center border-r border-gray-100">
+                      <PhotoThumb url={record.extraPhotoUrls[0]} />
+                    </td>
+                    <td className="py-1 px-3 text-center border-r border-gray-100">
+                      <PhotoThumb url={record.extraPhotoUrls[1]} />
+                    </td>
+                    <td className="py-2 px-3 text-gray-500 truncate max-w-[160px] border-r border-gray-100" title={record.reasoning || ""}>
+                      {isCompleted ? record.reasoning || "-" : "-"}
                     </td>
                     <td className="py-2 px-3 text-center border-r border-gray-100">
-                      {record.status === "completed" && record.confidence ? (
+                      {isCompleted && record.confidence ? (
                         <div className="flex items-center gap-1.5 justify-center">
                           <div className="w-12 bg-gray-200 h-1 rounded-full overflow-hidden hidden sm:block">
                             <div
@@ -311,11 +367,9 @@ export default function PruningTable({
                       )}
                     </td>
                     <td className="py-2 px-3 border-r border-gray-100" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex flex-col items-stretch gap-1 w-full">
+                      <div className="flex flex-col items-stretch gap-1 w-full min-w-[110px]">
                         <button
                           onClick={() => onOpenDetail(record.id)}
-                          onMouseEnter={(e) => handlePreviewEnter(record, e)}
-                          onMouseLeave={handlePreviewLeave}
                           title="상세 및 수정"
                           className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-gray-900 hover:bg-black text-white rounded font-bold whitespace-nowrap text-sm"
                         >
@@ -355,22 +409,6 @@ export default function PruningTable({
           </tbody>
         </table>
       </div>
-
-      {hoveredRecord && hoverPos && (
-        <div
-          className="fixed z-[100] pointer-events-none"
-          style={{ top: hoverPos.top - 8, left: hoverPos.left, transform: "translate(-50%, -100%)" }}
-        >
-          <div className="bg-white border border-gray-200 rounded-lg shadow-xl p-1.5">
-            <img
-              src={cropCache[hoveredRecord.id] || hoveredRecord.url}
-              alt="사진 미리보기"
-              className="max-w-[220px] max-h-[280px] object-contain rounded"
-              referrerPolicy="no-referrer"
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
