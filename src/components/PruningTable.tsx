@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { PruningRecord, BoundingBox } from "../types";
+import { PruningRecord, BoundingBox, DiameterCounts } from "../types";
 import { cropToBoundingBox } from "../lib/cropImage";
 import { Search, Download, Clipboard, Trash2, CheckCircle2, Play, Loader2, Eye, ImageOff } from "lucide-react";
 
@@ -11,6 +11,80 @@ interface PruningTableProps {
   onClearAll: () => void;
   onAnalyze: (id: string) => void;
   onOpenDetail: (id: string) => void;
+  onUpdate: (id: string, updatedFields: Partial<PruningRecord>) => void;
+}
+
+// 표 안에서 바로 값을 고치는 텍스트 입력. 클릭 시 행 선택(onSelect)으로 전파되지 않도록 막는다.
+function EditableText({
+  value,
+  onChange,
+  align = "left",
+  className = "",
+}: {
+  value: string | null;
+  onChange: (value: string) => void;
+  align?: "left" | "center";
+  className?: string;
+}) {
+  return (
+    <input
+      type="text"
+      value={value ?? ""}
+      onChange={(e) => onChange(e.target.value)}
+      onClick={(e) => e.stopPropagation()}
+      placeholder="-"
+      className={`w-full min-w-[60px] bg-transparent outline-none rounded px-1 py-0.5 hover:bg-gray-50 focus:bg-white focus:ring-1 focus:ring-blue-400 ${
+        align === "center" ? "text-center" : ""
+      } ${className}`}
+    />
+  );
+}
+
+// 지름 구간별 개수 입력. 합계는 여기서 계산해 넘기므로 별도 입력칸이 없다.
+function EditableCount({ value, onChange }: { value: number; onChange: (value: number) => void }) {
+  return (
+    <input
+      type="number"
+      value={value}
+      onChange={(e) => onChange(Number(e.target.value) || 0)}
+      onClick={(e) => e.stopPropagation()}
+      className="w-12 bg-transparent outline-none text-center font-mono rounded px-0.5 py-0.5 hover:bg-gray-50 focus:bg-white focus:ring-1 focus:ring-blue-400"
+    />
+  );
+}
+
+// 썸네일에 마우스를 올리면 커서 옆에 확대 이미지를 띄워주는 래퍼. fixed 포지셔닝이라 테이블의 overflow-x-auto에 잘리지 않는다.
+function HoverPreview({ src, alt, children }: { src: string | null; alt: string; children: React.ReactNode }) {
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+
+  if (!src) return <>{children}</>;
+
+  return (
+    <div
+      className="inline-flex"
+      onMouseEnter={(e) => setPos({ x: e.clientX, y: e.clientY })}
+      onMouseMove={(e) => setPos({ x: e.clientX, y: e.clientY })}
+      onMouseLeave={() => setPos(null)}
+    >
+      {children}
+      {pos && (
+        <div
+          className="fixed z-50 pointer-events-none p-1 bg-white border border-gray-200 rounded-lg shadow-2xl"
+          style={{
+            left: Math.min(pos.x + 16, window.innerWidth - 320),
+            top: Math.min(pos.y + 16, window.innerHeight - 320),
+          }}
+        >
+          <img
+            src={src}
+            alt={alt}
+            className="max-w-[300px] max-h-[300px] object-contain rounded"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+      )}
+    </div>
+  );
 }
 
 // boundingBox를 이용해 나무 부분만 잘라낸 "크롭된 사진" 썸네일. 계산이 끝나기 전에는 원본을 보여준다.
@@ -39,10 +113,14 @@ function CroppedThumb({ url, boundingBox }: { url: string; boundingBox: Bounding
     return <span className="text-gray-300">-</span>;
   }
 
+  const displayUrl = croppedUrl || url;
+
   return (
-    <div className="w-8 h-11 rounded bg-gray-100 border border-gray-200 overflow-hidden inline-flex items-center justify-center">
-      <img src={croppedUrl || url} alt="크롭된 사진" className="object-cover w-full h-full" referrerPolicy="no-referrer" />
-    </div>
+    <HoverPreview src={displayUrl} alt="크롭된 사진">
+      <div className="w-8 h-11 rounded bg-gray-100 border border-gray-200 overflow-hidden inline-flex items-center justify-center">
+        <img src={displayUrl} alt="크롭된 사진" className="object-cover w-full h-full" referrerPolicy="no-referrer" />
+      </div>
+    </HoverPreview>
   );
 }
 
@@ -71,10 +149,18 @@ export default function PruningTable({
   onClearAll,
   onAnalyze,
   onOpenDetail,
+  onUpdate,
 }: PruningTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [copiedErrorId, setCopiedErrorId] = useState<string | null>(null);
+
+  const handleCountChange = (record: PruningRecord, field: keyof Omit<DiameterCounts, "total">, value: number) => {
+    const current = record.diameterCounts || { under10: 0, over10: 0, over20: 0, over30: 0, over40: 0, total: 0 };
+    const updated: DiameterCounts = { ...current, [field]: value };
+    updated.total = updated.under10 + updated.over10 + updated.over20 + updated.over30 + updated.over40;
+    onUpdate(record.id, { diameterCounts: updated });
+  };
 
   const handleCopyError = (record: PruningRecord, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -270,36 +356,56 @@ export default function PruningTable({
                       isSelected ? "bg-blue-50/30 font-bold" : ""
                     }`}
                   >
-                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono">{isCompleted ? record.poleStart || "-" : "-"}</td>
-                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono">{isCompleted ? record.poleEnd || "-" : "-"}</td>
-                    <td className="py-2 px-3 border-r border-gray-100">
-                      {isCompleted ? (
-                        <span className="font-extrabold text-blue-700 font-sans">{record.treeSpecies || "-"}</span>
-                      ) : (
-                        <span className="text-gray-400 italic font-mono">-</span>
-                      )}
+                    <td className="py-1 px-1 border-r border-gray-100 font-mono">
+                      <EditableText value={record.poleStart} onChange={(v) => onUpdate(record.id, { poleStart: v })} align="center" />
                     </td>
-                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono">{isCompleted ? d?.under10 ?? 0 : "-"}</td>
-                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono">{isCompleted ? d?.over10 ?? 0 : "-"}</td>
-                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono">{isCompleted ? d?.over20 ?? 0 : "-"}</td>
-                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono">{isCompleted ? d?.over30 ?? 0 : "-"}</td>
-                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono">{isCompleted ? d?.over40 ?? 0 : "-"}</td>
-                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono font-extrabold">{isCompleted ? d?.total ?? 0 : "-"}</td>
-                    <td className="py-2 px-3 text-gray-500 truncate max-w-[100px] border-r border-gray-100" title={record.note || ""}>
-                      {isCompleted ? record.note || "-" : "-"}
+                    <td className="py-1 px-1 border-r border-gray-100 font-mono">
+                      <EditableText value={record.poleEnd} onChange={(v) => onUpdate(record.id, { poleEnd: v })} align="center" />
                     </td>
-                    <td className="py-2 px-3 text-center border-r border-gray-100">{isCompleted ? record.workIntensity || "-" : "-"}</td>
-                    <td className="py-2 px-3 text-center border-r border-gray-100">{isCompleted ? record.treeClassification || "-" : "-"}</td>
-                    <td className="py-2 px-3 text-gray-500 truncate max-w-[140px] border-r border-gray-100" title={record.spanDescription || ""}>
-                      {isCompleted ? record.spanDescription || "-" : "-"}
+                    <td className="py-1 px-1 border-r border-gray-100">
+                      <EditableText
+                        value={record.treeSpecies}
+                        onChange={(v) => onUpdate(record.id, { treeSpecies: v })}
+                        className="font-extrabold text-blue-700 font-sans"
+                      />
                     </td>
-                    <td className="py-2 px-3 text-gray-500 truncate max-w-[160px] border-r border-gray-100" title={record.workContent || ""}>
-                      {isCompleted ? record.workContent || "-" : "-"}
+                    <td className="py-1 px-1 text-center border-r border-gray-100 font-mono">
+                      <EditableCount value={d?.under10 ?? 0} onChange={(v) => handleCountChange(record, "under10", v)} />
+                    </td>
+                    <td className="py-1 px-1 text-center border-r border-gray-100 font-mono">
+                      <EditableCount value={d?.over10 ?? 0} onChange={(v) => handleCountChange(record, "over10", v)} />
+                    </td>
+                    <td className="py-1 px-1 text-center border-r border-gray-100 font-mono">
+                      <EditableCount value={d?.over20 ?? 0} onChange={(v) => handleCountChange(record, "over20", v)} />
+                    </td>
+                    <td className="py-1 px-1 text-center border-r border-gray-100 font-mono">
+                      <EditableCount value={d?.over30 ?? 0} onChange={(v) => handleCountChange(record, "over30", v)} />
+                    </td>
+                    <td className="py-1 px-1 text-center border-r border-gray-100 font-mono">
+                      <EditableCount value={d?.over40 ?? 0} onChange={(v) => handleCountChange(record, "over40", v)} />
+                    </td>
+                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono font-extrabold">{d?.total ?? 0}</td>
+                    <td className="py-1 px-1 border-r border-gray-100">
+                      <EditableText value={record.note} onChange={(v) => onUpdate(record.id, { note: v })} className="text-gray-500" />
+                    </td>
+                    <td className="py-1 px-1 border-r border-gray-100">
+                      <EditableText value={record.workIntensity} onChange={(v) => onUpdate(record.id, { workIntensity: v })} align="center" />
+                    </td>
+                    <td className="py-1 px-1 border-r border-gray-100">
+                      <EditableText value={record.treeClassification} onChange={(v) => onUpdate(record.id, { treeClassification: v })} align="center" />
+                    </td>
+                    <td className="py-1 px-1 border-r border-gray-100">
+                      <EditableText value={record.spanDescription} onChange={(v) => onUpdate(record.id, { spanDescription: v })} className="text-gray-500" />
+                    </td>
+                    <td className="py-1 px-1 border-r border-gray-100">
+                      <EditableText value={record.workContent} onChange={(v) => onUpdate(record.id, { workContent: v })} className="text-gray-500" />
                     </td>
                     <td className="py-1 px-3 text-center border-r border-gray-100">
-                      <div className="w-8 h-11 rounded bg-gray-100 border border-gray-200 overflow-hidden inline-flex items-center justify-center">
-                        <img src={record.url} alt="미리보기" className="object-cover w-full h-full" referrerPolicy="no-referrer" />
-                      </div>
+                      <HoverPreview src={record.url} alt="미리보기">
+                        <div className="w-8 h-11 rounded bg-gray-100 border border-gray-200 overflow-hidden inline-flex items-center justify-center">
+                          <img src={record.url} alt="미리보기" className="object-cover w-full h-full" referrerPolicy="no-referrer" />
+                        </div>
+                      </HoverPreview>
                     </td>
                     <td className="py-1 px-3 text-center border-r border-gray-100">
                       <CroppedThumb url={record.url} boundingBox={record.boundingBox} />

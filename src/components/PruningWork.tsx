@@ -360,6 +360,7 @@ export default function PruningWork({ settings, onNeedSettings }: PruningWorkPro
             onClearAll={handleClearAll}
             onAnalyze={handleAnalyze}
             onOpenDetail={setDetailId}
+            onUpdate={handleUpdateInfo}
           />
         )
       )}

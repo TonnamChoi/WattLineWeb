@@ -12,20 +12,26 @@ interface SidebarProps {
   onCloseMobile: () => void;
 }
 
+const HOME_VIEW: ViewId = "pruning";
+
 const navItems: { id: ViewId; label: string; icon: React.ElementType }[] = [
-  { id: "main", label: "번호찰추출", icon: Cpu },
   { id: "pruning", label: "전지작업", icon: Scissors },
+  { id: "main", label: "번호찰추출", icon: Cpu },
 ];
 
 function SidebarContent({ view, onNavigate, onOpenSettings }: Pick<SidebarProps, "view" | "onNavigate" | "onOpenSettings">) {
   return (
     <div className="flex flex-col h-full">
-      <div className="h-14 flex items-center gap-2 px-4 border-b border-gray-200 shrink-0">
+      <button
+        onClick={() => onNavigate(HOME_VIEW)}
+        title="홈으로 이동"
+        className="h-14 flex items-center gap-2 px-4 border-b border-gray-200 shrink-0 text-left hover:bg-gray-50 transition-colors"
+      >
         <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
           <Cpu className="w-4 h-4 text-white" />
         </div>
         <h1 className="text-sm font-bold text-gray-900 leading-tight">AI 전주번호찰<br />선로 정보 추출기</h1>
-      </div>
+      </button>
 
       <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
         {navItems.map(({ id, label, icon: Icon }) => (
@@ -78,12 +84,12 @@ export default function Sidebar({ view, onNavigate, onOpenSettings, isMobileOpen
 
       {/* Mobile top bar */}
       <div className="md:hidden h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 shrink-0">
-        <div className="flex items-center gap-2">
+        <button onClick={() => onNavigate(HOME_VIEW)} title="홈으로 이동" className="flex items-center gap-2">
           <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
             <Cpu className="w-4 h-4 text-white" />
           </div>
           <h1 className="text-sm font-bold text-gray-900">AI 전주번호찰 선로 정보 추출기</h1>
-        </div>
+        </button>
         <button
           onClick={onOpenMobile}
           className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
