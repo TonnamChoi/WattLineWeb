@@ -272,54 +272,40 @@ export default function PruningTable({
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead className="text-gray-600 font-bold text-[10px] uppercase tracking-wider">
-            <tr>
-              <th className={TH} colSpan={2} rowSpan={1}>전주번호</th>
-              <th className={TH} rowSpan={2}>수목종류</th>
-              <th className={TH} colSpan={6}>준공내역</th>
-              <th className={TH} rowSpan={2}>비고</th>
-              <th className={TH} rowSpan={2}>작업<br />강도</th>
-              <th className={TH} rowSpan={2}>나무<br />분류</th>
-              <th className={TH} rowSpan={2}>경간구분</th>
-              <th className={TH} rowSpan={2}>작업내용</th>
-              <th className={TH} colSpan={6}>사진</th>
-              <th className={TH} rowSpan={2}>기타 세부<br />정보</th>
-              <th className={TH} rowSpan={2}>정확도</th>
-              <th className={TH} rowSpan={2}>판독<br />상태</th>
-              <th className={TH} rowSpan={2}>작업</th>
-              <th className={TH} rowSpan={2}>삭제</th>
-            </tr>
-            <tr>
-              <th className={TH}>시작</th>
-              <th className={TH}>끝</th>
-              <th className={`${TH} w-14`}>10cm<br />미만</th>
-              <th className={`${TH} w-14`}>10cm<br />이상</th>
-              <th className={`${TH} w-14`}>20cm<br />이상</th>
-              <th className={`${TH} w-14`}>30cm<br />이상</th>
-              <th className={`${TH} w-14`}>40cm<br />이상</th>
-              <th className={`${TH} w-12`}>합계</th>
-              <th className={TH}>시작<br />전주</th>
-              <th className={TH}>종료<br />전주</th>
-              <th className={TH}>작업전</th>
-              <th className={TH}>흉고<br />직경</th>
-              <th className={TH}>작업후</th>
-              <th className={TH}>기타</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100 font-medium">
-            {filteredRecords.length === 0 ? (
+      {filteredRecords.length === 0 ? (
+        <div className="py-12 text-center text-gray-400 text-[11px]">
+          {searchTerm ? "검색 결과와 일치하는 데이터가 없습니다." : "표시할 분석 결과 데이터가 없습니다."}
+        </div>
+      ) : (
+        <>
+          {/* 1행: 전주번호/수목종류/준공내역/비고/작업강도/나무분류/경간구분/작업내용 */}
+          <table className="w-full text-left border-collapse">
+            <thead className="text-gray-600 font-bold text-[10px] uppercase tracking-wider">
               <tr>
-                <td colSpan={25} className="py-12 text-center text-gray-400 text-[11px]">
-                  {searchTerm ? "검색 결과와 일치하는 데이터가 없습니다." : "표시할 분석 결과 데이터가 없습니다."}
-                </td>
+                <th className={TH} colSpan={2} rowSpan={1}>전주번호</th>
+                <th className={TH} rowSpan={2}>수목종류</th>
+                <th className={TH} colSpan={6}>준공내역</th>
+                <th className={TH} rowSpan={2}>비고</th>
+                <th className={TH} rowSpan={2}>작업<br />강도</th>
+                <th className={TH} rowSpan={2}>나무<br />분류</th>
+                <th className={TH} rowSpan={2}>경간구분</th>
+                <th className={TH} rowSpan={2}>작업내용</th>
               </tr>
-            ) : (
-              filteredRecords.map((record) => {
+              <tr>
+                <th className={TH}>시작</th>
+                <th className={TH}>끝</th>
+                <th className={`${TH} w-14`}>10cm<br />미만</th>
+                <th className={`${TH} w-14`}>10cm<br />이상</th>
+                <th className={`${TH} w-14`}>20cm<br />이상</th>
+                <th className={`${TH} w-14`}>30cm<br />이상</th>
+                <th className={`${TH} w-14`}>40cm<br />이상</th>
+                <th className={`${TH} w-12`}>합계</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 font-medium">
+              {filteredRecords.map((record) => {
                 const isSelected = record.id === selectedId;
                 const d = record.diameterCounts;
-                const isCompleted = record.status === "completed";
                 return (
                   <tr
                     key={record.id}
@@ -372,6 +358,44 @@ export default function PruningTable({
                     <td className="py-1 px-1 border-r border-gray-100">
                       <EditableText value={record.workContent} onChange={(v) => onUpdate(record.id, { workContent: v })} className="text-gray-500" />
                     </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+          {/* 2행: 사진/기타 세부정보/정확도/판독상태/작업/삭제 */}
+          <table className="w-full text-left border-collapse border-t-2 border-gray-200">
+            <thead className="text-gray-600 font-bold text-[10px] uppercase tracking-wider">
+              <tr>
+                <th className={TH} colSpan={6}>사진</th>
+                <th className={TH} rowSpan={2}>기타 세부<br />정보</th>
+                <th className={TH} rowSpan={2}>정확도</th>
+                <th className={TH} rowSpan={2}>판독<br />상태</th>
+                <th className={TH} rowSpan={2}>작업</th>
+                <th className={TH} rowSpan={2}>삭제</th>
+              </tr>
+              <tr>
+                <th className={TH}>시작<br />전주</th>
+                <th className={TH}>종료<br />전주</th>
+                <th className={TH}>작업전</th>
+                <th className={TH}>흉고<br />직경</th>
+                <th className={TH}>작업후</th>
+                <th className={TH}>기타</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 font-medium">
+              {filteredRecords.map((record) => {
+                const isSelected = record.id === selectedId;
+                const isCompleted = record.status === "completed";
+                return (
+                  <tr
+                    key={record.id}
+                    onClick={() => onSelect(record.id)}
+                    className={`text-[12px] hover:bg-blue-50/50 transition-colors cursor-pointer ${
+                      isSelected ? "bg-blue-50/30 font-bold" : ""
+                    }`}
+                  >
                     {PHOTO_CATEGORIES.map((category) => {
                       const photoUrl = getCategoryPhotoUrl(record, category);
                       return (
@@ -476,11 +500,11 @@ export default function PruningTable({
                     </td>
                   </tr>
                 );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+              })}
+            </tbody>
+          </table>
+        </>
+      )}
     </div>
   );
 }
