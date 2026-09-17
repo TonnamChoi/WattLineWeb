@@ -3,7 +3,7 @@ import { Upload, AlertCircle, Loader2, Play, Trash2 } from "lucide-react";
 import { resizeImageFile } from "../lib/resizeImage";
 import { runWithConcurrency } from "../lib/asyncQueue";
 import { AppSettings, ProviderId } from "../lib/settings";
-import { PruningRecord } from "../types";
+import { PruningRecord, WattlineCategory } from "../types";
 import PruningTable from "./PruningTable";
 import PruningDetail from "./PruningDetail";
 
@@ -104,6 +104,76 @@ export default function PruningWork({ settings, onNeedSettings }: PruningWorkPro
       })
       .catch(() => {})
       .finally(() => setIsLoadingList(false));
+  }, []);
+
+  // WattLine(모바일 촬영 앱)이 Supabase DB에 저장한 사진 목록을 불러와, 같은 작업 건(작업장+날짜)의
+  // 분류별 사진을 한 행에 모아서 "대기중" 상태로 추가한다.
+  useEffect(() => {
+    fetch("/api/wattline-db")
+      .then((res) => res.json())
+      .then((data) => {
+        const photos: {
+          id: string;
+          url: string;
+          fileName: string;
+          workplaceName: string;
+          category: WattlineCategory;
+          photoDate: string;
+          createdAt: string;
+        }[] = data.photos || [];
+
+        const groups = new Map<
+          string,
+          { workplaceName: string; photoDate: string; latestCreatedAt: string; photosByCategory: Partial<Record<WattlineCategory, string>> }
+        >();
+        photos.forEach((p) => {
+          const key = `${p.workplaceName}__${p.photoDate}`;
+          const group = groups.get(key) || {
+            workplaceName: p.workplaceName,
+            photoDate: p.photoDate,
+            latestCreatedAt: p.createdAt,
+            photosByCategory: {},
+          };
+          group.photosByCategory[p.category] = p.url;
+          if (p.createdAt > group.latestCreatedAt) group.latestCreatedAt = p.createdAt;
+          groups.set(key, group);
+        });
+
+        setRecords((prev) => {
+          const existingIds = new Set(prev.map((r) => r.id));
+          const loaded = Array.from(groups.entries())
+            .filter(([key]) => !existingIds.has(`wl-db-${key}`))
+            .map(([key, g]) => ({
+              id: `wl-db-${key}`,
+              name: `${g.workplaceName} · ${g.photoDate}`,
+              url: g.photosByCategory["작업전"] || g.photosByCategory["흉고직경"] || Object.values(g.photosByCategory)[0] || "",
+              mimeType: "image/jpeg",
+              status: "idle" as const,
+              error: null,
+              poleStart: null,
+              poleEnd: null,
+              treeSpecies: null,
+              diameterCounts: null,
+              note: null,
+              workIntensity: null,
+              treeClassification: null,
+              spanDescription: null,
+              workContent: null,
+              confidence: null,
+              reasoning: null,
+              boundingBox: null,
+              wattlineCategoryPhotos: g.photosByCategory,
+              extraPhotoUrls: [],
+              uploadedAt: new Date(g.latestCreatedAt).toLocaleTimeString("ko-KR", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              }),
+            }));
+          return [...prev, ...loaded];
+        });
+      })
+      .catch(() => {});
   }, []);
 
   const analyzeRecord = async (targetRecord: PruningRecord, dataUrl: string, mimeType: string) => {

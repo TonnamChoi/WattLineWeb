@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { PruningRecord, BoundingBox, DiameterCounts } from "../types";
-import { cropToBoundingBox } from "../lib/cropImage";
+import React, { useState } from "react";
+import { PruningRecord, DiameterCounts, WattlineCategory } from "../types";
 import { Search, Download, Clipboard, Trash2, CheckCircle2, Play, Loader2, Eye, ImageOff } from "lucide-react";
 
 interface PruningTableProps {
@@ -87,43 +86,6 @@ function HoverPreview({ src, alt, children }: { src: string | null; alt: string;
   );
 }
 
-// boundingBox를 이용해 나무 부분만 잘라낸 "크롭된 사진" 썸네일. 계산이 끝나기 전에는 원본을 보여준다.
-function CroppedThumb({ url, boundingBox }: { url: string; boundingBox: BoundingBox | null }) {
-  const [croppedUrl, setCroppedUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!boundingBox) {
-      setCroppedUrl(null);
-      return;
-    }
-    let cancelled = false;
-    cropToBoundingBox(url, boundingBox)
-      .then((result) => {
-        if (!cancelled) setCroppedUrl(result);
-      })
-      .catch(() => {
-        if (!cancelled) setCroppedUrl(null);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [url, boundingBox?.x, boundingBox?.y, boundingBox?.width, boundingBox?.height]);
-
-  if (!boundingBox) {
-    return <span className="text-gray-300">-</span>;
-  }
-
-  const displayUrl = croppedUrl || url;
-
-  return (
-    <HoverPreview src={displayUrl} alt="크롭된 사진">
-      <div className="w-8 h-11 rounded bg-gray-100 border border-gray-200 overflow-hidden inline-flex items-center justify-center">
-        <img src={displayUrl} alt="크롭된 사진" className="object-cover w-full h-full" referrerPolicy="no-referrer" />
-      </div>
-    </HoverPreview>
-  );
-}
-
 function PhotoThumb({ url }: { url?: string | null }) {
   if (!url) {
     return (
@@ -140,6 +102,14 @@ function PhotoThumb({ url }: { url?: string | null }) {
 }
 
 const TH = "py-2 px-3 text-center border-r border-b border-green-200 bg-green-50 whitespace-nowrap";
+
+const PHOTO_CATEGORIES: WattlineCategory[] = ["시작전주", "종료전주", "작업전", "흉고직경", "작업후", "기타"];
+
+// WattLine DB에서 불러온 행은 분류별 실제 사진을, 수동 업로드 행은 대표 사진을 "작업전" 칸에 보여준다.
+function getCategoryPhotoUrl(record: PruningRecord, category: WattlineCategory): string | null {
+  if (record.wattlineCategoryPhotos) return record.wattlineCategoryPhotos[category] || null;
+  return category === "작업전" ? record.url : null;
+}
 
 export default function PruningTable({
   records,
@@ -314,7 +284,7 @@ export default function PruningTable({
               <th className={TH} rowSpan={2}>나무<br />분류</th>
               <th className={TH} rowSpan={2}>경간구분</th>
               <th className={TH} rowSpan={2}>작업내용</th>
-              <th className={TH} colSpan={4}>사진</th>
+              <th className={TH} colSpan={6}>사진</th>
               <th className={TH} rowSpan={2}>기타 세부<br />정보</th>
               <th className={TH} rowSpan={2}>정확도</th>
               <th className={TH} rowSpan={2}>판독<br />상태</th>
@@ -330,16 +300,18 @@ export default function PruningTable({
               <th className={`${TH} w-14`}>30cm<br />이상</th>
               <th className={`${TH} w-14`}>40cm<br />이상</th>
               <th className={`${TH} w-12`}>합계</th>
-              <th className={TH}>미리보기</th>
-              <th className={TH}>크롭된<br />사진</th>
-              <th className={TH}>사진3</th>
-              <th className={TH}>사진4</th>
+              <th className={TH}>시작<br />전주</th>
+              <th className={TH}>종료<br />전주</th>
+              <th className={TH}>작업전</th>
+              <th className={TH}>흉고<br />직경</th>
+              <th className={TH}>작업후</th>
+              <th className={TH}>기타</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 font-medium">
             {filteredRecords.length === 0 ? (
               <tr>
-                <td colSpan={23} className="py-12 text-center text-gray-400 text-[11px]">
+                <td colSpan={25} className="py-12 text-center text-gray-400 text-[11px]">
                   {searchTerm ? "검색 결과와 일치하는 데이터가 없습니다." : "표시할 분석 결과 데이터가 없습니다."}
                 </td>
               </tr>
@@ -400,22 +372,16 @@ export default function PruningTable({
                     <td className="py-1 px-1 border-r border-gray-100">
                       <EditableText value={record.workContent} onChange={(v) => onUpdate(record.id, { workContent: v })} className="text-gray-500" />
                     </td>
-                    <td className="py-1 px-3 text-center border-r border-gray-100">
-                      <HoverPreview src={record.url} alt="미리보기">
-                        <div className="w-8 h-11 rounded bg-gray-100 border border-gray-200 overflow-hidden inline-flex items-center justify-center">
-                          <img src={record.url} alt="미리보기" className="object-cover w-full h-full" referrerPolicy="no-referrer" />
-                        </div>
-                      </HoverPreview>
-                    </td>
-                    <td className="py-1 px-3 text-center border-r border-gray-100">
-                      <CroppedThumb url={record.url} boundingBox={record.boundingBox} />
-                    </td>
-                    <td className="py-1 px-3 text-center border-r border-gray-100">
-                      <PhotoThumb url={record.extraPhotoUrls[0]} />
-                    </td>
-                    <td className="py-1 px-3 text-center border-r border-gray-100">
-                      <PhotoThumb url={record.extraPhotoUrls[1]} />
-                    </td>
+                    {PHOTO_CATEGORIES.map((category) => {
+                      const photoUrl = getCategoryPhotoUrl(record, category);
+                      return (
+                        <td key={category} className="py-1 px-3 text-center border-r border-gray-100">
+                          <HoverPreview src={photoUrl} alt={category}>
+                            <PhotoThumb url={photoUrl} />
+                          </HoverPreview>
+                        </td>
+                      );
+                    })}
                     <td className="py-2 px-3 text-gray-500 truncate max-w-[160px] border-r border-gray-100" title={record.reasoning || ""}>
                       {isCompleted ? record.reasoning || "-" : "-"}
                     </td>

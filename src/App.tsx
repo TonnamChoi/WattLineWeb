@@ -4,6 +4,7 @@ import PoleDetail from "./components/PoleDetail";
 import PoleTable from "./components/PoleTable";
 import SettingsPanel from "./components/SettingsPanel";
 import AboutPlate from "./components/AboutPlate";
+import TreePruningGuide from "./components/TreePruningGuide";
 import PruningWork from "./components/PruningWork";
 import Sidebar, { ViewId } from "./components/Sidebar";
 import { PoleImage } from "./types";
@@ -224,6 +225,7 @@ export default function App() {
           }`}
         >
           {view === "about" && <AboutPlate />}
+          {view === "pruning-guide" && <TreePruningGuide />}
           {view === "pruning" && <PruningWork settings={settings} onNeedSettings={() => setIsSettingsOpen(true)} />}
           {view === "main" && (
           <>

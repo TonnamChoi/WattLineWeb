@@ -42,6 +42,8 @@ export interface DiameterCounts {
   total: number;
 }
 
+export type WattlineCategory = "시작전주" | "종료전주" | "작업전" | "흉고직경" | "작업후" | "기타";
+
 export interface PruningRecord {
   id: string;
   name: string;
@@ -49,6 +51,9 @@ export interface PruningRecord {
   mimeType: string;
   status: "idle" | "processing" | "completed" | "failed";
   error: string | null;
+
+  // WattLine(모바일 촬영 앱) DB에서 불러온 작업 건인 경우, 분류별 사진 URL. 수동 업로드 사진에는 없음.
+  wattlineCategoryPhotos?: Partial<Record<WattlineCategory, string>>;
 
   poleStart: string | null;
   poleEnd: string | null;

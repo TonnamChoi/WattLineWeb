@@ -29,18 +29,18 @@
 
 ## 배포 상태
 
-- **URL**: https://pole-number.vercel.app/
+- **URL**: https://wattline-web.vercel.app/
 - main push → Vercel 자동 빌드(GitHub 연동), 정상 배포 확인됨
-- **Vercel Blob 스토어**: `pole-number-blob` (Public 접근, region iad1) 생성 및 `pole-number` 프로젝트에 연결 완료 (Production/Preview 환경변수: `BLOB_READ_WRITE_TOKEN`, `BLOB_STORE_ID`, `BLOB_WEBHOOK_PUBLIC_KEY`)
+- **Vercel Blob 스토어**: `pole-number-blob` (Public 접근, region iad1) 생성 및 `wattline-web` 프로젝트에 연결 완료 (Production/Preview 환경변수: `BLOB_READ_WRITE_TOKEN`, `BLOB_STORE_ID`, `BLOB_WEBHOOK_PUBLIC_KEY`)
 - 연결 후 1회 수동 Redeploy 필요했음 (환경변수 연결은 기존 실행 중인 함수에 즉시 반영되지 않음)
-- 확인: `curl https://pole-number.vercel.app/api/pruning` → `{"photos":[]}` (HTTP 200) 정상
+- 확인: `curl https://wattline-web.vercel.app/api/pruning` → `{"photos":[]}` (HTTP 200) 정상
 
 ## 참고사항 / 주의점
 
 - **로컬 개발 시**: `BLOB_READ_WRITE_TOKEN`이 없으면 전지작업 업로드가 "파일 저장소가 연결되어 있지 않습니다" 오류를 반환함(의도된 동작). 로컬에서 실제 업로드까지 테스트하려면 `vercel env pull`로 토큰을 받아와야 함 (단, 현재 `server.ts`는 dotenv 로딩 코드가 없어 `.env.local`을 자동으로 읽지 않음 — 필요 시 추가 작업 필요).
 - **`tsx server.ts`는 파일 변경을 자동 감지하지 않음** — `server.ts`/`api/`/`providers/` 등 서버 코드를 고치면 개발 서버를 껐다 켜야 반영됨 (프론트 `src/`는 Vite HMR로 자동 반영).
 - 실제 Blob 토큰 값 등 민감 정보는 `docs-private.md` (git에 커밋되지 않음, `.gitignore` 등록됨)에 기록되어 있음.
-- 저장소(GitHub `TonnamChoi/PoleNumber`)는 **public** 저장소이므로, 토큰/키는 절대 코드나 커밋에 직접 넣지 말 것.
+- 저장소(GitHub `TonnamChoi/WattLineWeb`)는 **public** 저장소이므로, 토큰/키는 절대 코드나 커밋에 직접 넣지 말 것.
 
 ## 남은 일 / 다음에 이어서 할 수 있는 것
 

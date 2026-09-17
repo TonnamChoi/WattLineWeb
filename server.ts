@@ -1,3 +1,6 @@
+import { config as loadEnv } from "dotenv";
+loadEnv({ path: ".env.local" });
+
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
@@ -8,9 +11,10 @@ import {
   deletePruningPhoto,
 } from "./providers/handlePruningRequest";
 import { handlePruningExtractRequest } from "./providers/handlePruningExtractRequest";
+import { listWattlineDbPhotos } from "./providers/handleWattlineDbRequest";
 
 const app = express();
-const PORT = 3000;
+const PORT = 4004;
 
 // Increase payload size limit since we will send base64 images
 app.use(express.json({ limit: "50mb" }));
@@ -39,6 +43,12 @@ app.delete("/api/pruning", async (req, res) => {
 // API Routes (mirrors api/pruning-extract.ts, which Vercel uses in production)
 app.post("/api/pruning-extract", async (req, res) => {
   const { status, body } = await handlePruningExtractRequest(req.body);
+  res.status(status).json(body);
+});
+
+// API Routes (mirrors api/wattline-db.ts, which Vercel uses in production)
+app.get("/api/wattline-db", async (req, res) => {
+  const { status, body } = await listWattlineDbPhotos();
   res.status(status).json(body);
 });
 

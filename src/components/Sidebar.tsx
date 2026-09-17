@@ -1,7 +1,8 @@
 import React from "react";
-import { Cpu, Scissors, Settings, Menu, X, Info } from "lucide-react";
+import { Cpu, Scissors, Settings, Menu, X, Info, TreeDeciduous } from "lucide-react";
+import { APP_VERSION } from "../lib/version";
 
-export type ViewId = "main" | "pruning" | "about";
+export type ViewId = "main" | "pruning" | "pruning-guide" | "about";
 
 interface SidebarProps {
   view: ViewId;
@@ -52,6 +53,17 @@ function SidebarContent({ view, onNavigate, onOpenSettings }: Pick<SidebarProps,
 
       <div className="p-2 border-t border-gray-200 shrink-0 space-y-0.5">
         <button
+          onClick={() => onNavigate("pruning-guide")}
+          className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+            view === "pruning-guide"
+              ? "bg-blue-50 text-blue-700 font-semibold"
+              : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+          }`}
+        >
+          <TreeDeciduous className="w-4 h-4" />
+          수목전지 기초
+        </button>
+        <button
           onClick={() => onNavigate("about")}
           className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
             view === "about"
@@ -69,6 +81,10 @@ function SidebarContent({ view, onNavigate, onOpenSettings }: Pick<SidebarProps,
           <Settings className="w-4 h-4" />
           AI 설정
         </button>
+      </div>
+
+      <div className="px-3 py-2 border-t border-gray-100 shrink-0 text-center text-[10px] text-gray-300 font-mono">
+        {APP_VERSION}
       </div>
     </div>
   );
