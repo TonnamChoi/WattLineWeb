@@ -1,35 +1,57 @@
-import { list, put, del } from "@vercel/blob";
+import { createClient } from "@supabase/supabase-js";
 
-const PRUNING_PREFIX = "pruning/";
+const BUCKET = "pruning-photos";
+// 업로드 직후 사진이 표(재분석 버튼 포함)와 상세보기에서 세션 내내 계속 쓰이므로,
+// wattline-db 목록 조회(10분)보다 훨씬 긴 유효시간을 둔다.
+const SIGNED_URL_TTL_SECONDS = 60 * 60 * 6;
 
 interface HandlerResult {
   status: number;
   body: any;
 }
 
-function isMissingTokenError(err: any): boolean {
-  const message = err?.message || "";
-  return message.includes("BLOB_READ_WRITE_TOKEN");
+const MISSING_CREDS_MESSAGE =
+  "파일 저장소(Supabase Storage)가 연결되어 있지 않습니다. SUPABASE_URL, SUPABASE_SECRET_KEY 환경변수를 설정하세요.";
+
+function getClient() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key);
 }
 
-const MISSING_TOKEN_MESSAGE =
-  "파일 저장소(Vercel Blob)가 연결되어 있지 않습니다. Vercel 프로젝트에 Blob 스토어를 연결한 뒤 `vercel env pull`로 BLOB_READ_WRITE_TOKEN 환경변수를 받아오세요.";
-
 export async function listPruningPhotos(): Promise<HandlerResult> {
+  const supabase = getClient();
+  if (!supabase) return { status: 500, body: { error: MISSING_CREDS_MESSAGE } };
+
   try {
-    const { blobs } = await list({ prefix: PRUNING_PREFIX });
-    const photos = blobs
-      .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())
-      .map((b) => ({
-        url: b.url,
-        pathname: b.pathname,
-        uploadedAt: b.uploadedAt,
-      }));
+    const { data: files, error } = await supabase.storage.from(BUCKET).list("", {
+      sortBy: { column: "created_at", order: "desc" },
+    });
+    if (error) throw error;
+
+    const paths = (files || []).map((f) => f.name);
+    if (paths.length === 0) {
+      return { status: 200, body: { photos: [] } };
+    }
+
+    const { data: signedUrls, error: signError } = await supabase.storage
+      .from(BUCKET)
+      .createSignedUrls(paths, SIGNED_URL_TTL_SECONDS);
+    if (signError) throw signError;
+
+    const urlByPath = new Map((signedUrls || []).map((s) => [s.path, s.signedUrl]));
+
+    const photos = (files || [])
+      .map((f) => ({
+        url: urlByPath.get(f.name) || null,
+        pathname: f.name,
+        uploadedAt: f.created_at || new Date().toISOString(),
+      }))
+      .filter((p) => p.url);
+
     return { status: 200, body: { photos } };
   } catch (err: any) {
-    if (isMissingTokenError(err)) {
-      return { status: 500, body: { error: MISSING_TOKEN_MESSAGE } };
-    }
     console.error("Failed to list pruning photos", err);
     return { status: 500, body: { error: "사진 목록을 불러오지 못했습니다." } };
   }
@@ -41,44 +63,51 @@ export async function uploadPruningPhoto(reqBody: any): Promise<HandlerResult> {
     return { status: 400, body: { error: "파일 정보가 올바르지 않습니다." } };
   }
 
+  const supabase = getClient();
+  if (!supabase) return { status: 500, body: { error: MISSING_CREDS_MESSAGE } };
+
   try {
     const base64 = String(dataUrl).split(",").pop() || "";
     const buffer = Buffer.from(base64, "base64");
     const safeName = String(fileName).replace(/[^\w.\-가-힣]/g, "_");
-    const pathname = `${PRUNING_PREFIX}${Date.now()}-${safeName}`;
+    const randomSuffix = Math.random().toString(36).slice(2, 8);
+    const pathname = `${Date.now()}-${randomSuffix}-${safeName}`;
 
-    const blob = await put(pathname, buffer, {
-      access: "public",
+    const { error } = await supabase.storage.from(BUCKET).upload(pathname, buffer, {
       contentType: mimeType,
-      addRandomSuffix: true,
+      upsert: false,
     });
+    if (error) throw error;
+
+    const { data: signedUrlData, error: signError } = await supabase.storage
+      .from(BUCKET)
+      .createSignedUrl(pathname, SIGNED_URL_TTL_SECONDS);
+    if (signError) throw signError;
 
     return {
       status: 200,
-      body: { url: blob.url, pathname: blob.pathname, uploadedAt: new Date().toISOString() },
+      body: { url: signedUrlData.signedUrl, pathname, uploadedAt: new Date().toISOString() },
     };
   } catch (err: any) {
-    if (isMissingTokenError(err)) {
-      return { status: 500, body: { error: MISSING_TOKEN_MESSAGE } };
-    }
     console.error("Failed to upload pruning photo", err);
     return { status: 500, body: { error: "사진 업로드에 실패했습니다." } };
   }
 }
 
 export async function deletePruningPhoto(reqBody: any): Promise<HandlerResult> {
-  const { url } = reqBody || {};
-  if (!url) {
+  const { pathname } = reqBody || {};
+  if (!pathname) {
     return { status: 400, body: { error: "삭제할 파일 정보가 없습니다." } };
   }
 
+  const supabase = getClient();
+  if (!supabase) return { status: 500, body: { error: MISSING_CREDS_MESSAGE } };
+
   try {
-    await del(url);
+    const { error } = await supabase.storage.from(BUCKET).remove([pathname]);
+    if (error) throw error;
     return { status: 200, body: { success: true } };
   } catch (err: any) {
-    if (isMissingTokenError(err)) {
-      return { status: 500, body: { error: MISSING_TOKEN_MESSAGE } };
-    }
     console.error("Failed to delete pruning photo", err);
     return { status: 500, body: { error: "사진 삭제에 실패했습니다." } };
   }
