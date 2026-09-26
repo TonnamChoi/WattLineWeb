@@ -41,7 +41,7 @@ export default function WorkplaceList({ user, onOpenWorkplace }: { user: AuthUse
   const load = () => {
     setLoading(true);
     setError(null);
-    getJson(`/api/workplaces${companyId ? `?companyId=${companyId}` : ""}`)
+    getJson(`/api/workplaces${companyId ?`?companyId=${companyId}`: ""}`)
       .then((d) => setItems(d.items))
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -56,8 +56,8 @@ export default function WorkplaceList({ user, onOpenWorkplace }: { user: AuthUse
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="font-bold text-navy">작업장 목록</h2>
-          <p className="text-text3 mt-0.5">
+          <h2 className="font-bold text-text">작업장 목록</h2>
+          <p className="text-text-soft mt-0.5">
             {isAdmin ? "회사를 선택해 작업장을 확인합니다." : `${user.companyName || "소속 회사"}의 작업장입니다.`}
           </p>
         </div>
@@ -66,7 +66,7 @@ export default function WorkplaceList({ user, onOpenWorkplace }: { user: AuthUse
             <select
               value={companyId}
               onChange={(e) => setCompanyId(e.target.value)}
-              className="text-sm border border-border rounded-md px-2 py-2 bg-surface"
+              className="text-sm border border-line rounded-md px-2 py-2 bg-panel"
             >
               <option value="">전체 회사</option>
               {companies.map((c) => (
@@ -77,7 +77,7 @@ export default function WorkplaceList({ user, onOpenWorkplace }: { user: AuthUse
           <button
             onClick={load}
             title="새로고침"
-            className="p-2 text-text3 hover:text-navy hover:bg-surface2 rounded-md border border-border bg-surface"
+            className="p-2 text-text-soft hover:text-blue hover:bg-panel-2 rounded-md border border-line bg-panel"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
@@ -86,9 +86,9 @@ export default function WorkplaceList({ user, onOpenWorkplace }: { user: AuthUse
 
       {!loading && !error && (
         <div className="flex flex-wrap gap-2">
-          <span className="px-2.5 py-1 rounded-full bg-surface2 text-text2 font-semibold">전체 {items.length}</span>
-          <span className="px-2.5 py-1 rounded-full bg-amber-light text-amber-dark font-semibold">미완료 {items.length - doneCount}</span>
-          <span className="px-2.5 py-1 rounded-full bg-green-bg text-green font-semibold">완료 {doneCount}</span>
+          <span className="px-2.5 py-1 rounded-full bg-panel-2 text-text-soft font-semibold">전체 {items.length}</span>
+          <span className="px-2.5 py-1 rounded-full bg-amber/15 text-amber font-semibold">미완료 {items.length - doneCount}</span>
+          <span className="px-2.5 py-1 rounded-full bg-green/15 text-green font-semibold">완료 {doneCount}</span>
         </div>
       )}
 
@@ -99,9 +99,9 @@ export default function WorkplaceList({ user, onOpenWorkplace }: { user: AuthUse
         </div>
       )}
 
-      <div className="rounded-xl border border-border bg-surface shadow-sm overflow-x-auto">
+      <div className="rounded-[22px] border border-line bg-panel shadow-sm overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-surface2 text-text3">
+          <thead className="bg-panel-2 text-text-soft">
             <tr>
               <th className="px-3 py-2.5 text-left font-semibold whitespace-nowrap w-24">작업완료</th>
               {showCompany && <th className="px-3 py-2.5 text-left font-semibold whitespace-nowrap">회사</th>}
@@ -112,47 +112,47 @@ export default function WorkplaceList({ user, onOpenWorkplace }: { user: AuthUse
               <th className="px-3 py-2.5 text-left font-semibold">비고</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
+          <tbody className="divide-y divide-line">
             {loading ? (
               <tr>
-                <td colSpan={7} className="py-10 text-center text-text3">
+                <td colSpan={7} className="py-10 text-center text-text-soft">
                   <Loader2 className="w-5 h-5 animate-spin inline" />
                 </td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-10 text-center text-text3">
+                <td colSpan={7} className="py-10 text-center text-text-soft">
                   {!isAdmin && !user.companyName ? "소속 회사가 지정되지 않았습니다. 관리자에게 문의하세요." : "등록된 작업장이 없습니다."}
                 </td>
               </tr>
             ) : (
               items.map((w) => (
-                <tr key={w.id} className="hover:bg-surface2 align-top">
+                <tr key={w.id} className="hover:bg-panel-2 align-top">
                   <td className="px-3 py-2.5 whitespace-nowrap">
                     {w.is_completed ? (
-                      <span className="px-2 py-0.5 rounded-full bg-green-bg text-green font-semibold">완료</span>
+                      <span className="px-2 py-0.5 rounded-full bg-green/15 text-green font-semibold">완료</span>
                     ) : (
-                      <span className="px-2 py-0.5 rounded-full bg-amber-light text-amber-dark font-semibold">미완료</span>
+                      <span className="px-2 py-0.5 rounded-full bg-amber/15 text-amber font-semibold">미완료</span>
                     )}
                   </td>
-                  {showCompany && <td className="px-3 py-2.5 text-text2 whitespace-nowrap">{w.company?.name}</td>}
+                  {showCompany && <td className="px-3 py-2.5 text-text-soft whitespace-nowrap">{w.company?.name}</td>}
                   <td className="px-3 py-2.5 whitespace-nowrap">
                     <button
                       onClick={() => onOpenWorkplace(w.id)}
                       title="전지작업으로 이동"
-                      className="font-semibold text-navy hover:text-navy-light underline underline-offset-2"
+                      className="font-semibold text-blue hover:text-blue underline underline-offset-2"
                     >
                       {w.name}
                     </button>
                   </td>
-                  <td className="px-3 py-2.5 text-text2 whitespace-pre-line">{w.description}</td>
-                  <td className="px-3 py-2.5 text-text2 whitespace-nowrap">
+                  <td className="px-3 py-2.5 text-text-soft whitespace-pre-line">{w.description}</td>
+                  <td className="px-3 py-2.5 text-text-soft whitespace-nowrap">
                     {w.start_date || w.end_date ? `${w.start_date || "?"} ~ ${w.end_date || ""}` : ""}
                   </td>
-                  <td className="px-3 py-2.5 text-text2">
-                    {w.workers.map((x) => x.user?.name).filter(Boolean).join(", ")}
+                  <td className="px-3 py-2.5 text-text-soft">
+                    {w.workers.map((x) => x.user?.name).filter(Boolean).join(",")}
                   </td>
-                  <td className="px-3 py-2.5 text-text3 whitespace-pre-line">{w.memo}</td>
+                  <td className="px-3 py-2.5 text-text-soft whitespace-pre-line">{w.memo}</td>
                 </tr>
               ))
             )}

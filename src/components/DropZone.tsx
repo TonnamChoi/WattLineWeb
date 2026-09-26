@@ -117,21 +117,19 @@ export default function DropZone({ onImagesAdded, uploadedCount }: DropZoneProps
           onDragOver={handleDrag}
           onDragLeave={handleDrag}
           onDrop={handleDrop}
-          className={`w-full border-2 border-dashed rounded-lg p-3 flex items-center gap-3 transition-all duration-200 ${
-            isDragActive ? "border-navy-light bg-info-bg/50" : "border-border-strong bg-surface2/60"
-          }`}
+          className={`w-full border-2 border-dashed rounded-lg p-3 flex items-center gap-3 transition-all duration-200 ${ isDragActive ? "border-blue bg-blue/50" : "border-text-soft/40 bg-panel-2/60" }`}
         >
           <div className="min-w-0 flex-1">
-            <p className="text-gray-800 font-bold text-xs">
+            <p className="text-text font-bold text-xs">
               {uploadedCount}개의 이미지가 업로드 되었습니다.
             </p>
-            <p className="text-text3 text-[11px] mt-0.5">
+            <p className="text-text-soft text-[11px] mt-0.5">
               드래그 앤 드롭으로도 다른 이미지를 추가할 수 있습니다.
             </p>
           </div>
           <button
             onClick={onButtonClick}
-            className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-surface hover:bg-surface2 border border-border-strong text-text2 rounded-lg transition-colors"
+            className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-panel hover:bg-panel-2 border border-text-soft/40 text-text-soft rounded-lg transition-colors"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             이미지 업로드
@@ -145,20 +143,16 @@ export default function DropZone({ onImagesAdded, uploadedCount }: DropZoneProps
           onDragLeave={handleDrag}
           onDrop={handleDrop}
           onClick={onButtonClick}
-          className={`w-full h-40 border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all duration-200 ${
-            isDragActive
-              ? "border-navy-light bg-info-bg/50"
-              : "border-border-strong hover:border-navy-light bg-surface2/60 hover:bg-surface"
-          }`}
+          className={`w-full h-40 border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all duration-200 ${ isDragActive ? "border-blue bg-blue/50" : "border-text-soft/40 hover:border-blue bg-panel-2/60 hover:bg-panel" }`}
         >
-          <div className="p-2.5 bg-surface rounded border border-border shadow-xs mb-2 text-navy">
+          <div className="p-2.5 bg-panel rounded border border-line shadow-xs mb-2 text-blue">
             <Upload className="w-5 h-5" />
           </div>
 
-          <p className="text-gray-800 font-bold text-xs md:text-sm mb-0.5">
+          <p className="text-text font-bold text-xs md:text-sm mb-0.5">
             여기에 전주번호찰 이미지들을 드래그하여 드롭하거나 클릭하여 업로드
           </p>
-          <p className="text-text3 text-[11px]">
+          <p className="text-text-soft text-[11px]">
             여러 장의 이미지를 동시에 업로드할 수 있습니다. (PNG, JPG, JPEG 지원)
           </p>
         </div>

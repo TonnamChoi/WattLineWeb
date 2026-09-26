@@ -8,11 +8,13 @@ interface HandlerResult {
 
 export interface TokenPayload {
   uid: string;
-  role: "admin" | "worker";
+  role: "admin" | "company_admin" | "worker";
   exp: number;
 }
 
 const TOKEN_TTL_MS = 12 * 60 * 60 * 1000;
+
+const WORKER_WEB_MESSAGE = "일반사용자는 웹을 사용할 수 없습니다. WattLineApp에서 사진을 업로드하세요.";
 
 const MISSING_CREDS_MESSAGE =
   "로그인 DB(Supabase)가 연결되어 있지 않습니다. SUPABASE_URL, SUPABASE_SECRET_KEY 환경변수를 설정하세요.";
@@ -95,6 +97,8 @@ export async function login(body: any): Promise<HandlerResult> {
       return { status: 401, body: { error: "아이디 또는 비밀번호가 올바르지 않습니다." } };
     }
     if (!row.is_active) return { status: 403, body: { error: "사용이 중지된 계정입니다. 관리자에게 문의하세요." } };
+    // 일반사용자(worker)는 WattLineApp(사진 업로드) 전용이라 웹 로그인을 막는다.
+    if (row.role === "worker") return { status: 403, body: { error: WORKER_WEB_MESSAGE } };
 
     return { status: 200, body: { token: issueToken(row.id, row.role), user: toUser(row) } };
   } catch (err) {
@@ -114,7 +118,7 @@ export async function getMe(authHeader: unknown): Promise<HandlerResult> {
   try {
     const { data: row, error } = await supabase.from("app_users").select(USER_COLUMNS).eq("id", payload.uid).maybeSingle();
     if (error) throw error;
-    if (!row || !row.is_active) return { status: 401, body: { error: "로그인이 필요합니다." } };
+    if (!row || !row.is_active || row.role === "worker") return { status: 401, body: { error: "로그인이 필요합니다." } };
     return { status: 200, body: { user: toUser(row) } };
   } catch (err) {
     console.error("Session check failed", err);

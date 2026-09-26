@@ -22,10 +22,10 @@ import slide14 from "../assets/pruning-guide/slide14.webp";
 function SlideImage({ src, alt, caption }: { src: string; alt: string; caption?: string }) {
   return (
     <figure className="mb-4">
-      <div className="bg-surface2 border border-border rounded-xl overflow-hidden">
+      <div className="bg-panel-2 border border-line rounded-xl overflow-hidden">
         <img src={src} alt={alt} className="w-full h-auto" />
       </div>
-      {caption && <figcaption className="text-[11px] text-text3 mt-1.5">{caption}</figcaption>}
+      {caption && <figcaption className="text-[11px] text-text-soft mt-1.5">{caption}</figcaption>}
     </figure>
   );
 }
@@ -34,11 +34,11 @@ export default function TreePruningGuide() {
   return (
     <div className="space-y-5">
       {/* Hero */}
-      <div className="bg-surface border border-border rounded-xl p-5 shadow-sm">
-        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-green bg-green-bg border border-green/20 px-2.5 py-1 rounded-full uppercase tracking-wider mb-3">
+      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-green bg-green/15 border border-green/20 px-2.5 py-1 rounded-full uppercase tracking-wider mb-3">
           현장 실무자용 가이드북 · 배전선로 근접수목 관리
         </span>
-        <h2 className="font-bold text-navy text-lg mb-2">
+        <h2 className="font-bold text-text text-lg mb-2">
           수목전지, 왜 하고 어떻게 해야 할까?
         </h2>
         <SlideImage
@@ -46,24 +46,24 @@ export default function TreePruningGuide() {
           alt="배전선로 근접수목 관리 시각화 매뉴얼 표지 — 전주와 전선, 수목 이격거리를 도식화한 이미지"
           caption="한국전력공사 배전운영실 · 현장 실무자용 가이드북"
         />
-        <p className="text-sm text-text3 leading-relaxed">
-          <strong className="text-gray-800">수목전지(樹木剪枝, Tree Pruning)</strong>는 전기사업법 제68조(전기설비의
+        <p className="text-sm text-text-soft leading-relaxed">
+          <strong className="text-text">수목전지(樹木剪枝, Tree Pruning)</strong>는 전기사업법 제68조(전기설비의
           유지) 및 제87조(다른 자의 토지 등의 사용)에 근거해, 배전선로 경과지 상의 수목이 전력선과
           근접·접촉하면서 발생할 수 있는 지락·단선·정전·화재를 예방하기 위해 가지치기 또는 벌목을
-          시행하여 안전 이격거리를 확보하는 관리 행위입니다. <strong className="text-gray-800">전력 안전 공급</strong>과{" "}
-          <strong className="text-gray-800">수목 훼손 최소화</strong>라는 두 원칙이 만나는 지점에서 현장 판단이
+          시행하여 안전 이격거리를 확보하는 관리 행위입니다. <strong className="text-text">전력 안전 공급</strong>과{""}
+          <strong className="text-text">수목 훼손 최소화</strong>라는 두 원칙이 만나는 지점에서 현장 판단이
           이루어져야 하며, 이 화면은 그 판단 기준을 한전 배전수목관리 매뉴얼과 수목전지작업 기초
           안내서를 바탕으로 정리한 것입니다.
         </p>
       </div>
 
       {/* 01. 기본 원칙 */}
-      <div className="bg-surface border border-border rounded-xl p-5 shadow-sm">
-        <h3 className="font-bold text-gray-800 text-sm mb-1 flex items-center gap-2">
+      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+        <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <Scale className="w-4 h-4 text-green" />
           기본 원칙 및 법적 준수사항
         </h3>
-        <p className="text-xs text-text3 leading-relaxed mb-3">
+        <p className="text-xs text-text-soft leading-relaxed mb-3">
           수목전지는 가공 배전선로의 안정적 운영과 수목의 생리적 특성·도시 미관 유지를 동시에
           충족해야 합니다. 모든 현장 판단은 아래 네 가지 원칙 위에서 이루어집니다.
         </p>
@@ -79,13 +79,13 @@ export default function TreePruningGuide() {
             { title: "사전 대관 협의 및 동의 수취", desc: "지자체 관리 가로수 및 사유지 수목은 작업 시행 1개월 전 관할 가로수 관리청의 대관허가·승인을 받거나 소유자 협의·확인서를 수취한 후 시행합니다." },
             { title: "환경 관리 및 부산물 당일 수거", desc: "전지 작업으로 발생한 폐가지·부산물은 폐기물관리법 제18조에 따라 당일 수거하여 폐기물 처리업 허가자 등에게 위탁 처리합니다." },
           ].map((item, i) => (
-            <div key={i} className="flex gap-3 bg-surface2 border border-border rounded-lg p-3">
-              <div className="w-6 h-6 rounded-full bg-green text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+            <div key={i} className="flex gap-3 bg-panel-2 border border-line rounded-lg p-3">
+              <div className="w-6 h-6 rounded-full bg-green text-bg text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                 {i + 1}
               </div>
               <div>
-                <p className="text-xs font-bold text-gray-800">{item.title}</p>
-                <p className="text-[11px] text-text3 leading-relaxed mt-0.5">{item.desc}</p>
+                <p className="text-xs font-bold text-text">{item.title}</p>
+                <p className="text-[11px] text-text-soft leading-relaxed mt-0.5">{item.desc}</p>
               </div>
             </div>
           ))}
@@ -93,12 +93,12 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 02. 전지 유형 4가지 */}
-      <div className="bg-surface border border-border rounded-xl p-5 shadow-sm">
-        <h3 className="font-bold text-gray-800 text-sm mb-1 flex items-center gap-2">
+      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+        <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <Layers className="w-4 h-4 text-green" />
           전지 유형 4가지 — 약전지 · 강전지 · 순치기 · 벌목
         </h3>
-        <p className="text-xs text-text3 leading-relaxed mb-4">
+        <p className="text-xs text-text-soft leading-relaxed mb-4">
           제거하는 가지의 두께, 지엽 제거 비율, 목적과 현장 여건에 따라 4가지로 구분됩니다.
           산림청 고시(도시숲·가로수 조성 관리 기준), 국가표준품셈, 한전 기술지침을 종합한 기준은
           다음과 같습니다.
@@ -110,13 +110,13 @@ export default function TreePruningGuide() {
         <div className="overflow-x-auto -mx-1">
           <table className="w-full text-[11px] text-left border-collapse min-w-[640px]">
             <thead>
-              <tr className="bg-green-bg text-text2 font-bold">
+              <tr className="bg-green/15 text-text-soft font-bold">
                 {["전지 유형", "제거 비율 및 직경", "대상 가지 및 특성", "주요 적용 구간", "수행 주체"].map((h) => (
                   <th key={h} className="py-2 px-2.5 border border-green/20 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-line">
               {[
                 {
                   type: "약전지\n(Light Pruning)",
@@ -128,7 +128,7 @@ export default function TreePruningGuide() {
                 },
                 {
                   type: "강전지\n(Heavy Pruning)",
-                  color: "text-amber-dark",
+                  color: "text-amber",
                   ratio: "· 지엽 질량 30% 이상\n· 직경 10cm 이상 굵은 가지 또는 주지/원줄기 절단",
                   target: "· 핵심 수관 대형 주지 제거 및 두절(頭切) 작업\n· 절단면 상처보호제(정균제) 도포 필수",
                   section: "산간지역, 격지·오지, 고압선 직접 저촉 긴급 구간",
@@ -136,7 +136,7 @@ export default function TreePruningGuide() {
                 },
                 {
                   type: "순치기\n(Tip Pruning)",
-                  color: "text-navy",
+                  color: "text-blue",
                   ratio: "· 수형·흉고직경 관계없이 상부/측부 잔가지만 절단",
                   target: "· 여름철 웃자란 가지가 전력선에 근접·접촉할 우려 시 긴급 제거",
                   section: "긴급 정전 예방 필요 개소, 흉고직경 측정 곤란 개소",
@@ -152,11 +152,11 @@ export default function TreePruningGuide() {
                 },
               ].map((row) => (
                 <tr key={row.type}>
-                  <td className={`py-2 px-2.5 border border-border font-bold whitespace-pre-line ${row.color}`}>{row.type}</td>
-                  <td className="py-2 px-2.5 border border-border whitespace-pre-line text-text2">{row.ratio}</td>
-                  <td className="py-2 px-2.5 border border-border whitespace-pre-line text-text2">{row.target}</td>
-                  <td className="py-2 px-2.5 border border-border text-text2">{row.section}</td>
-                  <td className="py-2 px-2.5 border border-border text-text2">{row.agent}</td>
+                  <td className={`py-2 px-2.5 border border-line font-bold whitespace-pre-line ${row.color}`}>{row.type}</td>
+                  <td className="py-2 px-2.5 border border-line whitespace-pre-line text-text-soft">{row.ratio}</td>
+                  <td className="py-2 px-2.5 border border-line whitespace-pre-line text-text-soft">{row.target}</td>
+                  <td className="py-2 px-2.5 border border-line text-text-soft">{row.section}</td>
+                  <td className="py-2 px-2.5 border border-line text-text-soft">{row.agent}</td>
                 </tr>
               ))}
             </tbody>
@@ -166,9 +166,9 @@ export default function TreePruningGuide() {
           src={slide6}
           alt="제3의 전지 기법 순치기(Topping) 비교 그림. 강전지는 대폭 축소, 약전지는 수형 유지, 순치기는 이격거리 확보만을 목적으로 상층부만 평탄화"
         />
-        <div className="mt-3 bg-info-bg/60 border border-border rounded-lg p-3">
-          <p className="text-xs text-text2 leading-relaxed">
-            <strong className="text-navy">순치기란—</strong> 강전지(대폭 축소)나 약전지(수형 유지)와 달리
+        <div className="mt-3 bg-blue/60 border border-line rounded-lg p-3">
+          <p className="text-xs text-text-soft leading-relaxed">
+            <strong className="text-blue">순치기란—</strong> 강전지(대폭 축소)나 약전지(수형 유지)와 달리
             오직 "이격 거리 확보"만을 목적으로 상층부만 평탄화하는 제3의 기법입니다. 성장세가
             왕성한 여름철, 특고압 전력선 접촉 우려 등 긴급한 고장 예방이 필요할 때 적용합니다.
           </p>
@@ -176,12 +176,12 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 03. 절단 대상 가지 + 측정 용어 */}
-      <div className="bg-surface border border-border rounded-xl p-5 shadow-sm">
-        <h3 className="font-bold text-gray-800 text-sm mb-1 flex items-center gap-2">
+      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+        <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <Scissors className="w-4 h-4 text-green" />
           절단 대상 가지의 종류 및 측정 용어
         </h3>
-        <p className="text-xs text-text3 leading-relaxed mb-3">
+        <p className="text-xs text-text-soft leading-relaxed mb-3">
           약전지 및 수형 유지 작업 시 정리해야 할 주요 가지의 종류입니다.
         </p>
         <SlideImage
@@ -195,14 +195,14 @@ export default function TreePruningGuide() {
             { title: "교차지 · 역지", desc: "다른 가지와 얽히거나 수목의 정상적인 성장 방향과 반대로 자라 미관·생육을 해치는 가지." },
             { title: "고사지 · 병해충지", desc: "이미 죽었거나 병해충에 감염되어 낙하 및 2차 피해 우려가 있는 가지." },
           ].map((item) => (
-            <div key={item.title} className="bg-surface2 border border-border rounded-lg p-3">
-              <p className="text-xs font-bold text-gray-800">{item.title}</p>
-              <p className="text-[11px] text-text3 leading-relaxed mt-0.5">{item.desc}</p>
+            <div key={item.title} className="bg-panel-2 border border-line rounded-lg p-3">
+              <p className="text-xs font-bold text-text">{item.title}</p>
+              <p className="text-[11px] text-text-soft leading-relaxed mt-0.5">{item.desc}</p>
             </div>
           ))}
         </div>
 
-        <p className="text-xs font-bold text-text2 mb-2">현장 조사·설계에서 자주 쓰는 측정 용어</p>
+        <p className="text-xs font-bold text-text-soft mb-2">현장 조사·설계에서 자주 쓰는 측정 용어</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {[
             { title: "수고(樹高)", desc: "지표면에서 수관 정상까지의 수직거리(웃자란 가지 제외)." },
@@ -210,21 +210,21 @@ export default function TreePruningGuide() {
             { title: "흉고직경(胸高直徑, DBH)", desc: "지표면에서 1.2m 지점의 줄기 직경. 현장 조사 및 도급(설계) 계수 산정의 핵심 지표." },
             { title: "근원직경(根元直徑)", desc: "관목이나 흉고 이하에서 줄기가 분기하는 수목의 지표면 줄기 굵기." },
           ].map((item) => (
-            <div key={item.title} className="bg-surface border border-border rounded-lg p-3">
-              <p className="text-xs font-bold text-gray-800">{item.title}</p>
-              <p className="text-[11px] text-text3 leading-relaxed mt-0.5">{item.desc}</p>
+            <div key={item.title} className="bg-panel border border-line rounded-lg p-3">
+              <p className="text-xs font-bold text-text">{item.title}</p>
+              <p className="text-[11px] text-text-soft leading-relaxed mt-0.5">{item.desc}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* 04. 이격거리 기준 */}
-      <div className="bg-surface border border-border rounded-xl p-5 shadow-sm">
-        <h3 className="font-bold text-gray-800 text-sm mb-1 flex items-center gap-2">
+      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+        <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <Ruler className="w-4 h-4 text-green" />
           배전선로 이격거리 및 안전거리 기준
         </h3>
-        <p className="text-xs text-text3 leading-relaxed mb-4">
+        <p className="text-xs text-text-soft leading-relaxed mb-4">
           배전선로와 수목 간 이격거리는 전선 종류 및 전압 수준에 따라 엄격히 규정되어 있으며,
           작업자·장비의 접근한계거리도 함께 지켜야 합니다.
         </p>
@@ -236,22 +236,22 @@ export default function TreePruningGuide() {
           <div className="bg-red/10 border border-red/20 rounded-lg p-3">
             <p className="text-xs font-bold text-red">특고압 나전선 (22.9kV)</p>
             <p className="font-mono font-bold text-red text-base mt-1">2.0m 이상</p>
-            <p className="text-[11px] text-text3 mt-1">생장 왕성 수종은 1.8~2.0m 이상, 최대 3.0m까지 확보. 활선접근거리(90cm) 유지 필수 — 부득이 90cm 이내 접근 시 충전부 방호관 취부.</p>
+            <p className="text-[11px] text-text-soft mt-1">생장 왕성 수종은 1.8~2.0m 이상, 최대 3.0m까지 확보. 활선접근거리(90cm) 유지 필수 — 부득이 90cm 이내 접근 시 충전부 방호관 취부.</p>
           </div>
-          <div className="bg-amber-light border border-amber/30 rounded-lg p-3">
-            <p className="text-xs font-bold text-amber-dark">특고압 절연전선 (22.9kV OC)</p>
-            <p className="font-mono font-bold text-amber-dark text-base mt-1">0.5m ~ 1.0m 이상</p>
-            <p className="text-[11px] text-text3 mt-1">직접 접촉 및 풍압 저촉 방지 목적. 직접 마찰·피복 손상 방지, 절연성능 톱 및 연장핫스틱 사용.</p>
+          <div className="bg-amber/15 border border-amber/30 rounded-lg p-3">
+            <p className="text-xs font-bold text-amber">특고압 절연전선 (22.9kV OC)</p>
+            <p className="font-mono font-bold text-amber text-base mt-1">0.5m ~ 1.0m 이상</p>
+            <p className="text-[11px] text-text-soft mt-1">직접 접촉 및 풍압 저촉 방지 목적. 직접 마찰·피복 손상 방지, 절연성능 톱 및 연장핫스틱 사용.</p>
           </div>
-          <div className="bg-amber-light border border-amber/30 rounded-lg p-3">
-            <p className="text-xs font-bold text-amber-dark">저압 가공전선 및 인입선</p>
-            <p className="font-mono font-bold text-amber-dark text-base mt-1">0.3m 이상</p>
-            <p className="text-[11px] text-text3 mt-1">직접 마찰 및 피복 손상 예방. 저압보수차 버킷 이용 작업 가능, 절연 장구 착용 후 잔가지 제거.</p>
+          <div className="bg-amber/15 border border-amber/30 rounded-lg p-3">
+            <p className="text-xs font-bold text-amber">저압 가공전선 및 인입선</p>
+            <p className="font-mono font-bold text-amber text-base mt-1">0.3m 이상</p>
+            <p className="text-[11px] text-text-soft mt-1">직접 마찰 및 피복 손상 예방. 저압보수차 버킷 이용 작업 가능, 절연 장구 착용 후 잔가지 제거.</p>
           </div>
         </div>
-        <div className="bg-navy text-white rounded-md p-3.5">
+        <div className="bg-panel-2 text-text rounded-md p-3.5">
           <p className="text-xs font-bold mb-1">📌 충전전로 접근 한계거리 및 방호 원칙 — 90cm 절대 준수</p>
-          <ul className="text-[11px] text-border leading-relaxed list-disc list-inside space-y-0.5">
+          <ul className="text-[11px] text-text-soft/40 leading-relaxed list-disc list-inside space-y-0.5">
             <li>22.9kV 충전전로에 대한 안전 접근한계거리는 90cm입니다.</li>
             <li>표준 시공: 작업자 신체·장비가 충전부로부터 90cm 이상 이격을 유지한 채 연장형 절연톱(1.5m 이상)으로 작업.</li>
             <li>부득이한 시공: 90cm 이내 접근이 불가피하면 무정전(활선)전공이 충전부 방호(방호관 설치)를 완료한 후 지상감시자 입회 하에 작업.</li>
@@ -260,12 +260,12 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 05. 표준 시행 절차 */}
-      <div className="bg-surface border border-border rounded-xl p-5 shadow-sm">
-        <h3 className="font-bold text-gray-800 text-sm mb-1 flex items-center gap-2">
+      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+        <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <ListChecks className="w-4 h-4 text-green" />
           공사 표준 시행 절차 — 현장 작업 6단계
         </h3>
-        <p className="text-xs text-text3 leading-relaxed mb-3">
+        <p className="text-xs text-text-soft leading-relaxed mb-3">
           작업계획 통보부터 뒷정리까지, 개별 현장에서 실제로 밟는 순서입니다.
         </p>
         <div className="space-y-2 mb-4">
@@ -277,20 +277,20 @@ export default function TreePruningGuide() {
             { title: "원격 모니터링 사진 전송", desc: "작업인원 착용 상태, TBM 회의록, 위험성 체크리스트, 교통안전 표지판/신호수 사진 전송." },
             { title: "수목전지 작업 시행 및 뒷정리", desc: "지상감시자 입회 하에 전지 시행, 폐기물 당일 수거 및 배전센터에 작업 완료 통보." },
           ].map((step, i) => (
-            <div key={i} className="flex gap-3 bg-surface2 border border-border rounded-lg p-3">
-              <div className="w-6 h-6 rounded-lg bg-surface border border-border-strong text-text2 text-xs font-bold flex items-center justify-center shrink-0">
+            <div key={i} className="flex gap-3 bg-panel-2 border border-line rounded-lg p-3">
+              <div className="w-6 h-6 rounded-lg bg-panel border border-text-soft/40 text-text-soft text-xs font-bold flex items-center justify-center shrink-0">
                 {i + 1}
               </div>
               <div>
-                <p className="text-xs font-bold text-gray-800">{step.title}</p>
-                <p className="text-[11px] text-text3 leading-relaxed mt-0.5">{step.desc}</p>
+                <p className="text-xs font-bold text-text">{step.title}</p>
+                <p className="text-[11px] text-text-soft leading-relaxed mt-0.5">{step.desc}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <p className="text-xs font-bold text-text2 mb-2 flex items-center gap-1.5">
-          <GitBranch className="w-3.5 h-3.5 text-text3" />
+        <p className="text-xs font-bold text-text-soft mb-2 flex items-center gap-1.5">
+          <GitBranch className="w-3.5 h-3.5 text-text-soft" />
           전체 업무 흐름 (기획 → 정산 → DB화)
         </p>
         <SlideImage
@@ -307,9 +307,9 @@ export default function TreePruningGuide() {
               ["⑤", "검수 · 정산", "현장 확인 → 공사비/위탁비 지급"],
               ["⑥", "DB 완료", "수목관리시스템 입력 및 사후 모니터링 전환"],
             ].map(([n, title, desc]) => (
-              <div key={title} className="flex-1 bg-green-bg border border-green/20 rounded-lg p-2.5">
+              <div key={title} className="flex-1 bg-green/15 border border-green/20 rounded-lg p-2.5">
                 <p className="font-bold text-green">{n} {title}</p>
-                <p className="text-text3 leading-snug mt-1">{desc}</p>
+                <p className="text-text-soft leading-snug mt-1">{desc}</p>
               </div>
             ))}
           </div>
@@ -317,8 +317,8 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 06. 필수 장비/인력 */}
-      <div className="bg-surface border border-border rounded-xl p-5 shadow-sm">
-        <h3 className="font-bold text-gray-800 text-sm mb-1 flex items-center gap-2">
+      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+        <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <HardHat className="w-4 h-4 text-green" />
           작업조별 필수 장비 · 공구 · 안전장구 · 참여 인력
         </h3>
@@ -329,13 +329,13 @@ export default function TreePruningGuide() {
         <div className="overflow-x-auto -mx-1 mb-4">
           <table className="w-full text-[11px] text-left border-collapse min-w-[560px]">
             <thead>
-              <tr className="bg-green-bg text-text2 font-bold">
+              <tr className="bg-green/15 text-text-soft font-bold">
                 {["구분", "필수 사양 및 모델", "성능 검사 및 관리 기준"].map((h) => (
                   <th key={h} className="py-2 px-2.5 border border-green/20 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-line">
               {[
                 {
                   cat: "필수 장비\n(작업차량)",
@@ -354,17 +354,17 @@ export default function TreePruningGuide() {
                 },
               ].map((row) => (
                 <tr key={row.cat}>
-                  <td className="py-2 px-2.5 border border-border font-bold text-gray-800 whitespace-pre-line">{row.cat}</td>
-                  <td className="py-2 px-2.5 border border-border whitespace-pre-line text-text2">{row.spec}</td>
-                  <td className="py-2 px-2.5 border border-border whitespace-pre-line text-text2">{row.check}</td>
+                  <td className="py-2 px-2.5 border border-line font-bold text-text whitespace-pre-line">{row.cat}</td>
+                  <td className="py-2 px-2.5 border border-line whitespace-pre-line text-text-soft">{row.spec}</td>
+                  <td className="py-2 px-2.5 border border-line whitespace-pre-line text-text-soft">{row.check}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        <p className="text-xs font-bold text-text2 mb-2 flex items-center gap-1.5">
-          <Users className="w-3.5 h-3.5 text-text3" />
+        <p className="text-xs font-bold text-text-soft mb-2 flex items-center gap-1.5">
+          <Users className="w-3.5 h-3.5 text-text-soft" />
           작업조 필수 참여 인력 및 역할
         </p>
         <div className="space-y-2">
@@ -373,21 +373,21 @@ export default function TreePruningGuide() {
             { title: "가로수 수형 관리자 (조경사)", desc: "조경분야 유자격자로 가로수 허가조건에 명시된 경우 배치. 지상에서 수형 관리 및 작업 감시 임무 수행(직접 전지 작업 금지)." },
             { title: "충전부 방호 인력 (활선전공)", desc: "활선(무정전)전공 유자격자로 90cm 이내 접근이 필요할 때 충전부 방호관 취부 및 방호 작업 시행." },
           ].map((item) => (
-            <div key={item.title} className="bg-surface2 border border-border rounded-lg p-3">
-              <p className="text-xs font-bold text-gray-800">{item.title}</p>
-              <p className="text-[11px] text-text3 leading-relaxed mt-0.5">{item.desc}</p>
+            <div key={item.title} className="bg-panel-2 border border-line rounded-lg p-3">
+              <p className="text-xs font-bold text-text">{item.title}</p>
+              <p className="text-[11px] text-text-soft leading-relaxed mt-0.5">{item.desc}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* 07. 수행 주체 결정 */}
-      <div className="bg-surface border border-border rounded-xl p-5 shadow-sm">
-        <h3 className="font-bold text-gray-800 text-sm mb-1 flex items-center gap-2">
+      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+        <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <GitBranch className="w-4 h-4 text-green" />
           작업 유형별 수행 주체 결정
         </h3>
-        <p className="text-xs text-text3 leading-relaxed mb-3">
+        <p className="text-xs text-text-soft leading-relaxed mb-3">
           가지치기(약전지/강전지)는 전문회사 또는 지자체 위탁, 순치기는 한전 직영, 벌목은
           지자체·전문업체 위탁이 원칙입니다. 벌목은 한전이 직영으로 시행하지 않습니다.
         </p>
@@ -396,47 +396,47 @@ export default function TreePruningGuide() {
           alt="작업 유형별 수행 주체 결정 트리: 수목전지가 가지치기(강전지/약전지, 순치기)와 벌목으로 나뉘고, 각각 수행 주체와 안전관리 방식을 화살표로 연결한 흐름도"
         />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
-          <div className="bg-green-bg border border-green/20 rounded-lg p-3">
+          <div className="bg-green/15 border border-green/20 rounded-lg p-3">
             <p className="text-xs font-bold text-green">가지치기 A — 강전지 / 약전지</p>
-            <p className="text-[11px] text-text3 mt-1">전문회사 또는 지자체 위탁 → 안전관리: 안전감시원 현장 배치</p>
+            <p className="text-[11px] text-text-soft mt-1">전문회사 또는 지자체 위탁 → 안전관리: 안전감시원 현장 배치</p>
           </div>
-          <div className="bg-info-bg border border-border rounded-lg p-3">
-            <p className="text-xs font-bold text-navy">가지치기 B — 순치기</p>
-            <p className="text-[11px] text-text3 mt-1">한전 직영 → 안전관리: 작업 전 안전 확보 및 제한적 약전지 시행</p>
+          <div className="bg-blue/15 border border-line rounded-lg p-3">
+            <p className="text-xs font-bold text-text">가지치기 B — 순치기</p>
+            <p className="text-[11px] text-text-soft mt-1">한전 직영 → 안전관리: 작업 전 안전 확보 및 제한적 약전지 시행</p>
           </div>
           <div className="bg-red/10 border border-red/20 rounded-lg p-3">
             <p className="text-xs font-bold text-red">벌목 (직영 절대 금지)</p>
-            <p className="text-[11px] text-text3 mt-1">지자체 위해목 제거(우선) 또는 벌목전문업체 위탁 → 현장 입회·충전부 방호·전력선 차단 등 사전조치</p>
+            <p className="text-[11px] text-text-soft mt-1">지자체 위해목 제거(우선) 또는 벌목전문업체 위탁 → 현장 입회·충전부 방호·전력선 차단 등 사전조치</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="bg-surface2 border border-border rounded-lg p-3">
-            <p className="text-xs font-bold text-gray-800 mb-1">시공 방법 A — 공사 발주 및 지자체 위탁</p>
+          <div className="bg-panel-2 border border-line rounded-lg p-3">
+            <p className="text-xs font-bold text-text mb-1">시공 방법 A — 공사 발주 및 지자체 위탁</p>
             <SlideImage
               src={slide8}
               alt="시공 방법 A: 공사 발주 및 지자체 위탁 시행 기준. 필수 참여 인력(주 작업자, 조경 전문가, 활선 전공)과 위탁 절차 타임라인(대관 협의, 현장 확인, 협약 체결, 위탁 의뢰 및 시공)"
             />
-            <p className="text-[11px] text-text3 leading-relaxed">
-              위탁 절차: <strong>대관 협의</strong>(자체 계획 중복 조사, 비용 협의) →{" "}
-              <strong>현장 확인</strong>(동행 현장 조사, 전지 범위 확정) →{" "}
-              <strong>협약 체결</strong>(공사금액·내역 포함 2부 작성) →{" "}
+            <p className="text-[11px] text-text-soft leading-relaxed">
+              위탁 절차: <strong>대관 협의</strong>(자체 계획 중복 조사, 비용 협의) →{""}
+              <strong>현장 확인</strong>(동행 현장 조사, 전지 범위 확정) →{""}
+              <strong>협약 체결</strong>(공사금액·내역 포함 2부 작성) →{""}
               <strong>위탁 의뢰 및 시공</strong>(공사비 납부, 낙찰업체 확인, 안전협의).
             </p>
           </div>
-          <div className="bg-surface2 border border-border rounded-lg p-3">
-            <p className="text-xs font-bold text-gray-800 mb-1">시공 방법 B — 한전 직영 및 사유지 처리</p>
+          <div className="bg-panel-2 border border-line rounded-lg p-3">
+            <p className="text-xs font-bold text-text mb-1">시공 방법 B — 한전 직영 및 사유지 처리</p>
             <SlideImage
               src={slide9}
               alt="시공 방법 B: 한전 직영 시행 한계 및 사유지 처리. 직영 작업 원칙(제한적 허용, 강전지 조건)과 사유지 수목 처리 프로세스(탐문 조사, 사전 협의, 동의서 수취)"
             />
-            <p className="text-[11px] text-text3 leading-relaxed mb-1.5">
+            <p className="text-[11px] text-text-soft leading-relaxed mb-1.5">
               직영은 순치기 또는 간단한 약전지가 원칙이며, 강전지는 안전·선로 안정에 필수적이나
               발주가 곤란한 경우 시공부서장 판단과 철저한 현장 안전 확보 후 예외적으로 시행합니다.
             </p>
-            <p className="text-[11px] text-text3 leading-relaxed">
-              사유지 수목은 <strong>① 탐문 조사</strong>(소유자 미상 시 현수막 게시) →{" "}
-              <strong>② 사전 협의</strong>(작업 시기·방법 합의) →{" "}
+            <p className="text-[11px] text-text-soft leading-relaxed">
+              사유지 수목은 <strong>① 탐문 조사</strong>(소유자 미상 시 현수막 게시) →{""}
+              <strong>② 사전 협의</strong>(작업 시기·방법 합의) →{""}
               <strong>③ 동의서 수취</strong>(수목전지 확인서, 전기사업법 제87조 기반 보상 협의 포함) 순으로 처리합니다.
             </p>
           </div>
@@ -448,9 +448,9 @@ export default function TreePruningGuide() {
             src={slide10}
             alt="위험목 벌목 2단계 엄격 프로세스: Step 1 지자체 산림부서 신고 및 협의, Step 2 벌목전문업체 위탁. 하단에 전력선 차단, 충전부 방호, 시공관리 책임자 현장 입회 등 사전 안전조치 표시"
           />
-          <p className="text-[11px] text-text2 leading-relaxed">
+          <p className="text-[11px] text-text-soft leading-relaxed">
             <strong>Step 1. 지자체 산림부서 신고 및 협의(우선)</strong> — 유선 신고(위해목 우선 신고) 또는
-            모바일앱('스마트 산림재난 App' 촬영 등록) 후 지자체 현장 확인.{" "}
+            모바일앱('스마트 산림재난 App' 촬영 등록) 후 지자체 현장 확인.{""}
             <strong>Step 2. 벌목전문업체 위탁(1단계 곤란 시)</strong> — 산림조합법에 따른 지역 산림조합
             또는 산림 사업법인(벌목업)에 위탁, 산림청 특수지역 위험목 제거 품셈 적용(굴삭기·우드그랩,
             3인 이상 전문인력). 사전 안전조치(필수): 전력선 차단(사선화), 충전부 방호, 시공관리
@@ -460,13 +460,13 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 08. 현장 안전관리 */}
-      <div className="bg-surface border border-border rounded-xl p-5 shadow-sm">
-        <h3 className="font-bold text-gray-800 text-sm mb-1 flex items-center gap-2">
+      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+        <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <ShieldAlert className="w-4 h-4 text-green" />
           현장 안전 관리 및 재해 예방
         </h3>
-        <p className="text-xs font-bold text-text2 mb-2">위험성 Check List 핵심 점검 항목</p>
-        <ul className="text-[11px] text-text2 leading-relaxed list-disc list-inside space-y-1 mb-4">
+        <p className="text-xs font-bold text-text-soft mb-2">위험성 Check List 핵심 점검 항목</p>
+        <ul className="text-[11px] text-text-soft leading-relaxed list-disc list-inside space-y-1 mb-4">
           <li>작업 전 TBM 및 안전교육: 작업자 전원 참석, 음주/수면부족/약물 복용 여부(PMIS Check) 확인 및 분담 작업 숙지.</li>
           <li>교통 및 보행자 방호: 공사안내판·라바콘·구획로프 설치, 교통신호수 및 보행자 유도 감시자 배치. 출퇴근 시간대 작업 지양.</li>
           <li>낙하·비래 방지: 대형 가지 절단 시 로프 매달기 작업 사전 시행. 절단 작업 하부 근로자 출입 금지구역 설정.</li>
@@ -474,9 +474,9 @@ export default function TreePruningGuide() {
           <li>충전부 감전 방지: 활선접근경보기 동작 확인, 90cm 이내 접근 시 방호관 취부 확인 및 절연고무소매 착용.</li>
         </ul>
 
-        <div className="bg-amber-light border border-amber/30 rounded-lg p-3">
-          <p className="text-xs font-bold text-amber-dark mb-1.5">📌 벌독 알레르기 등급별 관리 지침</p>
-          <ul className="text-[11px] text-text2 leading-relaxed list-disc list-inside space-y-0.5">
+        <div className="bg-amber/15 border border-amber/30 rounded-lg p-3">
+          <p className="text-xs font-bold text-amber mb-1.5">📌 벌독 알레르기 등급별 관리 지침</p>
+          <ul className="text-[11px] text-text-soft leading-relaxed list-disc list-inside space-y-0.5">
             <li>검사결과 Class 4~6단계(위험도 높음): 수목전지 및 벌목 작업 투입 원천 금지.</li>
             <li>Class 3단계(보통): 벌 쏘임 보호복 의무 착용, 에피네프린 자가주사제(젝스트) 개별 소지(보냉파우치) 및 인근 응급의료기관 사전 파악.</li>
             <li>작업 전 긴 막대 등으로 수목 주변 벌집 유무 확인, 냄새 유발 화장품/스프레이 사용 자제.</li>
@@ -485,25 +485,25 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 09. 위약벌 */}
-      <div className="bg-surface border border-border rounded-xl p-5 shadow-sm">
-        <h3 className="font-bold text-gray-800 text-sm mb-1 flex items-center gap-2">
+      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+        <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 text-red" />
           작업자 과실 정전 유발 시 제재 기준 (위약벌)
         </h3>
-        <p className="text-xs text-text3 leading-relaxed mb-3">
+        <p className="text-xs text-text-soft leading-relaxed mb-3">
           수목전지 작업 중 작업자의 부주의 또는 과실로 선로 고장·정전이 발생하면 아래 위약벌이
           부과됩니다.
         </p>
         <div className="overflow-x-auto -mx-1">
           <table className="w-full text-[11px] text-left border-collapse min-w-[560px]">
             <thead>
-              <tr className="bg-red/10 text-text2 font-bold">
+              <tr className="bg-red/10 text-text-soft font-bold">
                 {["정전 구분", "위약벌 금액", "세부 부과 기준"].map((h) => (
                   <th key={h} className="py-2 px-2.5 border border-red/20 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-line">
               {[
                 ["고압선로 일시정전", "A등급: 1,500만원 / B등급: 1,000만원\nC등급: 500만원 / D등급: 500만원", "· A등급: 8,000세대 이상, 5분 이상 정전\n· B등급: 4,000세대 이상, 5분 이상 정전\n· C등급: 1,000세대 이상, 1시간 이상 정전"],
                 ["고압선로 순간정전", "200만원 (1회당)", "순간적인 전압 강하 및 재폐로 동작 발생 시"],
@@ -511,9 +511,9 @@ export default function TreePruningGuide() {
                 ["변대단위 저압정전 / 화재", "저압정전: 100만원\n화재 등 물의: 500만원", "변압기 단위 저압 정전 및 화재 사고 유발 시 (설비 복구비용 별도 부과)"],
               ].map(([type, penalty, detail]) => (
                 <tr key={type}>
-                  <td className="py-2 px-2.5 border border-border font-bold text-gray-800">{type}</td>
-                  <td className="py-2 px-2.5 border border-border whitespace-pre-line text-red font-bold">{penalty}</td>
-                  <td className="py-2 px-2.5 border border-border whitespace-pre-line text-text2">{detail}</td>
+                  <td className="py-2 px-2.5 border border-line font-bold text-text">{type}</td>
+                  <td className="py-2 px-2.5 border border-line whitespace-pre-line text-red font-bold">{penalty}</td>
+                  <td className="py-2 px-2.5 border border-line whitespace-pre-line text-text-soft">{detail}</td>
                 </tr>
               ))}
             </tbody>
@@ -522,8 +522,8 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 10. 사후관리 */}
-      <div className="bg-surface border border-border rounded-xl p-5 shadow-sm">
-        <h3 className="font-bold text-gray-800 text-sm mb-1 flex items-center gap-2">
+      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+        <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <ClipboardCheck className="w-4 h-4 text-green" />
           현장 사후 관리 — 환경 · 민원 · 준공
         </h3>
@@ -539,11 +539,11 @@ export default function TreePruningGuide() {
             { title: "조례 준수", desc: "지자체 '도시숲·가로수 조성 및 관리 조례' 엄수 (임의 수형 파괴로 인한 과태료 방지)." },
             { title: "준공 DB화", desc: "시공 전/후 사진 촬영(흉고직경 식별 가능), 준공검사 후 '수목관리시스템' DB 즉시 입력." },
           ].map((item) => (
-            <div key={item.title} className="bg-surface2 border border-border rounded-lg p-3 flex gap-2">
+            <div key={item.title} className="bg-panel-2 border border-line rounded-lg p-3 flex gap-2">
               <ClipboardCheck className="w-3.5 h-3.5 text-green shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs font-bold text-gray-800">{item.title}</p>
-                <p className="text-[11px] text-text3 leading-relaxed mt-0.5">{item.desc}</p>
+                <p className="text-xs font-bold text-text">{item.title}</p>
+                <p className="text-[11px] text-text-soft leading-relaxed mt-0.5">{item.desc}</p>
               </div>
             </div>
           ))}
@@ -551,12 +551,12 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 11. 근본적 해결책 */}
-      <div className="bg-surface border border-border rounded-xl p-5 shadow-sm">
-        <h3 className="font-bold text-gray-800 text-sm mb-1 flex items-center gap-2">
+      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+        <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <Recycle className="w-4 h-4 text-green" />
           근본적 해결책 — 저수고 수종갱신(Tree Replacement) 지원 사업
         </h3>
-        <p className="text-xs text-text3 leading-relaxed mb-3">
+        <p className="text-xs text-text-soft leading-relaxed mb-3">
           같은 자리에서 전지를 반복하며 정전 위험과 유지보수 비용을 계속 발생시키기보다, 저수고
           수종으로 교체해 근본적으로 안전을 확보하는 방안입니다.
         </p>
@@ -565,17 +565,17 @@ export default function TreePruningGuide() {
           alt="근본적 해결책: 저수고 수종갱신(Tree Replacement) 지원 사업. Before(전선에 얽힌 큰 나무)와 After(저수고 나무로 교체 후 전선이 깨끗한 모습) 비교"
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
-          <div className="bg-surface2 border border-border rounded-lg p-3">
-            <p className="text-xs font-bold text-gray-800 mb-1">지원 체계</p>
-            <p className="text-[11px] text-text3 leading-relaxed">
+          <div className="bg-panel-2 border border-line rounded-lg p-3">
+            <p className="text-xs font-bold text-text mb-1">지원 체계</p>
+            <p className="text-[11px] text-text-soft leading-relaxed">
               한전 요청으로 지자체/소유자가 수종 갱신 시 '수목 구입단가(조달청 가격정보 기준)'를
               지원합니다.<br />
               절차: 계획 수립 → 타당성 검토/협약 → 준공 내역 검토 → 비용 정산
             </p>
           </div>
-          <div className="bg-green-bg border border-green/20 rounded-lg p-3">
+          <div className="bg-green/15 border border-green/20 rounded-lg p-3">
             <p className="text-xs font-bold text-green mb-1">권장 수종 (최대 12m 이하)</p>
-            <p className="text-[11px] text-text2 leading-relaxed">
+            <p className="text-[11px] text-text-soft leading-relaxed">
               산딸나무, 쪽동백, 당단풍, 배롱나무, 굴거리, 먼나무 등
             </p>
           </div>
@@ -583,35 +583,35 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 12. 현장 이행 당부사항 + 출처 */}
-      <div className="bg-navy text-white rounded-xl p-5">
+      <div className="bg-panel-2 text-text rounded-xl p-5">
         <p className="text-sm font-bold mb-2">현장 이행 당부사항</p>
-        <p className="text-xs text-border-strong leading-relaxed">
+        <p className="text-xs text-text-soft/60 leading-relaxed">
           본 안내서에 명시된 수목전지 기준과 안전수칙을 철저히 준수하여 무사고·무재해 현장을
           달성하시기 바랍니다. 기타 문의사항이나 현장 특이사항 발생 시 한전 관할 사업소
           설비운영 부서 담당자(감독자)에게 즉시 보고 후 지시에 따르시기 바랍니다.
         </p>
       </div>
 
-      <div className="bg-surface border border-border rounded-xl p-5 shadow-sm">
-        <h3 className="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
+      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+        <h3 className="font-bold text-text text-sm mb-3 flex items-center gap-2">
           <Network className="w-4 h-4 text-green" />
           출처
         </h3>
         <table className="w-full text-[11px] text-left">
-          <tbody className="divide-y divide-border">
+          <tbody className="divide-y divide-line">
             {[
               ["기초 안내서", "수목전지작업 기초 안내서 — 배전선로 근접수목 관리기준·전지요령 및 현장 안전관리 가이드라인 (docs/cch_수목전지작업기초안내서.docx)"],
               ["시각화 매뉴얼", "배전선로 근접수목 관리 시각화 매뉴얼 — 한국전력공사 배전운영실·현장 실무자용 가이드북 (docs/cch_배전수목관리매뉴억요약.pptx)"],
               ["관련 법령", "전기사업법 제68조(전기설비의 유지), 제87조(다른 자의 토지 등의 사용), 폐기물관리법 제18조"],
             ].map(([tag, label], i) => (
               <tr key={i}>
-                <td className="py-2 pr-3 text-text3 whitespace-nowrap align-top">{tag}</td>
-                <td className="py-2 text-text2">{label}</td>
+                <td className="py-2 pr-3 text-text-soft whitespace-nowrap align-top">{tag}</td>
+                <td className="py-2 text-text-soft">{label}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <p className="text-[11px] text-text3 leading-relaxed mt-3">
+        <p className="text-[11px] text-text-soft leading-relaxed mt-3">
           수치는 한전 배전선로 근접수목 관리절차서(개정 4차) 및 특기시방서·특수계약조건을
           요약한 것으로, 실제 계약·시방 문서와 차이가 있을 경우 원문 기준이 우선합니다.
         </p>

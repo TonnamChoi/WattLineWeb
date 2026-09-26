@@ -63,7 +63,7 @@ const EMPTY: Record<AdminEntity, Row> = {
   workplaces: { is_completed: false, worker_ids: [] },
 };
 
-const ROLE_LABEL: Record<string, string> = { admin: "관리자", worker: "작업자" };
+const ROLE_LABEL: Record<string, string> = { admin: "관리자", company_admin: "회사관리자", worker: "일반사용자" };
 
 async function api(entity: AdminEntity, method: string, body?: any) {
   const res = await fetch(`/api/admin?entity=${entity}`, {
@@ -155,26 +155,26 @@ export default function AdminPanel({ entity }: { entity: AdminEntity }) {
           { label: "역할", render: (r) => ROLE_LABEL[r.role] || r.role },
           {
             label: "사용",
-            render: (r) => (r.is_active ? <span className="text-green">사용</span> : <span className="text-text3">중지</span>),
+            render: (r) => (r.is_active ? <span className="text-green">사용</span> : <span className="text-text-soft">중지</span>),
           },
         ]
       : [
           { label: "회사", render: (r) => r.company?.name },
           { label: "작업장명", render: (r) => <span className="font-semibold">{r.name}</span> },
           { label: "작업내용", render: (r) => <span className="line-clamp-2">{r.description}</span> },
-          { label: "기간", render: (r) => [r.start_date, r.end_date].filter(Boolean).join(" ~ ") },
+          { label: "기간", render: (r) => [r.start_date, r.end_date].filter(Boolean).join("~") },
           {
             label: "완료",
             render: (r) =>
               r.is_completed ? (
-                <span className="px-2 py-0.5 rounded-full bg-green-bg text-green text-xs font-semibold">완료</span>
+                <span className="px-2 py-0.5 rounded-full bg-green/15 text-green text-xs font-semibold">완료</span>
               ) : (
-                <span className="px-2 py-0.5 rounded-full bg-amber-light text-amber-dark text-xs font-semibold">진행중</span>
+                <span className="px-2 py-0.5 rounded-full bg-amber/15 text-amber text-xs font-semibold">진행중</span>
               ),
           },
           {
             label: "작업자",
-            render: (r) => (r.workers || []).map((w: Row) => userName.get(w.user_id)).filter(Boolean).join(", "),
+            render: (r) => (r.workers || []).map((w: Row) => userName.get(w.user_id)).filter(Boolean).join(","),
           },
         ];
 
@@ -182,15 +182,15 @@ export default function AdminPanel({ entity }: { entity: AdminEntity }) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="text-lg font-bold text-navy">{TITLES[entity]}</h2>
-          <p className="text-xs text-text3 mt-0.5">{DESCRIPTIONS[entity]}</p>
+          <h2 className="text-lg font-bold text-text">{TITLES[entity]}</h2>
+          <p className="text-xs text-text-soft mt-0.5">{DESCRIPTIONS[entity]}</p>
         </div>
         <div className="flex items-center gap-2">
           {entity !== "companies" && (
             <select
               value={companyFilter}
               onChange={(e) => setCompanyFilter(e.target.value)}
-              className="text-sm border border-border rounded-lg px-2 py-2 bg-surface"
+              className="text-sm border border-line rounded-lg px-2 py-2 bg-panel"
             >
               <option value="">전체 회사</option>
               {companies.map((c) => (
@@ -201,13 +201,19 @@ export default function AdminPanel({ entity }: { entity: AdminEntity }) {
           <button
             onClick={load}
             title="새로고침"
-            className="p-2 text-text3 hover:text-navy hover:bg-surface2 rounded-lg border border-border bg-surface"
+            className="p-2 text-text-soft hover:text-blue hover:bg-panel-2 rounded-lg border border-line bg-panel"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
           <button
-            onClick={() => setEditing({ ...EMPTY[entity], company_id: companyFilter || undefined })}
-            className="flex items-center gap-1.5 px-3 py-2 bg-navy text-white text-sm font-semibold rounded-md hover:bg-navy-dark"
+            onClick={() =>
+              setEditing({
+                ...EMPTY[entity],
+                // 선택할 회사가 하나뿐이면(회사관리자) 자동으로 지정한다.
+                company_id: companyFilter || (companies.length === 1 ? companies[0].id : undefined),
+              })
+            }
+            className="flex items-center gap-1.5 px-3 py-2 bg-green text-bg text-sm font-semibold rounded-2xl hover:bg-green-strong"
           >
             <Plus className="w-4 h-4" />
             추가
@@ -222,9 +228,9 @@ export default function AdminPanel({ entity }: { entity: AdminEntity }) {
         </div>
       )}
 
-      <div className="bg-surface border border-border rounded-xl overflow-x-auto shadow-sm">
+      <div className="bg-panel border border-line rounded-[22px] overflow-x-auto shadow-sm">
         <table className="w-full text-sm">
-          <thead className="bg-surface2 text-text3 text-xs">
+          <thead className="bg-panel-2 text-text-soft text-xs">
             <tr>
               {columns.map((c) => (
                 <th key={c.label} className="px-3 py-2.5 text-left font-semibold whitespace-nowrap">{c.label}</th>
@@ -232,28 +238,28 @@ export default function AdminPanel({ entity }: { entity: AdminEntity }) {
               <th className="px-3 py-2.5 w-20" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
+          <tbody className="divide-y divide-line">
             {loading ? (
               <tr>
-                <td colSpan={columns.length + 1} className="py-10 text-center text-text3">
+                <td colSpan={columns.length + 1} className="py-10 text-center text-text-soft">
                   <Loader2 className="w-5 h-5 animate-spin inline" />
                 </td>
               </tr>
             ) : visibleItems.length === 0 ? (
               <tr>
-                <td colSpan={columns.length + 1} className="py-10 text-center text-text3">등록된 항목이 없습니다.</td>
+                <td colSpan={columns.length + 1} className="py-10 text-center text-text-soft">등록된 항목이 없습니다.</td>
               </tr>
             ) : (
               visibleItems.map((r) => (
-                <tr key={r.id} className="hover:bg-surface2">
+                <tr key={r.id} className="hover:bg-panel-2">
                   {columns.map((c) => (
-                    <td key={c.label} className="px-3 py-2.5 text-text2">{c.render(r)}</td>
+                    <td key={c.label} className="px-3 py-2.5 text-text-soft">{c.render(r)}</td>
                   ))}
                   <td className="px-3 py-2.5 whitespace-nowrap text-right">
-                    <button onClick={() => openEdit(r)} title="수정" className="p-1.5 text-text3 hover:text-navy">
+                    <button onClick={() => openEdit(r)} title="수정" className="p-1.5 text-text-soft hover:text-blue">
                       <Pencil className="w-4 h-4" />
                     </button>
-                    <button onClick={() => setDeleting(r)} title="삭제" className="p-1.5 text-text3 hover:text-red">
+                    <button onClick={() => setDeleting(r)} title="삭제" className="p-1.5 text-text-soft hover:text-red">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </td>
@@ -280,14 +286,14 @@ export default function AdminPanel({ entity }: { entity: AdminEntity }) {
 
       {deleting && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-black/40" onClick={() => setDeleting(null)} />
-          <div className="relative bg-surface rounded-xl shadow-lg p-5 w-full max-w-sm space-y-4">
-            <p className="text-sm text-gray-800">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-[3px]" onClick={() => setDeleting(null)} />
+          <div className="relative bg-panel rounded-[18px] shadow-lg p-5 w-full max-w-sm space-y-4">
+            <p className="text-sm text-text">
               <span className="font-semibold">{deleting.name}</span> 항목을 삭제할까요? 되돌릴 수 없습니다.
             </p>
             <div className="flex justify-end gap-2">
-              <button onClick={() => setDeleting(null)} className="px-3 py-2 text-sm rounded-lg border border-border">취소</button>
-              <button onClick={confirmDelete} className="px-3 py-2 text-sm rounded-lg bg-red text-white font-semibold">삭제</button>
+              <button onClick={() => setDeleting(null)} className="px-3 py-2 text-sm rounded-lg border border-line">취소</button>
+              <button onClick={confirmDelete} className="px-3 py-2 text-sm rounded-lg bg-red text-bg font-semibold">삭제</button>
             </div>
           </div>
         </div>
@@ -348,7 +354,7 @@ function EditModal({
     }
   };
 
-  const inputClass = "w-full text-sm border border-border rounded-lg px-3 py-2 focus:outline-none focus:border-navy-light";
+  const inputClass = "w-full text-sm border border-line rounded-lg px-3 py-2 focus:outline-none focus:border-blue";
 
   const renderField = (f: Field) => {
     const value = form[f.key];
@@ -384,13 +390,14 @@ function EditModal({
       case "role":
         return (
           <select value={value || "worker"} onChange={(e) => set(f.key, e.target.value)} className={inputClass}>
-            <option value="worker">작업자</option>
-            <option value="admin">관리자</option>
+            <option value="worker">일반사용자 (WattLineApp 사진 업로드)</option>
+            <option value="company_admin">회사관리자 (소속 회사 작업장 관리)</option>
+            <option value="admin">관리자 (전체 시스템)</option>
           </select>
         );
       case "workers": {
-        if (!form.company_id) return <p className="text-xs text-text3 py-2">회사를 먼저 선택하세요.</p>;
-        if (companyUsers.length === 0) return <p className="text-xs text-text3 py-2">이 회사에 등록된 사용자가 없습니다.</p>;
+        if (!form.company_id) return <p className="text-xs text-text-soft py-2">회사를 먼저 선택하세요.</p>;
+        if (companyUsers.length === 0) return <p className="text-xs text-text-soft py-2">이 회사에 등록된 사용자가 없습니다.</p>;
         const selected: string[] = value || [];
         return (
           <div className="flex flex-wrap gap-x-4 gap-y-1.5 py-1">
@@ -416,18 +423,18 @@ function EditModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="fixed inset-0 bg-black/40" onClick={onClose} />
-      <form onSubmit={submit} className="relative bg-surface rounded-xl shadow-lg w-full max-w-lg max-h-[90vh] flex flex-col">
-        <div className="flex items-center justify-between px-5 py-3 border-b border-border">
-          <h3 className="font-bold text-navy">{TITLES[entity].replace("관리", isNew ? "추가" : "수정")}</h3>
-          <button type="button" onClick={onClose} className="p-1 text-text3 hover:text-navy">
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-[3px]" onClick={onClose} />
+      <form onSubmit={submit} className="relative bg-panel rounded-[18px] shadow-lg w-full max-w-lg max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-line">
+          <h3 className="font-bold text-text">{TITLES[entity].replace("관리", isNew ? "추가" : "수정")}</h3>
+          <button type="button" onClick={onClose} className="p-1 text-text-soft hover:text-blue">
             <X className="w-5 h-5" />
           </button>
         </div>
         <div className="px-5 py-4 space-y-3 overflow-y-auto">
           {FIELDS[entity].map((f) => (
             <div key={f.key} className={f.type === "checkbox" ? "flex items-center gap-3" : "space-y-1"}>
-              <label className="block text-xs font-semibold text-text2">
+              <label className="block text-xs font-semibold text-text-soft">
                 {f.label}
                 {(f.required || (f.type === "password" && isNew)) && <span className="text-red"> *</span>}
               </label>
@@ -436,12 +443,12 @@ function EditModal({
           ))}
           {error && <p className="text-sm text-red">{error}</p>}
         </div>
-        <div className="flex justify-end gap-2 px-5 py-3 border-t border-border">
-          <button type="button" onClick={onClose} className="px-3 py-2 text-sm rounded-lg border border-border">취소</button>
+        <div className="flex justify-end gap-2 px-5 py-3 border-t border-line">
+          <button type="button" onClick={onClose} className="px-3 py-2 text-sm rounded-lg border border-line">취소</button>
           <button
             type="submit"
             disabled={saving}
-            className="px-4 py-2 text-sm rounded-md bg-navy text-white font-semibold disabled:opacity-50 flex items-center gap-1.5"
+            className="px-4 py-2 text-sm rounded-md bg-panel-2 text-text font-semibold disabled:opacity-50 flex items-center gap-1.5"
           >
             {saving && <Loader2 className="w-4 h-4 animate-spin" />}
             저장

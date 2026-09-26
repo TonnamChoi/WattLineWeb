@@ -1,38 +1,31 @@
 @import "tailwindcss";
 
-/* 디자인 토큰 — 값과 용도는 DESIGN.md 2장 참고 */
+/* 디자인 토큰 — WattLineApp과 같은 값. 용도는 DESIGN.md 3장 참고 */
 @theme {
-  --font-sans: "Geist", ui-sans-serif, system-ui, "Malgun Gothic", sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, monospace;
+  --font-sans: "Inter", ui-sans-serif, system-ui, "Malgun Gothic", sans-serif;
 
-  --color-navy: #0d3b66;
-  --color-navy-dark: #082a4d;
-  --color-navy-light: #1a5290;
-  --color-amber: #f4a228;
-  --color-amber-dark: #d4861a;
-  --color-amber-light: #fef3dc;
-  --color-surface: #ffffff;
-  --color-surface2: #f7f9fc;
-  --color-border: #d1dce8;
-  --color-border-strong: #a8bece;
-  --color-text2: #4a5568;
-  --color-text3: #718096;
-  --color-green: #276749;
-  --color-green-bg: #eaf5ef;
-  --color-red: #9b2335;
-  --color-info: #1a5290;
-  --color-info-bg: #ebf4ff;
-  --color-background: #f0f4f8;
-  --color-accent-from: #2fb8c6;
-  --color-accent-to: #2e6ff2;
+  --color-bg: #07141c;
+  --color-bg-2: #0b1b28;
+  --color-panel: #101f2c;
+  --color-panel-2: #132a3c;
+  --color-line: rgba(151, 189, 216, 0.18);
+  --color-text: #edf8ff;
+  --color-text-soft: #9ab2c2;
+  --color-green: #47d9a3;
+  --color-green-strong: #1ecf8f;
+  --color-blue: #4ea8ff;
+  --color-amber: #ffbf6a;
+  --color-red: #ff7e7e;
+}
+
+/* 다크 테마: 기본 입력창·스크롤바도 어둡게 그리도록 한다 */
+:root {
+  color-scheme: dark;
 }
 
 body {
-  background-color: var(--color-background);
-}
-
-.gradient-accent {
-  background-image: linear-gradient(to right, var(--color-accent-from), var(--color-accent-to));
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 /* 화면의 모든 텍스트 크기를 '이미지 업로드' 제목 크기(text-sm, 14px)로 통일 */

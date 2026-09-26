@@ -366,19 +366,19 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
   const pendingCount = records.filter((r) => r.status === "idle" || r.status === "failed").length;
 
   const workplaceSelector = (
-    <div className="bg-surface border border-border rounded-xl px-4 py-3 shadow-sm flex flex-wrap items-center gap-3">
-      <span className="font-bold text-navy">작업장</span>
+    <div className="bg-panel border border-line rounded-[22px] px-4 py-3 shadow-sm flex flex-wrap items-center gap-3">
+      <span className="font-bold text-text">작업장</span>
       <select
         value={workplaceId || ""}
         onChange={(e) => onChangeWorkplace(e.target.value || null)}
-        className="min-w-64 text-sm border border-border rounded-md px-2 py-2 bg-surface"
+        className="min-w-64 text-sm border border-line rounded-md px-2 py-2 bg-panel"
       >
         <option value="">작업장을 선택하세요</option>
         {workplaces.map((w) => (
           <option key={w.id} value={w.id}>
-            {w.company?.name ? `[${w.company.name}] ` : ""}
+            {w.company?.name ? `[${w.company.name}]` : ""}
             {w.name}
-            {w.is_completed ? " (완료)" : ""}
+            {w.is_completed ? "(완료)" : ""}
           </option>
         ))}
       </select>
@@ -389,7 +389,7 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
     return (
       <div className="space-y-5">
         {workplaceSelector}
-        <div className="bg-surface border border-border rounded-xl p-10 shadow-sm text-center text-text3">
+        <div className="bg-panel border border-line rounded-[22px] p-10 shadow-sm text-center text-text-soft">
           작업장을 선택하면 해당 작업장의 전지작업 사진과 분석 결과가 표시됩니다.
         </div>
       </div>
@@ -399,10 +399,10 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
   return (
     <div className="space-y-5">
       {workplaceSelector}
-      <div className="bg-surface border border-border rounded-xl p-4 shadow-sm">
+      <div className="bg-panel border border-line rounded-[22px] p-4 shadow-sm">
         <div className="mb-3">
-          <h2 className="font-bold text-gray-800 text-sm">전지작업 사진 업로드</h2>
-          <p className="text-xs text-text3 mt-0.5">전지작업 사진을 선택하거나 드롭하면 AI가 자동으로 분석합니다</p>
+          <h2 className="font-bold text-text text-sm">전지작업 사진 업로드</h2>
+          <p className="text-xs text-text-soft mt-0.5">전지작업 사진을 선택하거나 드롭하면 AI가 자동으로 분석합니다</p>
         </div>
 
         <input ref={fileInputRef} type="file" className="hidden" multiple accept="image/*" onChange={handleFileChange} />
@@ -413,15 +413,13 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
           onDragLeave={handleDrag}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`w-full h-32 border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all duration-200 ${
-            isDragActive ? "border-navy-light bg-info-bg/50" : "border-border-strong hover:border-navy-light bg-surface2/60 hover:bg-surface"
-          }`}
+          className={`w-full h-32 border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all duration-200 ${ isDragActive ? "border-blue bg-blue/50" : "border-text-soft/40 hover:border-blue bg-panel-2/60 hover:bg-panel" }`}
         >
-          <div className="p-2.5 bg-surface rounded border border-border shadow-xs mb-2 text-navy">
+          <div className="p-2.5 bg-panel rounded border border-line shadow-xs mb-2 text-blue">
             <Upload className="w-5 h-5" />
           </div>
-          <p className="text-gray-800 font-bold text-xs md:text-sm mb-0.5">여기에 전지작업 사진을 드래그하거나 클릭하여 업로드</p>
-          <p className="text-text3 text-[11px]">여러 장의 사진을 동시에 업로드할 수 있습니다. (PNG, JPG, JPEG 지원)</p>
+          <p className="text-text font-bold text-xs md:text-sm mb-0.5">여기에 전지작업 사진을 드래그하거나 클릭하여 업로드</p>
+          <p className="text-text-soft text-[11px]">여러 장의 사진을 동시에 업로드할 수 있습니다. (PNG, JPG, JPEG 지원)</p>
         </div>
 
         {errorMsg && (
@@ -433,15 +431,15 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
       </div>
 
       {totalCount > 0 && (
-        <div className="bg-surface border border-border px-4 py-3 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
+        <div className="bg-panel border border-line px-4 py-3 rounded-[22px] flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className="px-2.5 py-1 rounded-full bg-surface2 text-text2 font-semibold">전체 {totalCount}</span>
+            <span className="px-2.5 py-1 rounded-full bg-panel-2 text-text-soft font-semibold">전체 {totalCount}</span>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handleClearAll}
               disabled={isBulkProcessing}
-              className="px-3 py-1.5 text-xs font-semibold text-text3 hover:bg-surface2 rounded-lg transition-colors disabled:opacity-40"
+              className="px-3 py-1.5 text-xs font-semibold text-text-soft hover:bg-panel-2 rounded-lg transition-colors disabled:opacity-40"
             >
               <span className="inline-flex items-center gap-1">
                 <Trash2 className="w-3.5 h-3.5" />
@@ -451,9 +449,7 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
             <button
               onClick={handleAnalyzeAll}
               disabled={isBulkProcessing || pendingCount === 0}
-              className={`px-4 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${
-                pendingCount === 0 ? "bg-surface2 text-text3 cursor-not-allowed" : "bg-navy hover:bg-navy-dark text-white"
-              }`}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${ pendingCount === 0 ? "bg-panel-2 text-text-soft cursor-not-allowed" : "bg-green hover:bg-green-strong text-bg" }`}
             >
               {isBulkProcessing ? (
                 <>
@@ -472,7 +468,7 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
       )}
 
       {isLoadingList ? (
-        <div className="flex items-center justify-center py-10 text-text3 text-sm gap-2">
+        <div className="flex items-center justify-center py-10 text-text-soft text-sm gap-2">
           <Loader2 className="w-4 h-4 animate-spin" />
           불러오는 중...
         </div>
@@ -492,7 +488,7 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
       )}
 
       {detailRecord && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50" onClick={() => setDetailId(null)}>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-[3px] flex items-center justify-center p-4 z-50" onClick={() => setDetailId(null)}>
           <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <PruningDetail record={detailRecord} onAnalyze={handleAnalyze} onUpdateInfo={handleUpdateInfo} onClose={() => setDetailId(null)} />
           </div>

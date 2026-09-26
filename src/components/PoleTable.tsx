@@ -119,13 +119,13 @@ export default function PoleTable({
   };
 
   return (
-    <div className="bg-surface border border-border rounded-lg overflow-hidden shadow-2xs">
+    <div className="bg-panel border border-line rounded-lg overflow-hidden shadow-2xs">
       {/* Table Action Controls */}
-      <div className="p-3.5 border-b border-border bg-surface2 space-y-2.5">
+      <div className="p-3.5 border-b border-line bg-panel-2 space-y-2.5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <h3 className="font-extrabold text-text2 text-xs uppercase tracking-wider">분석 대상 및 추출 결과</h3>
-            <span className="text-[11px] bg-info-bg text-navy font-extrabold px-2 py-0.5 rounded font-mono">
+            <h3 className="font-extrabold text-text-soft text-xs uppercase tracking-wider">분석 대상 및 추출 결과</h3>
+            <span className="text-[11px] bg-blue/15 text-text font-extrabold px-2 py-0.5 rounded font-mono">
               {poles.length}건 로드됨
             </span>
           </div>
@@ -136,7 +136,7 @@ export default function PoleTable({
               {/* Copy Button */}
               <button
                 onClick={handleCopyToClipboard}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-surface hover:bg-surface2 border border-border text-text2 rounded transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-panel hover:bg-panel-2 border border-line text-text-soft rounded transition-colors cursor-pointer"
               >
                 {isCopied ? (
                   <>
@@ -145,7 +145,7 @@ export default function PoleTable({
                   </>
                 ) : (
                   <>
-                    <Clipboard className="w-3.5 h-3.5 text-text3" />
+                    <Clipboard className="w-3.5 h-3.5 text-text-soft" />
                     엑셀용 복사 (TSV)
                   </>
                 )}
@@ -154,7 +154,7 @@ export default function PoleTable({
               {/* CSV Button */}
               <button
                 onClick={handleDownloadCSV}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-navy hover:bg-navy-dark text-white rounded transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-green hover:bg-green-strong text-bg rounded transition-colors cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 엑셀 다운로드 (.csv)
@@ -175,13 +175,13 @@ export default function PoleTable({
         {/* Search: 분석 대상 및 추출 결과 타이틀 아래 별도 줄 */}
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative max-w-[200px] w-full">
-            <Search className="w-3.5 h-3.5 text-text3 absolute left-2.5 top-1/2 transform -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-text-soft absolute left-2.5 top-1/2 transform -translate-y-1/2" />
             <input
               type="text"
               placeholder="선로명, 번호, 파일명 실시간 검색..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-8 pr-2.5 py-1 w-full text-xs border border-border-strong rounded outline-none hover:border-border-strong focus:border-navy-light transition-all bg-surface font-medium"
+              className="pl-8 pr-2.5 py-1 w-full text-xs border border-text-soft/40 rounded outline-none hover:border-text-soft/40 focus:border-blue transition-all bg-panel font-medium"
             />
           </div>
         </div>
@@ -191,24 +191,24 @@ export default function PoleTable({
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-surface2 border-b border-border text-text3 font-bold text-[10px] uppercase tracking-wider">
-              <th className="py-2 px-3 text-center w-12 border-r border-border">번호</th>
-              <th className="py-2 px-3 w-14 text-center border-r border-border">미리보기</th>
-              <th className="py-2 px-3 border-r border-border">파일명</th>
-              <th className="py-2 px-3 border-r border-border">전산화번호</th>
-              <th className="py-2 px-3 border-r border-border">선로명</th>
-              <th className="py-2 px-3 border-r border-border">선로번호</th>
-              <th className="py-2 px-3 border-r border-border">기타 세부 정보</th>
-              <th className="py-2 px-3 text-center border-r border-border w-24">정확도</th>
-              <th className="py-2 px-3 text-center border-r border-border w-24">판독 상태</th>
-              <th className="py-2 px-3 text-center border-r border-border w-32">작업</th>
+            <tr className="bg-panel-2 border-b border-line text-text-soft font-bold text-[10px] uppercase tracking-wider">
+              <th className="py-2 px-3 text-center w-12 border-r border-line">번호</th>
+              <th className="py-2 px-3 w-14 text-center border-r border-line">미리보기</th>
+              <th className="py-2 px-3 border-r border-line">파일명</th>
+              <th className="py-2 px-3 border-r border-line">전산화번호</th>
+              <th className="py-2 px-3 border-r border-line">선로명</th>
+              <th className="py-2 px-3 border-r border-line">선로번호</th>
+              <th className="py-2 px-3 border-r border-line">기타 세부 정보</th>
+              <th className="py-2 px-3 text-center border-r border-line w-24">정확도</th>
+              <th className="py-2 px-3 text-center border-r border-line w-24">판독 상태</th>
+              <th className="py-2 px-3 text-center border-r border-line w-32">작업</th>
               <th className="py-2 px-3 text-center w-16">삭제</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border font-medium">
+          <tbody className="divide-y divide-line font-medium">
             {filteredPoles.length === 0 ? (
               <tr>
-                <td colSpan={11} className="py-12 text-center text-text3 text-[11px]">
+                <td colSpan={11} className="py-12 text-center text-text-soft text-[11px]">
                   {searchTerm ? "검색 결과와 일치하는 선로 정보가 없습니다." : "표시할 추출 결과 데이터가 없습니다."}
                 </td>
               </tr>
@@ -219,16 +219,14 @@ export default function PoleTable({
                   <tr
                     key={pole.id}
                     onClick={() => onSelect(pole.id)}
-                    className={`text-[12px] hover:bg-info-bg/50 transition-colors cursor-pointer ${
-                      isSelected ? "bg-info-bg/30 font-bold" : ""
-                    }`}
+                    className={`text-[12px] hover:bg-blue/50 transition-colors cursor-pointer ${ isSelected ? "bg-blue/30 font-bold" : "" }`}
                   >
-                    <td className="py-2 px-3 text-center text-text3 font-mono border-r border-border">
+                    <td className="py-2 px-3 text-center text-text-soft font-mono border-r border-line">
                       {String(index + 1).padStart(3, "0")}
                     </td>
-                    <td className="py-1 px-3 text-center border-r border-border">
+                    <td className="py-1 px-3 text-center border-r border-line">
                       <div
-                        className="w-8 h-11 rounded bg-surface2 border border-border overflow-hidden inline-flex items-center justify-center cursor-zoom-in"
+                        className="w-8 h-11 rounded bg-panel-2 border border-line overflow-hidden inline-flex items-center justify-center cursor-zoom-in"
                         onMouseEnter={(e) => handlePreviewEnter(pole, e)}
                         onMouseLeave={handlePreviewLeave}
                       >
@@ -240,70 +238,62 @@ export default function PoleTable({
                         />
                       </div>
                     </td>
-                    <td className="py-2 px-3 text-text2 border-r border-border">
+                    <td className="py-2 px-3 text-text-soft border-r border-line">
                       <p className="font-mono truncate max-w-[140px]" title={pole.name}>
                         {pole.name}
                       </p>
-                      <p className="text-[9px] text-text3 font-mono mt-0.5">{pole.uploadedAt}</p>
+                      <p className="text-[9px] text-text-soft font-mono mt-0.5">{pole.uploadedAt}</p>
                     </td>
-                    <td className="py-2 px-3 border-r border-border">
+                    <td className="py-2 px-3 border-r border-line">
                       {pole.status === "completed" ? (
-                        <span className="font-extrabold font-mono text-navy bg-info-bg border border-border px-1.5 py-0.5 rounded">
+                        <span className="font-extrabold font-mono text-text bg-blue/15 border border-line px-1.5 py-0.5 rounded">
                           {pole.computerizedNumber || "-"}
                         </span>
                       ) : (
-                        <span className="text-text3 italic font-mono">-</span>
+                        <span className="text-text-soft italic font-mono">-</span>
                       )}
                     </td>
-                    <td className="py-2 px-3 border-r border-border">
+                    <td className="py-2 px-3 border-r border-line">
                       {pole.status === "completed" ? (
-                        <span className="font-extrabold text-navy font-sans">
+                        <span className="font-extrabold text-text font-sans">
                           {pole.lineName || "-"}
                         </span>
                       ) : (
-                        <span className="text-text3 italic font-mono">-</span>
+                        <span className="text-text-soft italic font-mono">-</span>
                       )}
                     </td>
-                    <td className="py-2 px-3 border-r border-border">
+                    <td className="py-2 px-3 border-r border-line">
                       {pole.status === "completed" ? (
-                        <span className="font-extrabold text-navy font-sans">
+                        <span className="font-extrabold text-text font-sans">
                           {pole.lineNumber || "-"}
                         </span>
                       ) : (
-                        <span className="text-text3 italic font-mono">-</span>
+                        <span className="text-text-soft italic font-mono">-</span>
                       )}
                     </td>
-                    <td className="py-2 px-3 text-text3 truncate max-w-[150px] border-r border-border" title={pole.extraInfo || ""}>
+                    <td className="py-2 px-3 text-text-soft truncate max-w-[150px] border-r border-line" title={pole.extraInfo || ""}>
                       {pole.status === "completed" ? pole.extraInfo || "-" : "-"}
                     </td>
-                    <td className="py-2 px-3 text-center border-r border-border">
+                    <td className="py-2 px-3 text-center border-r border-line">
                       {pole.status === "completed" && pole.confidence ? (
                         <div className="flex items-center gap-1.5 justify-center">
-                          <div className="w-12 bg-border h-1 rounded-full overflow-hidden hidden sm:block">
+                          <div className="w-12 bg-line h-1 rounded-full overflow-hidden hidden sm:block">
                             <div
-                              className={`h-full ${
-                                pole.confidence >= 90 ? "bg-green" : pole.confidence >= 70 ? "bg-info" : "bg-red"
-                              }`}
+                              className={`h-full ${ pole.confidence >= 90 ? "bg-green" : pole.confidence >= 70 ? "bg-blue" : "bg-red" }`}
                               style={{ width: `${pole.confidence}%` }}
                             />
                           </div>
-                          <span className={`inline-block text-[10px] font-extrabold font-mono px-1 py-0.2 rounded ${
-                            pole.confidence >= 90
-                              ? "bg-green-bg text-green"
-                              : pole.confidence >= 70
-                              ? "bg-info-bg text-navy"
-                              : "bg-red/10 text-red"
-                          }`}>
+                          <span className={`inline-block text-[10px] font-extrabold font-mono px-1 py-0.2 rounded ${ pole.confidence >= 90 ? "bg-green/15 text-green" : pole.confidence >= 70 ? "bg-blue/15 text-blue" : "bg-red/10 text-red" }`}>
                             {pole.confidence}%
                           </span>
                         </div>
                       ) : (
-                        <span className="text-text3 italic font-mono">-</span>
+                        <span className="text-text-soft italic font-mono">-</span>
                       )}
                     </td>
-                    <td className="py-2 px-3 text-center border-r border-border">
+                    <td className="py-2 px-3 text-center border-r border-line">
                       {pole.status === "completed" && (
-                        <span className="inline-block text-[10px] bg-green-bg text-green rounded px-1.5 py-0.5 font-extrabold tracking-wider">
+                        <span className="inline-block text-[10px] bg-green/15 text-green rounded px-1.5 py-0.5 font-extrabold tracking-wider">
                           추출완료
                         </span>
                       )}
@@ -317,30 +307,30 @@ export default function PoleTable({
                         </button>
                       )}
                       {pole.status === "processing" && (
-                        <span className="inline-block text-[10px] bg-info-bg text-navy rounded px-1.5 py-0.5 font-extrabold tracking-wider animate-pulse">
+                        <span className="inline-block text-[10px] bg-blue/15 text-text rounded px-1.5 py-0.5 font-extrabold tracking-wider animate-pulse">
                           분석중
                         </span>
                       )}
                       {pole.status === "idle" && (
-                        <span className="inline-block text-[10px] bg-surface2 text-text3 rounded px-1.5 py-0.5 font-bold tracking-wider">
+                        <span className="inline-block text-[10px] bg-panel-2 text-text-soft rounded px-1.5 py-0.5 font-bold tracking-wider">
                           대기중
                         </span>
                       )}
                     </td>
-                    <td className="py-2 px-3 border-r border-border" onClick={(e) => e.stopPropagation()}>
+                    <td className="py-2 px-3 border-r border-line" onClick={(e) => e.stopPropagation()}>
                       <div className="flex flex-col items-stretch gap-1 w-full">
                         <button
                           onClick={() => onOpenDetail(pole.id)}
                           onMouseEnter={(e) => handlePreviewEnter(pole, e)}
                           onMouseLeave={handlePreviewLeave}
                           title="상세 및 수정"
-                          className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-navy hover:bg-navy-dark text-white rounded font-bold whitespace-nowrap text-sm"
+                          className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-green hover:bg-green-strong text-bg rounded font-bold whitespace-nowrap text-sm"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           상세보기
                         </button>
                         {pole.status === "processing" ? (
-                          <span className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-info-bg text-navy-light rounded font-bold whitespace-nowrap text-sm">
+                          <span className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue/15 text-blue rounded font-bold whitespace-nowrap text-sm">
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
                             분석 중...
                           </span>
@@ -348,7 +338,7 @@ export default function PoleTable({
                           <button
                             onClick={() => onAnalyze(pole.id)}
                             title={pole.status === "completed" ? "재분석" : "분석 시작"}
-                            className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-info-bg hover:bg-info-bg text-navy rounded border border-border font-bold whitespace-nowrap text-sm"
+                            className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue/15 hover:bg-blue/15 text-blue rounded border border-line font-bold whitespace-nowrap text-sm"
                           >
                             <Play className="w-3.5 h-3.5 fill-current" />
                             {pole.status === "completed" ? "재분석" : "분석 시작"}
@@ -359,7 +349,7 @@ export default function PoleTable({
                     <td className="py-2 px-3 text-center" onClick={(e) => e.stopPropagation()}>
                       <button
                         onClick={() => onRemove(pole.id)}
-                        className="p-1 text-text3 hover:text-red rounded hover:bg-red/10 transition-colors"
+                        className="p-1 text-text-soft hover:text-red rounded hover:bg-red/10 transition-colors"
                         title="삭제"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -379,7 +369,7 @@ export default function PoleTable({
           className="fixed z-[100] pointer-events-none"
           style={{ top: hoverPos.top - 8, left: hoverPos.left, transform: "translate(-50%, -100%)" }}
         >
-          <div className="bg-surface border border-border rounded-lg shadow-xl p-1.5">
+          <div className="bg-panel border border-line rounded-lg shadow-xl p-1.5">
             <img
               src={cropCache[hoveredPole.id] || hoveredPole.url}
               alt="번호판 미리보기"

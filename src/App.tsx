@@ -229,18 +229,19 @@ export default function App() {
 
   if (!authChecked) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-navy" />
+      <div className="min-h-screen bg-bg flex items-center justify-center">
+        <Loader2 className="w-6 h-6 animate-spin text-blue" />
       </div>
     );
   }
   if (!authUser) return <LoginPage onLogin={setAuthUser} />;
 
   return (
-    <div className="min-h-screen bg-background text-gray-900 flex font-sans pt-14">
+    <div className="min-h-screen bg-bg text-text flex font-sans pt-14">
       <Sidebar
         currentUser={authUser}
         isAdmin={authUser.role === "admin"}
+        canManageWorkplaces={authUser.role === "admin" || authUser.role === "company_admin"}
         onLogout={handleLogout}
         view={view}
         onNavigate={setView}
@@ -253,9 +254,7 @@ export default function App() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Main Workspace Layout */}
         <main
-          className={`flex-1 w-full mx-auto space-y-5 ${
-            view === "pruning" ? "px-1 py-4 md:px-2 md:py-6" : "max-w-7xl p-4 md:p-6"
-          }`}
+          className={`flex-1 w-full mx-auto space-y-5 ${ view === "pruning" ? "px-1 py-4 md:px-2 md:py-6" : "max-w-7xl p-4 md:p-6" }`}
         >
           {view === "workplaces" && (
             <WorkplaceList
@@ -285,22 +284,22 @@ export default function App() {
           {view === "main" && (
           <>
           {/* Upload */}
-          <div className="bg-surface border border-border rounded-xl p-4 shadow-sm">
+          <div className="bg-panel border border-line rounded-[22px] p-4 shadow-sm">
             <div className="mb-3">
-              <h2 className="font-bold text-gray-800 text-sm">이미지 업로드</h2>
-              <p className="text-xs text-text3 mt-0.5">전주번호찰 이미지를 선택하거나 드롭 하세요</p>
+              <h2 className="font-bold text-text text-sm">이미지 업로드</h2>
+              <p className="text-xs text-text-soft mt-0.5">전주번호찰 이미지를 선택하거나 드롭 하세요</p>
             </div>
             <DropZone onImagesAdded={handleImagesAdded} uploadedCount={poles.length} />
           </div>
 
           {/* Action bar */}
           {totalCount > 0 && (
-            <div className="bg-surface border border-border px-4 py-3 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
+            <div className="bg-panel border border-line px-4 py-3 rounded-[22px] flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
               <div className="flex flex-wrap items-center gap-2 text-xs">
-                <span className="px-2.5 py-1 rounded-full bg-surface2 text-text2 font-semibold">전체 {totalCount}</span>
-                <span className="px-2.5 py-1 rounded-full bg-green-bg text-green font-semibold">완료 {completedCount}</span>
+                <span className="px-2.5 py-1 rounded-full bg-panel-2 text-text-soft font-semibold">전체 {totalCount}</span>
+                <span className="px-2.5 py-1 rounded-full bg-green/15 text-green font-semibold">완료 {completedCount}</span>
                 {processingCount > 0 && (
-                  <span className="px-2.5 py-1 rounded-full bg-info-bg text-navy font-semibold flex items-center gap-1">
+                  <span className="px-2.5 py-1 rounded-full bg-blue/15 text-text font-semibold flex items-center gap-1">
                     <Loader2 className="w-3 h-3 animate-spin" /> 분석 중 {processingCount}
                   </span>
                 )}
@@ -308,7 +307,7 @@ export default function App() {
                   <span className="px-2.5 py-1 rounded-full bg-red/10 text-red font-semibold">실패 {failedCount}</span>
                 )}
                 {idleCount > 0 && (
-                  <span className="px-2.5 py-1 rounded-full bg-surface2 text-text3 font-semibold">대기 {idleCount}</span>
+                  <span className="px-2.5 py-1 rounded-full bg-panel-2 text-text-soft font-semibold">대기 {idleCount}</span>
                 )}
               </div>
 
@@ -316,18 +315,14 @@ export default function App() {
                 <button
                   onClick={handleClearAll}
                   disabled={isBulkProcessing}
-                  className="px-3 py-1.5 text-xs font-semibold text-text3 hover:bg-surface2 rounded-lg transition-colors disabled:opacity-40"
+                  className="px-3 py-1.5 text-xs font-semibold text-text-soft hover:bg-panel-2 rounded-lg transition-colors disabled:opacity-40"
                 >
                   전체 삭제
                 </button>
                 <button
                   onClick={handleAnalyzeAll}
                   disabled={isBulkProcessing || pendingCount === 0}
-                  className={`px-4 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${
-                    pendingCount === 0
-                      ? "bg-surface2 text-text3 cursor-not-allowed"
-                      : "bg-navy hover:bg-navy-dark text-white"
-                  }`}
+                  className={`px-4 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${ pendingCount === 0 ? "bg-panel-2 text-text-soft cursor-not-allowed" : "bg-green hover:bg-green-strong text-bg" }`}
                 >
                   {isBulkProcessing ? (
                     <>
@@ -363,7 +358,7 @@ export default function App() {
           )}
         </main>
 
-        <footer className="py-4 text-center text-[11px] text-text3 shrink-0">
+        <footer className="py-4 text-center text-[11px] text-text-soft shrink-0">
           제작 : therianchoi@gmail.com
         </footer>
       </div>
@@ -378,7 +373,7 @@ export default function App() {
       {/* 상세 및 수정: 별도 모달 창으로 표시 */}
       {detailPole && (
         <div
-          className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
+          className="fixed inset-0 bg-black/60 backdrop-blur-[3px] flex items-center justify-center p-4 z-50"
           onClick={() => setDetailId(null)}
         >
           <div

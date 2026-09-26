@@ -35,7 +35,11 @@
 - `GET /api/auth` (헤더 `Authorization: Bearer <token>`) → `{ user }`. 새로고침할 때 세션을 복원하는 용도이고, 매번 DB를 다시 읽어 중지된 계정은 바로 차단한다.
 - 토큰 형식은 `base64url(JSON{uid, role, exp}).HMAC-SHA256`이고 유효시간은 12시간이다. 브라우저 `localStorage`의 `wattline.authToken`에 저장한다.
 - 서명 키는 `sha256("wattline-auth:" + SUPABASE_SECRET_KEY)`로 만든다. 별도 환경변수는 없다. **Supabase 키를 교체하면 모든 사용자가 로그아웃된다.**
-- `/api/admin`은 토큰이 유효하고, 그 사용자가 DB 기준으로 `is_active = true`이며 `role = 'admin'`일 때만 허용한다.
+- 권한 3단계(2026-09-26 변경): `admin`(총괄), `company_admin`(회사관리자), `worker`(일반사용자, 웹 로그인 불가).
+- `/api/admin` 권한은 DB 기준으로 매번 다시 확인한다.
+  - `admin`: 전체 허용.
+  - `company_admin`: 조회는 소속 회사 데이터만 된다. 추가·수정·삭제는 `workplaces`만 되고, `company_id`는 소속 회사로 강제된다. 다른 회사 작업장의 수정·삭제는 403. 작업자 배정은 같은 회사 사용자만 반영된다.
+  - `worker`: 403.
 - 최초 관리자 계정: `admin` (2026-09-26 생성, 임시 비밀번호는 대화로 전달함. 변경 필요).
 
 ## 작업장 ↔ 전지작업 사진 연결 (2026-09-26 추가)
