@@ -66,7 +66,7 @@ export default function WorkplaceList({ user, onOpenWorkplace }: { user: AuthUse
             <select
               value={companyId}
               onChange={(e) => setCompanyId(e.target.value)}
-              className="text-sm border border-line rounded-md px-2 py-2 bg-panel"
+              className="text-sm border border-line rounded-lg px-2 py-2 bg-panel"
             >
               <option value="">전체 회사</option>
               {companies.map((c) => (
@@ -77,7 +77,7 @@ export default function WorkplaceList({ user, onOpenWorkplace }: { user: AuthUse
           <button
             onClick={load}
             title="새로고침"
-            className="p-2 text-text-soft hover:text-blue hover:bg-panel-2 rounded-md border border-line bg-panel"
+            className="p-2 text-text-soft hover:text-blue hover:bg-panel-2 rounded-lg border border-line bg-panel"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
@@ -99,7 +99,7 @@ export default function WorkplaceList({ user, onOpenWorkplace }: { user: AuthUse
         </div>
       )}
 
-      <div className="rounded-[22px] border border-line bg-panel shadow-sm overflow-x-auto">
+      <div className="rounded-lg border border-line bg-panel overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-panel-2 text-text-soft">
             <tr>

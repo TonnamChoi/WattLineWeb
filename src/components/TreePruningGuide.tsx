@@ -22,7 +22,7 @@ import slide14 from "../assets/pruning-guide/slide14.webp";
 function SlideImage({ src, alt, caption }: { src: string; alt: string; caption?: string }) {
   return (
     <figure className="mb-4">
-      <div className="bg-panel-2 border border-line rounded-xl overflow-hidden">
+      <div className="bg-panel-2 border border-line rounded-lg overflow-hidden">
         <img src={src} alt={alt} className="w-full h-auto" />
       </div>
       {caption && <figcaption className="text-[11px] text-text-soft mt-1.5">{caption}</figcaption>}
@@ -34,7 +34,7 @@ export default function TreePruningGuide() {
   return (
     <div className="space-y-5">
       {/* Hero */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-green bg-green/15 border border-green/20 px-2.5 py-1 rounded-full uppercase tracking-wider mb-3">
           현장 실무자용 가이드북 · 배전선로 근접수목 관리
         </span>
@@ -58,7 +58,7 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 01. 기본 원칙 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <Scale className="w-4 h-4 text-green" />
           기본 원칙 및 법적 준수사항
@@ -80,7 +80,7 @@ export default function TreePruningGuide() {
             { title: "환경 관리 및 부산물 당일 수거", desc: "전지 작업으로 발생한 폐가지·부산물은 폐기물관리법 제18조에 따라 당일 수거하여 폐기물 처리업 허가자 등에게 위탁 처리합니다." },
           ].map((item, i) => (
             <div key={i} className="flex gap-3 bg-panel-2 border border-line rounded-lg p-3">
-              <div className="w-6 h-6 rounded-full bg-green text-bg text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-6 h-6 rounded-full bg-blue text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                 {i + 1}
               </div>
               <div>
@@ -93,7 +93,7 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 02. 전지 유형 4가지 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <Layers className="w-4 h-4 text-green" />
           전지 유형 4가지 — 약전지 · 강전지 · 순치기 · 벌목
@@ -176,7 +176,7 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 03. 절단 대상 가지 + 측정 용어 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <Scissors className="w-4 h-4 text-green" />
           절단 대상 가지의 종류 및 측정 용어
@@ -219,7 +219,7 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 04. 이격거리 기준 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <Ruler className="w-4 h-4 text-green" />
           배전선로 이격거리 및 안전거리 기준
@@ -249,9 +249,9 @@ export default function TreePruningGuide() {
             <p className="text-[11px] text-text-soft mt-1">직접 마찰 및 피복 손상 예방. 저압보수차 버킷 이용 작업 가능, 절연 장구 착용 후 잔가지 제거.</p>
           </div>
         </div>
-        <div className="bg-panel-2 text-text rounded-md p-3.5">
+        <div className="bg-panel-2 text-text rounded-lg p-3.5">
           <p className="text-xs font-bold mb-1">📌 충전전로 접근 한계거리 및 방호 원칙 — 90cm 절대 준수</p>
-          <ul className="text-[11px] text-text-soft/40 leading-relaxed list-disc list-inside space-y-0.5">
+          <ul className="text-[11px] text-text-soft leading-relaxed list-disc list-inside space-y-0.5">
             <li>22.9kV 충전전로에 대한 안전 접근한계거리는 90cm입니다.</li>
             <li>표준 시공: 작업자 신체·장비가 충전부로부터 90cm 이상 이격을 유지한 채 연장형 절연톱(1.5m 이상)으로 작업.</li>
             <li>부득이한 시공: 90cm 이내 접근이 불가피하면 무정전(활선)전공이 충전부 방호(방호관 설치)를 완료한 후 지상감시자 입회 하에 작업.</li>
@@ -260,7 +260,7 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 05. 표준 시행 절차 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <ListChecks className="w-4 h-4 text-green" />
           공사 표준 시행 절차 — 현장 작업 6단계
@@ -317,7 +317,7 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 06. 필수 장비/인력 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <HardHat className="w-4 h-4 text-green" />
           작업조별 필수 장비 · 공구 · 안전장구 · 참여 인력
@@ -382,7 +382,7 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 07. 수행 주체 결정 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <GitBranch className="w-4 h-4 text-green" />
           작업 유형별 수행 주체 결정
@@ -460,7 +460,7 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 08. 현장 안전관리 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <ShieldAlert className="w-4 h-4 text-green" />
           현장 안전 관리 및 재해 예방
@@ -485,7 +485,7 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 09. 위약벌 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 text-red" />
           작업자 과실 정전 유발 시 제재 기준 (위약벌)
@@ -522,7 +522,7 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 10. 사후관리 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <ClipboardCheck className="w-4 h-4 text-green" />
           현장 사후 관리 — 환경 · 민원 · 준공
@@ -551,7 +551,7 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 11. 근본적 해결책 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <Recycle className="w-4 h-4 text-green" />
           근본적 해결책 — 저수고 수종갱신(Tree Replacement) 지원 사업
@@ -583,16 +583,16 @@ export default function TreePruningGuide() {
       </div>
 
       {/* 12. 현장 이행 당부사항 + 출처 */}
-      <div className="bg-panel-2 text-text rounded-xl p-5">
+      <div className="bg-panel-2 text-text rounded-lg p-5">
         <p className="text-sm font-bold mb-2">현장 이행 당부사항</p>
-        <p className="text-xs text-text-soft/60 leading-relaxed">
+        <p className="text-xs text-text-soft leading-relaxed">
           본 안내서에 명시된 수목전지 기준과 안전수칙을 철저히 준수하여 무사고·무재해 현장을
           달성하시기 바랍니다. 기타 문의사항이나 현장 특이사항 발생 시 한전 관할 사업소
           설비운영 부서 담당자(감독자)에게 즉시 보고 후 지시에 따르시기 바랍니다.
         </p>
       </div>
 
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-3 flex items-center gap-2">
           <Network className="w-4 h-4 text-green" />
           출처

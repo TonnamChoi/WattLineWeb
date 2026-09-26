@@ -8,7 +8,7 @@ export default function AboutPlate() {
   return (
     <div className="space-y-5">
       {/* Hero */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-text bg-blue/15 border border-line px-2.5 py-1 rounded-full uppercase tracking-wider mb-3">
           전력설비 안내서 · 배전선로
         </span>
@@ -25,7 +25,7 @@ export default function AboutPlate() {
       </div>
 
       {/* 01. 실물 예시 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <IdCard className="w-4 h-4 text-blue" />
           실물부터 보고 시작하죠
@@ -38,7 +38,7 @@ export default function AboutPlate() {
         </p>
 
         <div className="md:flex md:items-start md:gap-5">
-        <div className="bg-panel-2 border border-line rounded-xl p-3 mb-4 md:mb-0 md:shrink-0 overflow-x-auto">
+        <div className="bg-panel-2 border border-line rounded-lg p-3 mb-4 md:mb-0 md:shrink-0 overflow-x-auto">
           <img
             src={polePlateExample}
             alt="실제 전주번호찰 예시 이미지: 상단 걸이 구멍 아래 위험 표시, 전산화번호 4193W101이 5칸+3칸 격자로 표기되고, 매/월/간 3단 라벨 위에 큰 숫자 77이 겹쳐 표기되며, 그 아래 2009와 16M이 각각 칸으로 나뉘어 표기되고, 세종전력(주) 제작사명과 한국전력 로고, 문의전화 123이 표기되어 있다."
@@ -101,7 +101,7 @@ export default function AboutPlate() {
       </div>
 
       {/* 02. 왜 번호를 붙였을까 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-2 flex items-center gap-2">
           <HelpCircle className="w-4 h-4 text-blue" />
           왜 전주마다 번호를 붙였을까
@@ -118,7 +118,7 @@ export default function AboutPlate() {
       </div>
 
       {/* 03. 8자리 어떻게 읽을까 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <Hash className="w-4 h-4 text-blue" />
           8자리, 어떻게 읽을까
@@ -129,7 +129,7 @@ export default function AboutPlate() {
           두었습니다.
         </p>
 
-        <div className="bg-panel-2 border border-line rounded-xl p-3 mb-4 overflow-x-auto">
+        <div className="bg-panel-2 border border-line rounded-lg p-3 mb-4 overflow-x-auto">
           <svg viewBox="0 0 680 400" className="w-full h-auto min-w-[420px]" role="img"
             aria-label="전산화번호 4193W101을 두 가지 방식으로 나눈 그림. 한전 공식 인포그래픽 기준으로는 앞 4자리가 2킬로미터 격자 위치, 뒤 4자리가 세부 위치와 설치 순서를 뜻한다. 특허 자료 기준으로는 앞 2자리가 동서 위치, 다음 2자리가 남북 위치, 다섯번째 문자가 2킬로미터를 4등분한 구역, 마지막 3자리가 좌표와 설치 순번을 뜻한다.">
             {[
@@ -179,11 +179,11 @@ export default function AboutPlate() {
           <div className="bg-panel-2 border border-line rounded-lg p-3">
             <p className="text-xs font-bold text-text-soft mb-2">A. 한전 공식 인포그래픽 기준</p>
             <div className="grid grid-cols-2 gap-2 text-[11px]">
-              <div className="bg-panel border border-line rounded p-2">
+              <div className="bg-panel border border-line rounded-lg p-2">
                 <p className="font-mono font-bold text-text">4193</p>
                 <p className="text-text-soft mt-1">2km 격자 위치</p>
               </div>
-              <div className="bg-panel border border-line rounded p-2">
+              <div className="bg-panel border border-line rounded-lg p-2">
                 <p className="font-mono font-bold text-text">W101</p>
                 <p className="text-text-soft mt-1">세부 위치 + 설치 순서</p>
               </div>
@@ -193,19 +193,19 @@ export default function AboutPlate() {
           <div className="bg-panel-2 border border-line rounded-lg p-3">
             <p className="text-xs font-bold text-text-soft mb-2">B. 특허 KR101515811B1 기준</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
-              <div className="bg-panel border border-line rounded p-2">
+              <div className="bg-panel border border-line rounded-lg p-2">
                 <p className="font-mono font-bold text-text">41</p>
                 <p className="text-text-soft mt-1">동서 위치</p>
               </div>
-              <div className="bg-panel border border-line rounded p-2">
+              <div className="bg-panel border border-line rounded-lg p-2">
                 <p className="font-mono font-bold text-text">93</p>
                 <p className="text-text-soft mt-1">남북 위치</p>
               </div>
-              <div className="bg-panel border border-line rounded p-2">
+              <div className="bg-panel border border-line rounded-lg p-2">
                 <p className="font-mono font-bold text-text">W</p>
                 <p className="text-text-soft mt-1">4분할 구역</p>
               </div>
-              <div className="bg-panel border border-line rounded p-2">
+              <div className="bg-panel border border-line rounded-lg p-2">
                 <p className="font-mono font-bold text-text">101</p>
                 <p className="text-text-soft mt-1">좌표 + 순번</p>
               </div>
@@ -229,7 +229,7 @@ export default function AboutPlate() {
       </div>
 
       {/* 04. GPS 정확도 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <Ruler className="w-4 h-4 text-blue" />
           정말 GPS보다 정확할까
@@ -262,7 +262,7 @@ export default function AboutPlate() {
       </div>
 
       {/* 05. 사용법 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-1 flex items-center gap-2">
           <Siren className="w-4 h-4 text-blue" />
           실제로 언제, 어떻게 쓸까
@@ -312,7 +312,7 @@ export default function AboutPlate() {
       </div>
 
       {/* 06. 아쉬운 현실 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-2 flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 text-blue" />
           아쉬운 현실
@@ -328,7 +328,7 @@ export default function AboutPlate() {
       </div>
 
       {/* 출처 */}
-      <div className="bg-panel border border-line rounded-[22px] p-5 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-5">
         <h3 className="font-bold text-text text-sm mb-3 flex items-center gap-2">
           <Network className="w-4 h-4 text-blue" />
           출처
@@ -368,7 +368,7 @@ export default function AboutPlate() {
           다음카페 account2000의 원문 한 건은 접근 제한으로 본문을 확인하지 못해 목록에서
           제외했습니다. 오차 범위·전주 개수 등 일부 수치는 보도마다 표현이 달라, 이 페이지에서는
           확인된 범위를 그대로 병기했습니다. 더 자세한 원본 정리는 프로젝트 저장소의{""}
-          <code className="bg-panel-2 px-1 py-0.5 rounded">docs/kepco-pole-number-plate.md</code>
+          <code className="bg-panel-2 px-1 py-0.5 rounded-lg">docs/kepco-pole-number-plate.md</code>
           에 있습니다.
         </p>
       </div>

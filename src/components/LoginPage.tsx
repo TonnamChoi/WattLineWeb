@@ -23,13 +23,13 @@ export default function LoginPage({ onLogin }: { onLogin: (user: AuthUser) => vo
   };
 
   const inputClass =
-    "w-full text-sm border border-line rounded-md px-3 py-2.5 bg-panel focus:outline-none focus:border-blue";
+    "w-full text-sm border border-line rounded-lg px-3 py-2.5 bg-panel focus:outline-none focus:border-blue";
 
   return (
     <div className="min-h-screen bg-bg flex items-center justify-center p-4 font-sans">
-      <div className="w-full max-w-sm rounded-[22px] border border-line bg-panel shadow-sm overflow-hidden">
+      <div className="w-full max-w-sm rounded-lg border border-line bg-panel overflow-hidden">
         <div className="bg-panel-2 px-6 py-5 flex items-center gap-3">
-          <img src={logoUrl} alt="WattLine 로고" className="w-12 h-12 rounded-xl shrink-0" />
+          <img src={logoUrl} alt="WattLine 로고" className="w-12 h-12 rounded-lg shrink-0" />
           <div>
             <h1 className="font-bold text-text leading-tight">수목전지 작업관리</h1>
             <p className="text-text-soft leading-tight">배전선로 전주번호찰 추출 · 수목전지 작업 관리</p>
@@ -60,12 +60,12 @@ export default function LoginPage({ onLogin }: { onLogin: (user: AuthUser) => vo
             />
           </div>
 
-          {error && <p className="px-3 py-2 rounded-md bg-red/10 text-red">{error}</p>}
+          {error && <p className="px-3 py-2 rounded-lg bg-red/10 text-red">{error}</p>}
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full h-10 rounded-2xl bg-green text-sm font-semibold text-bg hover:bg-green-strong disabled:opacity-60 flex items-center justify-center gap-1.5"
+            className="w-full h-10 rounded-lg bg-blue text-sm font-semibold text-white hover:bg-blue-hover disabled:opacity-60 flex items-center justify-center gap-1.5"
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
             로그인

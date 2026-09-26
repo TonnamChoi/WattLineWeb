@@ -57,7 +57,7 @@ export default function PoleDetail({ pole, onAnalyze, onUpdateInfo, onClose }: P
   if (!pole) {
     return (
       <div className="bg-panel border border-line rounded-lg flex flex-col items-center justify-center p-8 text-center text-text-soft">
-        <MapPin className="w-10 h-10 mb-2 stroke-1 text-text-soft/60" />
+        <MapPin className="w-10 h-10 mb-2 stroke-1 text-text-soft" />
         <h4 className="font-extrabold text-text-soft text-xs uppercase tracking-wider mb-1">상세 정보 패널</h4>
         <p className="text-[11px] text-text-soft max-w-[280px] leading-relaxed">
           좌측 분석 목록에서 전주번호찰 이미지를 선택하면 상세 정보 및 선로 데이터 분석 결과가 여기에 표시됩니다.
@@ -84,7 +84,7 @@ export default function PoleDetail({ pole, onAnalyze, onUpdateInfo, onClose }: P
   };
 
   const inputClassName = (value: string) =>
-    `w-full min-w-0 text-xs font-mono font-bold outline-none p-2 rounded transition-all border ${ isMissingValue(value) ? "bg-amber/40 border-amber text-[crimson] focus:border-amber focus:ring-1 focus:ring-amber/20" : "text-blue bg-panel border-text-soft/40 hover:border-text-soft/40 focus:border-blue focus:ring-1 focus:ring-blue/20" }`;
+    `w-full min-w-0 text-xs font-mono font-bold outline-none p-2 rounded-lg transition-all border ${ isMissingValue(value) ? "bg-amber/40 border-amber text-[crimson] focus:border-amber focus:ring-1 focus:ring-amber/20" : "text-blue bg-panel border-text-soft/40 hover:border-text-soft/40 focus:border-blue focus:ring-1 focus:ring-blue/20" }`;
 
   const getConfidenceColor = (score: number | null) => {
     if (!score) return "bg-line";
@@ -112,14 +112,14 @@ export default function PoleDetail({ pole, onAnalyze, onUpdateInfo, onClose }: P
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {pole.isSample && (
-            <span className="text-[10px] bg-blue/15 text-text border border-line px-2 py-0.5 rounded font-bold">
+            <span className="text-[10px] bg-blue/15 text-text border border-line px-2 py-0.5 rounded-lg font-bold">
               샘플 이미지
             </span>
           )}
           {onClose && (
             <button
               onClick={onClose}
-              className="text-text-soft hover:text-text-soft p-1 hover:bg-panel-2 rounded"
+              className="text-text-soft hover:text-text-soft p-1 hover:bg-panel-2 rounded-lg"
               title="닫기"
             >
               <X className="w-4 h-4" />
@@ -133,14 +133,14 @@ export default function PoleDetail({ pole, onAnalyze, onUpdateInfo, onClose }: P
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           
           {/* LEFT SIDE: Image Preview */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center bg-panel-2 rounded p-2.5 border border-line relative group h-48 lg:h-auto min-h-[200px]">
+          <div className="lg:col-span-5 flex flex-col items-center justify-center bg-panel-2 rounded-lg p-2.5 border border-line relative group h-48 lg:h-auto min-h-[200px]">
             <img
               src={croppedUrl || pole.url}
               alt={pole.name}
-              className="max-w-full max-h-full object-contain rounded border border-line shadow-2xs bg-panel relative transition-transform duration-300 ease-out cursor-zoom-in group-hover:scale-200 group-hover:z-20 group-hover:shadow-lg"
+              className="max-w-full max-h-full object-contain rounded-lg border border-line bg-panel relative transition-transform duration-300 ease-out cursor-zoom-in group-hover:scale-200 group-hover:z-20 group-hover:shadow-card"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute bottom-2 left-2 bg-black/75 text-[9px] font-semibold text-white px-1.5 py-0.5 rounded uppercase tracking-wider">
+            <div className="absolute bottom-2 left-2 bg-black/75 text-[9px] font-semibold text-white px-1.5 py-0.5 rounded-lg uppercase tracking-wider">
 번호판 미리보기
             </div>
           </div>
@@ -157,7 +157,7 @@ export default function PoleDetail({ pole, onAnalyze, onUpdateInfo, onClose }: P
                 </p>
                 <button
                   onClick={() => onAnalyze(pole.id)}
-                  className="mt-3 px-4 py-2 bg-green hover:bg-green-strong text-bg font-bold text-xs rounded shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                  className="mt-3 px-4 py-2 bg-blue hover:bg-blue-hover text-white font-bold text-xs rounded-lg flex items-center gap-1.5 transition-all cursor-pointer"
                 >
                   <Play className="w-3 h-3 fill-current" />
                   AI 분석 시작하기
@@ -190,7 +190,7 @@ export default function PoleDetail({ pole, onAnalyze, onUpdateInfo, onClose }: P
                 </p>
                 <button
                   onClick={() => onAnalyze(pole.id)}
-                  className="mt-3 px-3 py-1.5 bg-red/15 hover:bg-red/25 text-red font-bold text-[11px] rounded transition-colors"
+                  className="mt-3 px-3 py-1.5 bg-red/15 hover:bg-red/25 text-red font-bold text-[11px] rounded-lg transition-colors"
                 >
                   다시 분석하기
                 </button>
@@ -202,7 +202,7 @@ export default function PoleDetail({ pole, onAnalyze, onUpdateInfo, onClose }: P
               <div className="flex-1 flex flex-col justify-between space-y-3">
                 <div className="space-y-3">
                   {/* Confidence bar */}
-                  <div className="flex items-center justify-between bg-panel-2 p-2 rounded border border-line">
+                  <div className="flex items-center justify-between bg-panel-2 p-2 rounded-lg border border-line">
                     <div className="flex items-center gap-1.5 text-[11px] text-text-soft font-bold uppercase tracking-wider">
                       <Zap className="w-3.5 h-3.5 text-blue" />
                       AI 신뢰도 지수
@@ -214,7 +214,7 @@ export default function PoleDetail({ pole, onAnalyze, onUpdateInfo, onClose }: P
                           style={{ width: `${pole.confidence || 0}%` }}
                         />
                       </div>
-                      <span className={`text-[10px] font-extrabold border px-1.5 py-0.2 rounded ${getConfidenceBg(pole.confidence)}`}>
+                      <span className={`text-[10px] font-extrabold border px-1.5 py-0.2 rounded-lg ${getConfidenceBg(pole.confidence)}`}>
                         {pole.confidence ? `${pole.confidence}%` : "-"}
                       </span>
                     </div>
@@ -266,7 +266,7 @@ export default function PoleDetail({ pole, onAnalyze, onUpdateInfo, onClose }: P
                   </div>
 
                   {pole.reasoning && (
-                    <div className="bg-blue/40 border border-line rounded p-2.5 space-y-1">
+                    <div className="bg-blue/40 border border-line rounded-lg p-2.5 space-y-1">
                       <h5 className="text-[9px] font-extrabold text-text flex items-center gap-1 uppercase tracking-wider">
                         <Sparkles className="w-3 h-3" />
                         AI 분석 근거
@@ -286,7 +286,7 @@ export default function PoleDetail({ pole, onAnalyze, onUpdateInfo, onClose }: P
                   
                   <button
                     onClick={handleSave}
-                    className={`px-3 py-1.5 font-bold text-xs rounded flex items-center gap-1.5 transition-all shadow-xs cursor-pointer ${ isSaved ? "bg-green-strong hover:bg-green/90 text-bg" : "bg-green hover:bg-green-strong text-bg" }`}
+                    className={`px-3 py-1.5 font-bold text-xs rounded-lg flex items-center gap-1.5 transition-all  cursor-pointer ${ isSaved ? "bg-green hover:bg-green/90 text-white" : "bg-blue hover:bg-blue-hover text-white" }`}
                   >
                     {isSaved ? (
                       <>

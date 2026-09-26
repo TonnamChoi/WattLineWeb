@@ -32,7 +32,7 @@ function EditableText({
       onChange={(e) => onChange(e.target.value)}
       onClick={(e) => e.stopPropagation()}
       placeholder="-"
-      className={`w-full min-w-[60px] bg-transparent outline-none rounded px-1 py-0.5 hover:bg-panel-2 focus:bg-panel focus:ring-1 focus:ring-blue ${ align === "center" ? "text-center" : "" } ${className}`}
+      className={`w-full min-w-[60px] bg-transparent outline-none rounded-lg px-1 py-0.5 hover:bg-panel-2 focus:bg-panel focus:ring-1 focus:ring-blue ${ align === "center" ? "text-center" : "" } ${className}`}
     />
   );
 }
@@ -45,7 +45,7 @@ function EditableCount({ value, onChange }: { value: number; onChange: (value: n
       value={value}
       onChange={(e) => onChange(Number(e.target.value) || 0)}
       onClick={(e) => e.stopPropagation()}
-      className="w-12 bg-transparent outline-none text-center font-mono rounded px-0.5 py-0.5 hover:bg-panel-2 focus:bg-panel focus:ring-1 focus:ring-blue"
+      className="w-12 bg-transparent outline-none text-center font-mono rounded-lg px-0.5 py-0.5 hover:bg-panel-2 focus:bg-panel focus:ring-1 focus:ring-blue"
     />
   );
 }
@@ -66,7 +66,7 @@ function HoverPreview({ src, alt, children }: { src: string | null; alt: string;
       {children}
       {pos && (
         <div
-          className="fixed z-50 pointer-events-none p-1 bg-panel border border-line rounded-lg shadow-2xl"
+          className="fixed z-50 pointer-events-none p-1 bg-panel border border-line rounded-lg shadow-card"
           style={{
             left: Math.min(pos.x + 16, window.innerWidth - 320),
             top: Math.min(pos.y + 16, window.innerHeight - 320),
@@ -75,7 +75,7 @@ function HoverPreview({ src, alt, children }: { src: string | null; alt: string;
           <img
             src={src}
             alt={alt}
-            className="max-w-[300px] max-h-[300px] object-contain rounded"
+            className="max-w-[300px] max-h-[300px] object-contain rounded-lg"
             referrerPolicy="no-referrer"
           />
         </div>
@@ -87,26 +87,26 @@ function HoverPreview({ src, alt, children }: { src: string | null; alt: string;
 function PhotoThumb({ url }: { url?: string | null }) {
   if (!url) {
     return (
-      <div className="w-8 h-11 inline-flex items-center justify-center text-text-soft/60">
+      <div className="w-8 h-11 inline-flex items-center justify-center text-text-soft">
         <ImageOff className="w-3.5 h-3.5" />
       </div>
     );
   }
   return (
-    <div className="w-8 h-11 rounded bg-panel-2 border border-line overflow-hidden inline-flex items-center justify-center">
+    <div className="w-8 h-11 rounded-lg bg-panel-2 border border-line overflow-hidden inline-flex items-center justify-center">
       <img src={url} alt="참고 사진" className="object-cover w-full h-full" referrerPolicy="no-referrer" />
     </div>
   );
 }
 
-const TH = "py-2 px-3 text-center border-r border-b border-green/20 bg-green/15 whitespace-nowrap";
+const TH = "py-2 px-3 text-center border-r border-b border-line bg-panel-2 text-text-soft font-medium whitespace-nowrap";
 
 const PHOTO_CATEGORIES: WattlineCategory[] = ["시작전주", "종료전주", "작업전", "흉고직경", "작업후", "기타"];
 
-// WattLine DB에서 불러온 행은 분류별 실제 사진을, 수동 업로드 행은 대표 사진을 "작업전" 칸에 보여준다.
-function getCategoryPhotoUrl(record: PruningRecord, category: WattlineCategory): string | null {
-  if (record.wattlineCategoryPhotos) return record.wattlineCategoryPhotos[category] || null;
-  return category === "작업전" ? record.url : null;
+// WattLine DB에서 불러온 행은 분류별 실제 사진(여러 장 가능)을, 수동 업로드 행은 대표 사진을 "작업전" 칸에 보여준다.
+function getCategoryPhotoUrls(record: PruningRecord, category: WattlineCategory): string[] {
+  if (record.wattlineCategoryPhotos) return record.wattlineCategoryPhotos[category] || [];
+  return category === "작업전" && record.url ? [record.url] : [];
 }
 
 export default function PruningTable({
@@ -208,12 +208,12 @@ export default function PruningTable({
   };
 
   return (
-    <div className="bg-panel border border-line rounded-lg overflow-hidden shadow-2xs">
+    <div className="bg-panel border border-line rounded-lg overflow-hidden">
       <div className="p-3.5 border-b border-line bg-panel-2 space-y-2.5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <h3 className="font-extrabold text-text-soft text-xs uppercase tracking-wider">전지작업 분석 결과</h3>
-            <span className="text-[11px] bg-blue/15 text-text font-extrabold px-2 py-0.5 rounded font-mono">
+            <span className="text-[11px] bg-blue/15 text-text font-extrabold px-2 py-0.5 rounded-lg font-mono">
               {records.length}건 로드됨
             </span>
           </div>
@@ -222,7 +222,7 @@ export default function PruningTable({
             <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={handleCopyToClipboard}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-panel hover:bg-panel-2 border border-line text-text-soft rounded transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-panel hover:bg-panel-2 border border-line text-text-soft rounded-lg transition-colors cursor-pointer"
               >
                 {isCopied ? (
                   <>
@@ -239,7 +239,7 @@ export default function PruningTable({
 
               <button
                 onClick={handleDownloadCSV}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-green hover:bg-green-strong text-bg rounded transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-blue hover:bg-blue-hover text-white rounded-lg transition-colors cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 엑셀 다운로드 (.csv)
@@ -247,7 +247,7 @@ export default function PruningTable({
 
               <button
                 onClick={onClearAll}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold hover:bg-red/10 text-red border border-transparent rounded transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold hover:bg-red/10 text-red border border-transparent rounded-lg transition-colors cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 목록 비우기
@@ -264,7 +264,7 @@ export default function PruningTable({
               placeholder="수목종류, 전주번호, 파일명 검색..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-8 pr-2.5 py-1 w-full text-xs border border-text-soft/40 rounded outline-none hover:border-text-soft/40 focus:border-blue transition-all bg-panel font-medium"
+              className="pl-8 pr-2.5 py-1 w-full text-xs border border-text-soft/40 rounded-lg outline-none hover:border-text-soft/40 focus:border-blue transition-all bg-panel font-medium"
             />
           </div>
         </div>
@@ -391,12 +391,22 @@ export default function PruningTable({
                     className={`text-[12px] hover:bg-blue/50 transition-colors cursor-pointer ${ isSelected ? "bg-blue/30 font-bold" : "" }`}
                   >
                     {PHOTO_CATEGORIES.map((category) => {
-                      const photoUrl = getCategoryPhotoUrl(record, category);
+                      const photoUrls = getCategoryPhotoUrls(record, category);
                       return (
                         <td key={category} className="py-1 px-3 text-center border-r border-line">
-                          <HoverPreview src={photoUrl} alt={category}>
-                            <PhotoThumb url={photoUrl} />
-                          </HoverPreview>
+                          {photoUrls.length === 0 ? (
+                            <PhotoThumb url={null} />
+                          ) : (
+                            <div className="flex flex-wrap justify-center gap-1">
+                              {photoUrls.map((url) => (
+                                <React.Fragment key={url}>
+                                  <HoverPreview src={url} alt={category}>
+                                    <PhotoThumb url={url} />
+                                  </HoverPreview>
+                                </React.Fragment>
+                              ))}
+                            </div>
+                          )}
                         </td>
                       );
                     })}
@@ -413,7 +423,7 @@ export default function PruningTable({
                             />
                           </div>
                           <span
-                            className={`inline-block text-[10px] font-extrabold font-mono px-1 py-0.2 rounded ${ record.confidence >= 90 ? "bg-green/15 text-green" : record.confidence >= 70 ? "bg-blue/15 text-blue" : "bg-red/10 text-red" }`}
+                            className={`inline-block text-[10px] font-extrabold font-mono px-1 py-0.2 rounded-lg ${ record.confidence >= 90 ? "bg-green/15 text-green" : record.confidence >= 70 ? "bg-blue/15 text-blue" : "bg-red/10 text-red" }`}
                           >
                             {record.confidence}%
                           </span>
@@ -424,7 +434,7 @@ export default function PruningTable({
                     </td>
                     <td className="py-2 px-3 text-center border-r border-line">
                       {record.status === "completed" && (
-                        <span className="inline-block text-[10px] bg-green/15 text-green rounded px-1.5 py-0.5 font-extrabold tracking-wider">
+                        <span className="inline-block text-[10px] bg-green/15 text-green rounded-lg px-1.5 py-0.5 font-extrabold tracking-wider">
                           추출완료
                         </span>
                       )}
@@ -432,18 +442,18 @@ export default function PruningTable({
                         <button
                           onClick={(e) => handleCopyError(record, e)}
                           title={record.error ? `${record.error}\n(클릭하여 실패 사유 복사)` : "실패"}
-                          className="inline-block bg-red/10 hover:bg-red/15 text-red rounded px-1.5 py-0.5 font-extrabold tracking-wider cursor-pointer"
+                          className="inline-block bg-red/10 hover:bg-red/15 text-red rounded-lg px-1.5 py-0.5 font-extrabold tracking-wider cursor-pointer"
                         >
                           {copiedErrorId === record.id ? "복사됨!" : "실패"}
                         </button>
                       )}
                       {record.status === "processing" && (
-                        <span className="inline-block text-[10px] bg-blue/15 text-text rounded px-1.5 py-0.5 font-extrabold tracking-wider animate-pulse">
+                        <span className="inline-block text-[10px] bg-blue/15 text-text rounded-lg px-1.5 py-0.5 font-extrabold tracking-wider animate-pulse">
                           분석중
                         </span>
                       )}
                       {record.status === "idle" && (
-                        <span className="inline-block text-[10px] bg-panel-2 text-text-soft rounded px-1.5 py-0.5 font-bold tracking-wider">
+                        <span className="inline-block text-[10px] bg-panel-2 text-text-soft rounded-lg px-1.5 py-0.5 font-bold tracking-wider">
                           대기중
                         </span>
                       )}
@@ -453,13 +463,13 @@ export default function PruningTable({
                         <button
                           onClick={() => onOpenDetail(record.id)}
                           title="상세 및 수정"
-                          className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-green hover:bg-green-strong text-bg rounded font-bold whitespace-nowrap text-sm"
+                          className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue hover:bg-blue-hover text-white rounded-lg font-bold whitespace-nowrap text-sm"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           상세보기
                         </button>
                         {record.status === "processing" ? (
-                          <span className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue/15 text-blue rounded font-bold whitespace-nowrap text-sm">
+                          <span className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue/15 text-blue rounded-lg font-bold whitespace-nowrap text-sm">
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
                             분석 중...
                           </span>
@@ -467,7 +477,7 @@ export default function PruningTable({
                           <button
                             onClick={() => onAnalyze(record.id)}
                             title={record.status === "completed" ? "재분석" : "분석 시작"}
-                            className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue/15 hover:bg-blue/15 text-blue rounded border border-line font-bold whitespace-nowrap text-sm"
+                            className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue/15 hover:bg-blue/15 text-blue rounded-lg border border-line font-bold whitespace-nowrap text-sm"
                           >
                             <Play className="w-3.5 h-3.5 fill-current" />
                             {record.status === "completed" ? "재분석" : "분석 시작"}
@@ -478,7 +488,7 @@ export default function PruningTable({
                     <td className="py-2 px-3 text-center" onClick={(e) => e.stopPropagation()}>
                       <button
                         onClick={() => onRemove(record.id)}
-                        className="p-1 text-text-soft hover:text-red rounded hover:bg-red/10 transition-colors"
+                        className="p-1 text-text-soft hover:text-red rounded-lg hover:bg-red/10 transition-colors"
                         title="삭제"
                       >
                         <Trash2 className="w-3.5 h-3.5" />

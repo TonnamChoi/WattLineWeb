@@ -52,8 +52,8 @@ export interface PruningRecord {
   status: "idle" | "processing" | "completed" | "failed";
   error: string | null;
 
-  // WattLine(모바일 촬영 앱) DB에서 불러온 작업 건인 경우, 분류별 사진 URL. 수동 업로드 사진에는 없음.
-  wattlineCategoryPhotos?: Partial<Record<WattlineCategory, string>>;
+  // WattLine(모바일 촬영 앱) DB에서 불러온 작업 건인 경우, 분류별 사진 URL 목록(촬영 순). 수동 업로드 사진에는 없음.
+  wattlineCategoryPhotos?: Partial<Record<WattlineCategory, string[]>>;
 
   poleStart: string | null;
   poleEnd: string | null;

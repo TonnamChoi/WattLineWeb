@@ -1,31 +1,67 @@
 @import "tailwindcss";
 
-/* 디자인 토큰 — WattLineApp과 같은 값. 용도는 DESIGN.md 3장 참고 */
+/* 디자인 토큰 — 기준: src/DESIGN.md (Deep Violet Admin v2) 8장. 적용 규칙은 루트 DESIGN.md 참고. */
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, "Malgun Gothic", sans-serif;
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Segoe UI", Roboto, "Malgun Gothic", sans-serif;
 
-  --color-bg: #07141c;
-  --color-bg-2: #0b1b28;
-  --color-panel: #101f2c;
-  --color-panel-2: #132a3c;
-  --color-line: rgba(151, 189, 216, 0.18);
-  --color-text: #edf8ff;
-  --color-text-soft: #9ab2c2;
-  --color-green: #47d9a3;
-  --color-green-strong: #1ecf8f;
-  --color-blue: #4ea8ff;
-  --color-amber: #ffbf6a;
-  --color-red: #ff7e7e;
+  /* Body */
+  --color-bg: #f4f1f8;
+  --color-panel: #ffffff;
+  --color-panel-2: #ece6f4;
+  --color-line: #e3dcec;
+  --color-text: #1e1433;
+  --color-text-soft: #5e5373;
+  --color-text-muted: #8c80a0;   /* placeholder·비활성 글자 전용 */
+
+  /* Brand (기존 클래스명 blue / violet-soft 유지) */
+  --color-blue: #7203ff;          /* accent: 주요 버튼·링크·선택 */
+  --color-blue-hover: #5e00d6;
+  --color-violet-soft: #eee4ff;   /* accent-soft: 선택된 행·필터 칩 */
+
+  /* Status (상태 표시 전용) */
+  --color-green: #05704a;
+  --color-amber: #9a5700;
+  --color-red: #be2537;
+
+  /* Shell */
+  --color-bg-2: #2d0c57;          /* 상단바 */
+  --color-shell-side: #24104a;
+  --color-shell-text: #f4eeff;
+  --color-shell-text-soft: #b9acd3;
+  --color-shell-accent: #cbf265;
+
+  --shadow-card: 0 8px 24px rgba(30, 20, 51, 0.12);   /* 모달·드롭다운 */
 }
 
-/* 다크 테마: 기본 입력창·스크롤바도 어둡게 그리도록 한다 */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
+}
+
+/* 셸(상단바·사이드바) 범위: 같은 토큰을 다크 셸용 값으로 다시 정의해
+   text-text, bg-panel-2, border-line 등이 셸 안에서는 밝은 글자/어두운 배경이 되게 한다. */
+header {
+  --color-line: rgb(255 255 255 / 0.08);
+  --color-text: #f4eeff;
+  --color-text-soft: #b9acd3;
+  --color-panel-2: rgb(255 255 255 / 0.08);     /* hover */
+  --color-violet-soft: rgb(203 242 101 / 0.16); /* 소속 배지 배경 */
+  --color-blue: #cbf265;                        /* 소속 배지 글자(lime) */
+  color: var(--color-text-soft);
+}
+aside {
+  --color-bg-2: #24104a;                        /* 사이드바는 상단바보다 한 단계 어둡게 */
+  --color-line: rgb(255 255 255 / 0.08);
+  --color-text: #f4eeff;
+  --color-text-soft: #b9acd3;
+  --color-panel-2: rgb(255 255 255 / 0.06);     /* hover */
+  --color-violet-soft: rgb(155 107 255 / 0.24); /* 선택된 메뉴 배경 */
+  --color-blue: #ffffff;                        /* 선택된 메뉴 글자 */
+  color: var(--color-text-soft);
 }
 
 /* 화면의 모든 텍스트 크기를 '이미지 업로드' 제목 크기(text-sm, 14px)로 통일 */

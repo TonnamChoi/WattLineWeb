@@ -145,7 +145,7 @@ export default function DropZone({ onImagesAdded, uploadedCount }: DropZoneProps
           onClick={onButtonClick}
           className={`w-full h-40 border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all duration-200 ${ isDragActive ? "border-blue bg-blue/50" : "border-text-soft/40 hover:border-blue bg-panel-2/60 hover:bg-panel" }`}
         >
-          <div className="p-2.5 bg-panel rounded border border-line shadow-xs mb-2 text-blue">
+          <div className="p-2.5 bg-panel rounded-lg border border-line mb-2 text-blue">
             <Upload className="w-5 h-5" />
           </div>
 

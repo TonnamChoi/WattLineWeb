@@ -67,7 +67,7 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
   if (!record) {
     return (
       <div className="bg-panel border border-line rounded-lg flex flex-col items-center justify-center p-8 text-center text-text-soft">
-        <MapPin className="w-10 h-10 mb-2 stroke-1 text-text-soft/60" />
+        <MapPin className="w-10 h-10 mb-2 stroke-1 text-text-soft" />
         <h4 className="font-extrabold text-text-soft text-xs uppercase tracking-wider mb-1">상세 정보 패널</h4>
         <p className="text-[11px] text-text-soft max-w-[280px] leading-relaxed">
           목록에서 전지작업 사진을 선택하면 상세 정보 및 분석 결과가 여기에 표시됩니다.
@@ -150,7 +150,7 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
   };
 
   const inputClassName =
-    "w-full min-w-0 text-xs font-mono font-bold outline-none p-2 rounded transition-all border text-blue bg-panel border-text-soft/40 hover:border-text-soft/40 focus:border-blue focus:ring-1 focus:ring-blue/20";
+    "w-full min-w-0 text-xs font-mono font-bold outline-none p-2 rounded-lg transition-all border text-blue bg-panel border-text-soft/40 hover:border-text-soft/40 focus:border-blue focus:ring-1 focus:ring-blue/20";
 
   return (
     <div className="bg-panel border border-line rounded-lg overflow-hidden flex flex-col">
@@ -162,7 +162,7 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
           <p className="text-[10px] text-text-soft font-semibold uppercase tracking-wider mt-0.5">전지작업 상세 분석 및 수기 검증</p>
         </div>
         {onClose && (
-          <button onClick={onClose} className="text-text-soft hover:text-text-soft p-1 hover:bg-panel-2 rounded" title="닫기">
+          <button onClick={onClose} className="text-text-soft hover:text-text-soft p-1 hover:bg-panel-2 rounded-lg" title="닫기">
             <X className="w-4 h-4" />
           </button>
         )}
@@ -170,14 +170,14 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
 
       <div className="p-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          <div className="lg:col-span-5 flex flex-col items-center justify-center bg-panel-2 rounded p-2.5 border border-line relative group h-48 lg:h-auto min-h-[200px]">
+          <div className="lg:col-span-5 flex flex-col items-center justify-center bg-panel-2 rounded-lg p-2.5 border border-line relative group h-48 lg:h-auto min-h-[200px]">
             <img
               src={croppedUrl || record.url}
               alt={record.name}
-              className="max-w-full max-h-full object-contain rounded border border-line shadow-2xs bg-panel relative transition-transform duration-300 ease-out cursor-zoom-in group-hover:scale-200 group-hover:z-20 group-hover:shadow-lg"
+              className="max-w-full max-h-full object-contain rounded-lg border border-line bg-panel relative transition-transform duration-300 ease-out cursor-zoom-in group-hover:scale-200 group-hover:z-20 group-hover:shadow-card"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute bottom-2 left-2 bg-black/75 text-[9px] font-semibold text-white px-1.5 py-0.5 rounded uppercase tracking-wider">
+            <div className="absolute bottom-2 left-2 bg-black/75 text-[9px] font-semibold text-white px-1.5 py-0.5 rounded-lg uppercase tracking-wider">
               대표 사진 미리보기
             </div>
           </div>
@@ -192,7 +192,7 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
                 </p>
                 <button
                   onClick={() => onAnalyze(record.id)}
-                  className="mt-3 px-4 py-2 bg-green hover:bg-green-strong text-bg font-bold text-xs rounded shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                  className="mt-3 px-4 py-2 bg-blue hover:bg-blue-hover text-white font-bold text-xs rounded-lg flex items-center gap-1.5 transition-all cursor-pointer"
                 >
                   <Play className="w-3 h-3 fill-current" />
                   AI 분석 시작하기
@@ -219,7 +219,7 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
                 </p>
                 <button
                   onClick={() => onAnalyze(record.id)}
-                  className="mt-3 px-3 py-1.5 bg-red/15 hover:bg-red/25 text-red font-bold text-[11px] rounded transition-colors"
+                  className="mt-3 px-3 py-1.5 bg-red/15 hover:bg-red/25 text-red font-bold text-[11px] rounded-lg transition-colors"
                 >
                   다시 분석하기
                 </button>
@@ -229,7 +229,7 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
             {record.status === "completed" && (
               <div className="flex-1 flex flex-col justify-between space-y-3">
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between bg-panel-2 p-2 rounded border border-line">
+                  <div className="flex items-center justify-between bg-panel-2 p-2 rounded-lg border border-line">
                     <div className="flex items-center gap-1.5 text-[11px] text-text-soft font-bold uppercase tracking-wider">
                       <Zap className="w-3.5 h-3.5 text-blue" />
                       AI 신뢰도 지수
@@ -238,7 +238,7 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
                       <div className="w-20 bg-line rounded-full h-1.5 overflow-hidden">
                         <div className={`h-full ${getConfidenceColor(record.confidence)}`} style={{ width: `${record.confidence || 0}%` }} />
                       </div>
-                      <span className={`text-[10px] font-extrabold border px-1.5 py-0.2 rounded ${getConfidenceBg(record.confidence)}`}>
+                      <span className={`text-[10px] font-extrabold border px-1.5 py-0.2 rounded-lg ${getConfidenceBg(record.confidence)}`}>
                         {record.confidence ? `${record.confidence}%` : "-"}
                       </span>
                     </div>
@@ -278,7 +278,7 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
                             min={0}
                             value={counts[field]}
                             onChange={(e) => handleCountChange(field, e.target.value)}
-                            className="w-full text-center text-xs font-mono font-bold p-1 rounded border border-text-soft/40 focus:border-blue outline-none"
+                            className="w-full text-center text-xs font-mono font-bold p-1 rounded-lg border border-text-soft/40 focus:border-blue outline-none"
                           />
                         </div>
                       ))}
@@ -312,7 +312,7 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
                   </div>
 
                   {record.reasoning && (
-                    <div className="bg-blue/40 border border-line rounded p-2.5 space-y-1">
+                    <div className="bg-blue/40 border border-line rounded-lg p-2.5 space-y-1">
                       <h5 className="text-[9px] font-extrabold text-text flex items-center gap-1 uppercase tracking-wider">
                         <Sparkles className="w-3 h-3" />
                         AI 분석 근거
@@ -333,7 +333,7 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
                     />
                     <div className="flex items-center gap-2 flex-wrap">
                       {record.extraPhotoUrls.map((url) => (
-                        <div key={url} className="relative w-14 h-14 rounded border border-line overflow-hidden group">
+                        <div key={url} className="relative w-14 h-14 rounded-lg border border-line overflow-hidden group">
                           <img src={url} alt="참고 사진" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                           <button
                             onClick={() => handleRemoveExtraPhoto(url)}
@@ -348,7 +348,7 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
                         <button
                           onClick={() => extraPhotoInputRef.current?.click()}
                           disabled={isUploadingExtra}
-                          className="w-14 h-14 rounded border border-dashed border-text-soft/40 flex items-center justify-center text-text-soft hover:text-blue hover:border-blue transition-colors disabled:opacity-50"
+                          className="w-14 h-14 rounded-lg border border-dashed border-text-soft/40 flex items-center justify-center text-text-soft hover:text-blue hover:border-blue transition-colors disabled:opacity-50"
                           title="참고 사진 추가"
                         >
                           {isUploadingExtra ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
@@ -362,7 +362,7 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
                   <span className="text-[9px] text-text-soft mr-auto font-medium">* 판독 오류 발생 시 값을 수정한 후 저장할 수 있습니다.</span>
                   <button
                     onClick={handleSave}
-                    className={`px-3 py-1.5 font-bold text-xs rounded flex items-center gap-1.5 transition-all shadow-xs cursor-pointer ${ isSaved ? "bg-green-strong hover:bg-green/90 text-bg" : "bg-green hover:bg-green-strong text-bg" }`}
+                    className={`px-3 py-1.5 font-bold text-xs rounded-lg flex items-center gap-1.5 transition-all  cursor-pointer ${ isSaved ? "bg-green hover:bg-green/90 text-white" : "bg-blue hover:bg-blue-hover text-white" }`}
                   >
                     {isSaved ? (
                       <>

@@ -213,7 +213,7 @@ export default function AdminPanel({ entity }: { entity: AdminEntity }) {
                 company_id: companyFilter || (companies.length === 1 ? companies[0].id : undefined),
               })
             }
-            className="flex items-center gap-1.5 px-3 py-2 bg-green text-bg text-sm font-semibold rounded-2xl hover:bg-green-strong"
+            className="flex items-center gap-1.5 px-3 py-2 bg-blue text-white text-sm font-semibold rounded-lg hover:bg-blue-hover"
           >
             <Plus className="w-4 h-4" />
             추가
@@ -228,7 +228,7 @@ export default function AdminPanel({ entity }: { entity: AdminEntity }) {
         </div>
       )}
 
-      <div className="bg-panel border border-line rounded-[22px] overflow-x-auto shadow-sm">
+      <div className="bg-panel border border-line rounded-lg overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-panel-2 text-text-soft text-xs">
             <tr>
@@ -287,13 +287,13 @@ export default function AdminPanel({ entity }: { entity: AdminEntity }) {
       {deleting && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="fixed inset-0 bg-black/60 backdrop-blur-[3px]" onClick={() => setDeleting(null)} />
-          <div className="relative bg-panel rounded-[18px] shadow-lg p-5 w-full max-w-sm space-y-4">
+          <div className="relative bg-panel rounded-3xl shadow-card p-5 w-full max-w-sm space-y-4">
             <p className="text-sm text-text">
               <span className="font-semibold">{deleting.name}</span> 항목을 삭제할까요? 되돌릴 수 없습니다.
             </p>
             <div className="flex justify-end gap-2">
               <button onClick={() => setDeleting(null)} className="px-3 py-2 text-sm rounded-lg border border-line">취소</button>
-              <button onClick={confirmDelete} className="px-3 py-2 text-sm rounded-lg bg-red text-bg font-semibold">삭제</button>
+              <button onClick={confirmDelete} className="px-3 py-2 text-sm rounded-lg bg-red text-white font-semibold">삭제</button>
             </div>
           </div>
         </div>
@@ -424,7 +424,7 @@ function EditModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="fixed inset-0 bg-black/60 backdrop-blur-[3px]" onClick={onClose} />
-      <form onSubmit={submit} className="relative bg-panel rounded-[18px] shadow-lg w-full max-w-lg max-h-[90vh] flex flex-col">
+      <form onSubmit={submit} className="relative bg-panel rounded-3xl shadow-card w-full max-w-lg max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between px-5 py-3 border-b border-line">
           <h3 className="font-bold text-text">{TITLES[entity].replace("관리", isNew ? "추가" : "수정")}</h3>
           <button type="button" onClick={onClose} className="p-1 text-text-soft hover:text-blue">
@@ -448,7 +448,7 @@ function EditModal({
           <button
             type="submit"
             disabled={saving}
-            className="px-4 py-2 text-sm rounded-md bg-panel-2 text-text font-semibold disabled:opacity-50 flex items-center gap-1.5"
+            className="px-4 py-2 text-sm rounded-lg bg-blue text-white hover:bg-blue-hover font-semibold disabled:opacity-50 flex items-center gap-1.5"
           >
             {saving && <Loader2 className="w-4 h-4 animate-spin" />}
             저장

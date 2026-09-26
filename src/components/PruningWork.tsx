@@ -29,6 +29,12 @@ const RETRY_BASE_DELAY_MS = 1500;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// 촬영일(YYYYMMDD) 모음을 "20260917~20260926" 또는 하루면 "20260926"으로 표시한다.
+function formatDateRange(dates: Set<string>) {
+  const sorted = Array.from(dates).sort();
+  return sorted.length > 1 ? `${sorted[0]}~${sorted[sorted.length - 1]}` : sorted[0] || "";
+}
+
 async function requestPruningExtraction(dataUrl: string, mimeType: string, provider: ProviderId, apiKey: string) {
   const response = await fetch("/api/pruning-extract", {
     method: "POST",
@@ -129,7 +135,7 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
       .finally(() => setIsLoadingList(false));
   }, []);
 
-  // WattLine(모바일 촬영 앱)이 Supabase DB에 저장한 사진 목록을 불러와, 같은 작업 건(작업장+날짜)의
+  // WattLine(모바일 촬영 앱)이 Supabase DB에 저장한 사진 목록을 불러와, 같은 작업 건(작업장, 촬영일 무관)의
   // 분류별 사진을 한 행에 모아서 "대기중" 상태로 추가한다.
   useEffect(() => {
     if (!workplaceId) return;
@@ -148,17 +154,20 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
 
         const groups = new Map<
           string,
-          { workplaceName: string; photoDate: string; latestCreatedAt: string; photosByCategory: Partial<Record<WattlineCategory, string>> }
+          { workplaceName: string; photoDates: Set<string>; latestCreatedAt: string; photosByCategory: Partial<Record<WattlineCategory, string[]>> }
         >();
         photos.forEach((p) => {
-          const key = `${p.workplaceName}__${p.photoDate}`;
+          // 촬영일과 상관없이 작업장 하나를 한 작업 건(한 줄)으로 묶는다.
+          const key = workplaceId;
           const group = groups.get(key) || {
             workplaceName: p.workplaceName,
-            photoDate: p.photoDate,
+            photoDates: new Set<string>(),
             latestCreatedAt: p.createdAt,
             photosByCategory: {},
           };
-          group.photosByCategory[p.category] = p.url;
+          group.photoDates.add(p.photoDate);
+          // 같은 분류 사진이 여러 장일 수 있으므로 모두 모은다. API가 최신순이라 앞에 넣어 촬영 순으로 만든다.
+          (group.photosByCategory[p.category] ||= []).unshift(p.url);
           if (p.createdAt > group.latestCreatedAt) group.latestCreatedAt = p.createdAt;
           groups.set(key, group);
         });
@@ -169,8 +178,8 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
             .filter(([key]) => !existingIds.has(`wl-db-${key}`))
             .map(([key, g]) => ({
               id: `wl-db-${key}`,
-              name: `${g.workplaceName} · ${g.photoDate}`,
-              url: g.photosByCategory["작업전"] || g.photosByCategory["흉고직경"] || Object.values(g.photosByCategory)[0] || "",
+              name: `${g.workplaceName} · ${formatDateRange(g.photoDates)}`,
+              url: g.photosByCategory["작업전"]?.[0] || g.photosByCategory["흉고직경"]?.[0] || Object.values(g.photosByCategory)[0]?.[0] || "",
               mimeType: "image/jpeg",
               status: "idle" as const,
               error: null,
@@ -366,12 +375,12 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
   const pendingCount = records.filter((r) => r.status === "idle" || r.status === "failed").length;
 
   const workplaceSelector = (
-    <div className="bg-panel border border-line rounded-[22px] px-4 py-3 shadow-sm flex flex-wrap items-center gap-3">
+    <div className="bg-panel border border-line rounded-lg px-4 py-3 flex flex-wrap items-center gap-3">
       <span className="font-bold text-text">작업장</span>
       <select
         value={workplaceId || ""}
         onChange={(e) => onChangeWorkplace(e.target.value || null)}
-        className="min-w-64 text-sm border border-line rounded-md px-2 py-2 bg-panel"
+        className="min-w-64 text-sm border border-line rounded-lg px-2 py-2 bg-panel"
       >
         <option value="">작업장을 선택하세요</option>
         {workplaces.map((w) => (
@@ -389,7 +398,7 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
     return (
       <div className="space-y-5">
         {workplaceSelector}
-        <div className="bg-panel border border-line rounded-[22px] p-10 shadow-sm text-center text-text-soft">
+        <div className="bg-panel border border-line rounded-lg p-10 text-center text-text-soft">
           작업장을 선택하면 해당 작업장의 전지작업 사진과 분석 결과가 표시됩니다.
         </div>
       </div>
@@ -399,7 +408,7 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
   return (
     <div className="space-y-5">
       {workplaceSelector}
-      <div className="bg-panel border border-line rounded-[22px] p-4 shadow-sm">
+      <div className="bg-panel border border-line rounded-lg p-4">
         <div className="mb-3">
           <h2 className="font-bold text-text text-sm">전지작업 사진 업로드</h2>
           <p className="text-xs text-text-soft mt-0.5">전지작업 사진을 선택하거나 드롭하면 AI가 자동으로 분석합니다</p>
@@ -415,7 +424,7 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
           onClick={() => fileInputRef.current?.click()}
           className={`w-full h-32 border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all duration-200 ${ isDragActive ? "border-blue bg-blue/50" : "border-text-soft/40 hover:border-blue bg-panel-2/60 hover:bg-panel" }`}
         >
-          <div className="p-2.5 bg-panel rounded border border-line shadow-xs mb-2 text-blue">
+          <div className="p-2.5 bg-panel rounded-lg border border-line mb-2 text-blue">
             <Upload className="w-5 h-5" />
           </div>
           <p className="text-text font-bold text-xs md:text-sm mb-0.5">여기에 전지작업 사진을 드래그하거나 클릭하여 업로드</p>
@@ -431,7 +440,7 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
       </div>
 
       {totalCount > 0 && (
-        <div className="bg-panel border border-line px-4 py-3 rounded-[22px] flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
+        <div className="bg-panel border border-line px-4 py-3 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="px-2.5 py-1 rounded-full bg-panel-2 text-text-soft font-semibold">전체 {totalCount}</span>
           </div>
@@ -449,7 +458,7 @@ export default function PruningWork({ settings, onNeedSettings, workplaceId, onC
             <button
               onClick={handleAnalyzeAll}
               disabled={isBulkProcessing || pendingCount === 0}
-              className={`px-4 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${ pendingCount === 0 ? "bg-panel-2 text-text-soft cursor-not-allowed" : "bg-green hover:bg-green-strong text-bg" }`}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${ pendingCount === 0 ? "bg-panel-2 text-text-soft cursor-not-allowed" : "bg-blue hover:bg-blue-hover text-white" }`}
             >
               {isBulkProcessing ? (
                 <>

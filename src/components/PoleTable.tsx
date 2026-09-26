@@ -119,13 +119,13 @@ export default function PoleTable({
   };
 
   return (
-    <div className="bg-panel border border-line rounded-lg overflow-hidden shadow-2xs">
+    <div className="bg-panel border border-line rounded-lg overflow-hidden">
       {/* Table Action Controls */}
       <div className="p-3.5 border-b border-line bg-panel-2 space-y-2.5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <h3 className="font-extrabold text-text-soft text-xs uppercase tracking-wider">분석 대상 및 추출 결과</h3>
-            <span className="text-[11px] bg-blue/15 text-text font-extrabold px-2 py-0.5 rounded font-mono">
+            <span className="text-[11px] bg-blue/15 text-text font-extrabold px-2 py-0.5 rounded-lg font-mono">
               {poles.length}건 로드됨
             </span>
           </div>
@@ -136,7 +136,7 @@ export default function PoleTable({
               {/* Copy Button */}
               <button
                 onClick={handleCopyToClipboard}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-panel hover:bg-panel-2 border border-line text-text-soft rounded transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-panel hover:bg-panel-2 border border-line text-text-soft rounded-lg transition-colors cursor-pointer"
               >
                 {isCopied ? (
                   <>
@@ -154,7 +154,7 @@ export default function PoleTable({
               {/* CSV Button */}
               <button
                 onClick={handleDownloadCSV}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-green hover:bg-green-strong text-bg rounded transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-blue hover:bg-blue-hover text-white rounded-lg transition-colors cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 엑셀 다운로드 (.csv)
@@ -163,7 +163,7 @@ export default function PoleTable({
               {/* Clear All */}
               <button
                 onClick={onClearAll}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold hover:bg-red/10 text-red border border-transparent rounded transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold hover:bg-red/10 text-red border border-transparent rounded-lg transition-colors cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 목록 비우기
@@ -181,7 +181,7 @@ export default function PoleTable({
               placeholder="선로명, 번호, 파일명 실시간 검색..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-8 pr-2.5 py-1 w-full text-xs border border-text-soft/40 rounded outline-none hover:border-text-soft/40 focus:border-blue transition-all bg-panel font-medium"
+              className="pl-8 pr-2.5 py-1 w-full text-xs border border-text-soft/40 rounded-lg outline-none hover:border-text-soft/40 focus:border-blue transition-all bg-panel font-medium"
             />
           </div>
         </div>
@@ -226,7 +226,7 @@ export default function PoleTable({
                     </td>
                     <td className="py-1 px-3 text-center border-r border-line">
                       <div
-                        className="w-8 h-11 rounded bg-panel-2 border border-line overflow-hidden inline-flex items-center justify-center cursor-zoom-in"
+                        className="w-8 h-11 rounded-lg bg-panel-2 border border-line overflow-hidden inline-flex items-center justify-center cursor-zoom-in"
                         onMouseEnter={(e) => handlePreviewEnter(pole, e)}
                         onMouseLeave={handlePreviewLeave}
                       >
@@ -246,7 +246,7 @@ export default function PoleTable({
                     </td>
                     <td className="py-2 px-3 border-r border-line">
                       {pole.status === "completed" ? (
-                        <span className="font-extrabold font-mono text-text bg-blue/15 border border-line px-1.5 py-0.5 rounded">
+                        <span className="font-extrabold font-mono text-text bg-blue/15 border border-line px-1.5 py-0.5 rounded-lg">
                           {pole.computerizedNumber || "-"}
                         </span>
                       ) : (
@@ -283,7 +283,7 @@ export default function PoleTable({
                               style={{ width: `${pole.confidence}%` }}
                             />
                           </div>
-                          <span className={`inline-block text-[10px] font-extrabold font-mono px-1 py-0.2 rounded ${ pole.confidence >= 90 ? "bg-green/15 text-green" : pole.confidence >= 70 ? "bg-blue/15 text-blue" : "bg-red/10 text-red" }`}>
+                          <span className={`inline-block text-[10px] font-extrabold font-mono px-1 py-0.2 rounded-lg ${ pole.confidence >= 90 ? "bg-green/15 text-green" : pole.confidence >= 70 ? "bg-blue/15 text-blue" : "bg-red/10 text-red" }`}>
                             {pole.confidence}%
                           </span>
                         </div>
@@ -293,7 +293,7 @@ export default function PoleTable({
                     </td>
                     <td className="py-2 px-3 text-center border-r border-line">
                       {pole.status === "completed" && (
-                        <span className="inline-block text-[10px] bg-green/15 text-green rounded px-1.5 py-0.5 font-extrabold tracking-wider">
+                        <span className="inline-block text-[10px] bg-green/15 text-green rounded-lg px-1.5 py-0.5 font-extrabold tracking-wider">
                           추출완료
                         </span>
                       )}
@@ -301,18 +301,18 @@ export default function PoleTable({
                         <button
                           onClick={(e) => handleCopyError(pole, e)}
                           title={pole.error ? `${pole.error}\n(클릭하여 실패 사유 복사)` : "실패"}
-                          className="inline-block bg-red/10 hover:bg-red/15 text-red rounded px-1.5 py-0.5 font-extrabold tracking-wider cursor-pointer"
+                          className="inline-block bg-red/10 hover:bg-red/15 text-red rounded-lg px-1.5 py-0.5 font-extrabold tracking-wider cursor-pointer"
                         >
                           {copiedErrorId === pole.id ? "복사됨!" : "실패"}
                         </button>
                       )}
                       {pole.status === "processing" && (
-                        <span className="inline-block text-[10px] bg-blue/15 text-text rounded px-1.5 py-0.5 font-extrabold tracking-wider animate-pulse">
+                        <span className="inline-block text-[10px] bg-blue/15 text-text rounded-lg px-1.5 py-0.5 font-extrabold tracking-wider animate-pulse">
                           분석중
                         </span>
                       )}
                       {pole.status === "idle" && (
-                        <span className="inline-block text-[10px] bg-panel-2 text-text-soft rounded px-1.5 py-0.5 font-bold tracking-wider">
+                        <span className="inline-block text-[10px] bg-panel-2 text-text-soft rounded-lg px-1.5 py-0.5 font-bold tracking-wider">
                           대기중
                         </span>
                       )}
@@ -324,13 +324,13 @@ export default function PoleTable({
                           onMouseEnter={(e) => handlePreviewEnter(pole, e)}
                           onMouseLeave={handlePreviewLeave}
                           title="상세 및 수정"
-                          className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-green hover:bg-green-strong text-bg rounded font-bold whitespace-nowrap text-sm"
+                          className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue hover:bg-blue-hover text-white rounded-lg font-bold whitespace-nowrap text-sm"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           상세보기
                         </button>
                         {pole.status === "processing" ? (
-                          <span className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue/15 text-blue rounded font-bold whitespace-nowrap text-sm">
+                          <span className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue/15 text-blue rounded-lg font-bold whitespace-nowrap text-sm">
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
                             분석 중...
                           </span>
@@ -338,7 +338,7 @@ export default function PoleTable({
                           <button
                             onClick={() => onAnalyze(pole.id)}
                             title={pole.status === "completed" ? "재분석" : "분석 시작"}
-                            className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue/15 hover:bg-blue/15 text-blue rounded border border-line font-bold whitespace-nowrap text-sm"
+                            className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue/15 hover:bg-blue/15 text-blue rounded-lg border border-line font-bold whitespace-nowrap text-sm"
                           >
                             <Play className="w-3.5 h-3.5 fill-current" />
                             {pole.status === "completed" ? "재분석" : "분석 시작"}
@@ -349,7 +349,7 @@ export default function PoleTable({
                     <td className="py-2 px-3 text-center" onClick={(e) => e.stopPropagation()}>
                       <button
                         onClick={() => onRemove(pole.id)}
-                        className="p-1 text-text-soft hover:text-red rounded hover:bg-red/10 transition-colors"
+                        className="p-1 text-text-soft hover:text-red rounded-lg hover:bg-red/10 transition-colors"
                         title="삭제"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -369,11 +369,11 @@ export default function PoleTable({
           className="fixed z-[100] pointer-events-none"
           style={{ top: hoverPos.top - 8, left: hoverPos.left, transform: "translate(-50%, -100%)" }}
         >
-          <div className="bg-panel border border-line rounded-lg shadow-xl p-1.5">
+          <div className="bg-panel border border-line rounded-lg shadow-card p-1.5">
             <img
               src={cropCache[hoveredPole.id] || hoveredPole.url}
               alt="번호판 미리보기"
-              className="max-w-[220px] max-h-[280px] object-contain rounded"
+              className="max-w-[220px] max-h-[280px] object-contain rounded-lg"
               referrerPolicy="no-referrer"
             />
           </div>

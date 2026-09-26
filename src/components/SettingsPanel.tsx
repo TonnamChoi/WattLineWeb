@@ -43,7 +43,7 @@ export default function SettingsPanel({ isOpen, settings, onSave, onClose }: Set
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-[3px] flex items-center justify-center p-4 z-50">
-      <div className="bg-panel rounded-[18px] shadow-xl w-full max-w-sm p-5">
+      <div className="bg-panel rounded-3xl shadow-card w-full max-w-sm p-5">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-bold text-text text-sm flex items-center gap-2">
             <KeyRound className="w-4 h-4" />
@@ -85,7 +85,7 @@ export default function SettingsPanel({ isOpen, settings, onSave, onClose }: Set
 
         <button
           onClick={handleSave}
-          className="w-full mt-4 bg-green hover:bg-green-strong text-bg font-bold text-sm py-2 rounded-2xl transition-colors"
+          className="w-full mt-4 bg-blue hover:bg-blue-hover text-white font-bold text-sm py-2 rounded-lg transition-colors"
         >
           저장
         </button>

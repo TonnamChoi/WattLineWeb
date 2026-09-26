@@ -284,7 +284,7 @@ export default function App() {
           {view === "main" && (
           <>
           {/* Upload */}
-          <div className="bg-panel border border-line rounded-[22px] p-4 shadow-sm">
+          <div className="bg-panel border border-line rounded-lg p-4">
             <div className="mb-3">
               <h2 className="font-bold text-text text-sm">이미지 업로드</h2>
               <p className="text-xs text-text-soft mt-0.5">전주번호찰 이미지를 선택하거나 드롭 하세요</p>
@@ -294,7 +294,7 @@ export default function App() {
 
           {/* Action bar */}
           {totalCount > 0 && (
-            <div className="bg-panel border border-line px-4 py-3 rounded-[22px] flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
+            <div className="bg-panel border border-line px-4 py-3 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 <span className="px-2.5 py-1 rounded-full bg-panel-2 text-text-soft font-semibold">전체 {totalCount}</span>
                 <span className="px-2.5 py-1 rounded-full bg-green/15 text-green font-semibold">완료 {completedCount}</span>
@@ -322,7 +322,7 @@ export default function App() {
                 <button
                   onClick={handleAnalyzeAll}
                   disabled={isBulkProcessing || pendingCount === 0}
-                  className={`px-4 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${ pendingCount === 0 ? "bg-panel-2 text-text-soft cursor-not-allowed" : "bg-green hover:bg-green-strong text-bg" }`}
+                  className={`px-4 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${ pendingCount === 0 ? "bg-panel-2 text-text-soft cursor-not-allowed" : "bg-blue hover:bg-blue-hover text-white" }`}
                 >
                   {isBulkProcessing ? (
                     <>

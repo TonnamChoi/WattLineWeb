@@ -62,7 +62,7 @@ function SidebarContent({ view, isAdmin, canManageWorkplaces, onNavigate, onOpen
             onClick={() => onNavigate(id)}
             className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
               view === id
-                ? "bg-blue/15 text-blue"
+                ? "bg-violet-soft text-text"
                 : "text-text-soft hover:bg-panel-2 hover:text-text"
             }`}
           >
@@ -73,7 +73,7 @@ function SidebarContent({ view, isAdmin, canManageWorkplaces, onNavigate, onOpen
 
         {isAdmin && (
         <div className="pt-3 mt-3 border-t border-line">
-          <div className="flex items-center gap-2.5 px-3 py-1.5 text-xs font-semibold text-text-soft/70 tracking-wide">
+          <div className="flex items-center gap-2.5 px-3 py-1.5 text-xs font-semibold text-text-soft tracking-wide">
             <ShieldCheck className="w-4 h-4" />
             설정(관리자)
           </div>
@@ -83,7 +83,7 @@ function SidebarContent({ view, isAdmin, canManageWorkplaces, onNavigate, onOpen
               onClick={() => onNavigate(id)}
               className={`w-full flex items-center gap-2.5 pl-6 pr-3 py-2 rounded-lg text-sm transition-colors ${
                 view === id
-                  ? "bg-blue/15 text-blue font-semibold"
+                  ? "bg-violet-soft text-text font-semibold"
                   : "text-text-soft hover:bg-panel-2 hover:text-text"
               }`}
             >
@@ -100,7 +100,7 @@ function SidebarContent({ view, isAdmin, canManageWorkplaces, onNavigate, onOpen
           onClick={() => onNavigate("pruning-guide")}
           className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
             view === "pruning-guide"
-              ? "bg-blue/15 text-blue font-semibold"
+              ? "bg-violet-soft text-text font-semibold"
               : "text-text-soft hover:bg-panel-2 hover:text-text"
           }`}
         >
@@ -111,7 +111,7 @@ function SidebarContent({ view, isAdmin, canManageWorkplaces, onNavigate, onOpen
           onClick={() => onNavigate("about")}
           className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
             view === "about"
-              ? "bg-blue/15 text-blue font-semibold"
+              ? "bg-violet-soft text-text font-semibold"
               : "text-text-soft hover:bg-panel-2 hover:text-text"
           }`}
         >
@@ -127,7 +127,7 @@ function SidebarContent({ view, isAdmin, canManageWorkplaces, onNavigate, onOpen
         </button>
       </div>
 
-      <div className="px-3 py-2 border-t border-line shrink-0 text-center text-[10px] text-text-soft/60 font-mono">
+      <div className="px-3 py-2 border-t border-line shrink-0 text-center text-[10px] text-text-soft font-mono">
         {APP_VERSION}
       </div>
     </div>
@@ -148,7 +148,7 @@ export default function Sidebar({ currentUser, isAdmin, canManageWorkplaces, onL
             <Menu className="w-5 h-5" />
           </button>
           <button onClick={() => onNavigate(HOME_VIEW)} title="홈으로 이동" className="flex items-center gap-2.5 min-w-0 text-left">
-            <img src={logoUrl} alt="WattLine 로고" className="w-9 h-9 rounded-lg shrink-0" />
+            <img src={logoUrl} alt="WattLine 로고" className="w-8 h-8 rounded-lg shrink-0" />
             <div className="min-w-0">
               <h1 className="text-sm font-bold text-text leading-tight truncate">수목전지 작업관리</h1>
               <p className="hidden md:block text-[11px] text-text-soft leading-tight truncate">배전선로 전주번호찰 추출 · 수목전지 작업 관리</p>
@@ -159,7 +159,7 @@ export default function Sidebar({ currentUser, isAdmin, canManageWorkplaces, onL
         <div className="flex items-center gap-2.5 shrink-0">
           <div className="text-right leading-tight">
             <p className="text-sm font-bold text-text">{currentUser ? `${currentUser.name} 님` : "게스트"}</p>
-            <span className="inline-block mt-0.5 px-2 py-px rounded-full bg-green/15 text-green text-[11px] font-semibold">
+            <span className="inline-block mt-0.5 px-2 py-px rounded-full bg-violet-soft text-blue text-[11px] font-semibold">
               {currentUser ? currentUser.companyName || "소속 없음" : "로그인 전"}
             </span>
           </div>
@@ -169,7 +169,7 @@ export default function Sidebar({ currentUser, isAdmin, canManageWorkplaces, onL
           <button
             onClick={onLogout}
             title="로그아웃"
-            className="p-2 text-text-soft hover:text-red hover:bg-red/15 rounded-lg transition-colors"
+            className="p-2 text-text-soft hover:text-text hover:bg-panel-2 rounded-lg transition-colors"
           >
             <LogOut className="w-5 h-5" />
           </button>
@@ -185,11 +185,11 @@ export default function Sidebar({ currentUser, isAdmin, canManageWorkplaces, onL
       {isMobileOpen && (
         <div className="md:hidden fixed inset-0 z-50">
           <div className="fixed inset-0 bg-black/60 backdrop-blur-[3px]" onClick={onCloseMobile} />
-          <aside className="absolute left-0 top-0 h-full w-64 bg-bg-2 border-r border-line shadow-lg flex flex-col">
+          <aside className="absolute left-0 top-0 h-full w-64 bg-bg-2 border-r border-line shadow-card flex flex-col">
             <div className="flex items-center justify-end p-2 border-b border-line">
               <button
                 onClick={onCloseMobile}
-                className="p-2 text-text-soft hover:text-text hover:bg-panel-2 rounded-lg"
+                className="p-2 text-text hover:text-text hover:bg-panel-2 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>

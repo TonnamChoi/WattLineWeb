@@ -5,7 +5,7 @@
 > - **관리자 메뉴**(role = admin만 보임): 회사(한전 협력사) / 사용자 / 작업장을 추가·수정·삭제한다. Supabase `WattLine` DB에 `companies`, `app_users`, `workplaces`, `workplace_workers` 테이블을 추가했다.
 > - **작업장 목록**이 로그인 후 첫 화면이다. 작업자는 자기 회사 작업장만 보고, 관리자는 회사를 골라 본다. 작업장명을 누르면 해당 작업장의 전지작업 화면으로 이동한다.
 > - **전지작업은 작업장 단위**로 동작한다. 웹 업로드 사진은 `pruning-photos/{workplace_id}/...`에 저장하고, 모바일 앱 사진은 `photo_uploads.workplace_id`(신규 열)로 연결한다.
-> - **화면 구조/디자인**: 상단 네이비 헤더(오른쪽에 사용자명·소속·로그아웃)와 네이비 사이드바. 색상은 `src/index.css`의 `@theme` 토큰을 쓴다(`DESIGN.md`).
+> - **화면 구조/디자인**: 상단 흰색 헤더(오른쪽에 사용자명·소속·로그아웃)와 흰색 사이드바, 밝은 보라 톤 + 녹색 버튼. 디자인 기준은 `src/DESIGN.md`, 적용 규칙은 `DESIGN.md`, 색상은 `src/index.css`의 `@theme` 토큰(2026-09-27 변경).
 > - AI 분석 결과는 여전히 DB에 저장되지 않는다(새로고침 시 재분석 필요).
 
 > ⚠️ **2026-09-18 업데이트**: 아래 문서는 작성 당시(2026-09-14) 기준 기록이다. 이후 전지작업 사진 저장소는 **Vercel Blob에서 Supabase Storage(`pruning-photos` 버킷)로 완전히 이전**했고, Vercel 프로젝트도 `pole-number`를 삭제하고 `wattline-web` 하나로 통합했다. `BLOB_READ_WRITE_TOKEN` 등 아래 언급된 Blob 관련 환경변수/스토어는 더 이상 쓰이지 않는다. 최신 상태는 `docs/신규앱.md` 1장을 참고.

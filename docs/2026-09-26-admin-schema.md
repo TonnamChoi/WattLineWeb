@@ -50,6 +50,7 @@
   - 연결 전에 루트에 있던 사진 1장은 사용자 요청으로 삭제했다.
 - **모바일 앱 사진** (`photo_uploads`): 마이그레이션 `photo_uploads_add_workplace_id`로 `workplace_id uuid → workplaces(id) on delete set null` 열을 추가했다(nullable). `GET /api/wattline-db?workplaceId=`는 이 열로 거른다.
   - 기존 10장(workplace_name "충주" 8장, "서울" 2장)은 모두 "충주대로 20경간"(`b800b7cd-294a-414e-8e51-32de4e75222f`)에 연결했다.
+  - 전지작업 표에서는 한 작업장의 모바일 앱 사진을 **촬영일과 상관없이 한 줄**로 묶는다. 같은 분류의 사진이 여러 장이면 칸 안에 촬영 순으로 모두 보여준다. 줄 이름은 `작업장명 · 첫 촬영일~마지막 촬영일`이다.
   - ⚠️ **WattLine 모바일 앱이 업로드할 때 `workplace_id`를 넣지 않으면, 그 사진은 어느 작업장의 전지작업 화면에도 나오지 않는다.** 모바일 앱 쪽 수정이 필요하다.
 
 ## ⚠️ 남은 과제

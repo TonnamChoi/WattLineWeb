@@ -1,128 +1,89 @@
-# WattLineWeb — 디자인 가이드
+# WattLineWeb — 디자인 적용 가이드
 
-이 문서는 UI/비주얼 디자인 시스템(색상·타이포그래피·레이아웃·컴포넌트 패턴)을 다룹니다.
-기능 명세·아키텍처는 `README.md`, 변경 이력·정책 결정 배경은 `HANDOFF.md`와 `docs/`를 참고하세요.
+> **기준 문서: [`src/DESIGN.md`](src/DESIGN.md) — Deep Violet Admin v2** (2026-09-27 적용)
+> 색·글꼴·모서리·그림자 값은 모두 그 문서를 따른다. 이 파일은 그 기준을 **이 웹에 어떻게 적용했는지**만 적는다.
+> 이전 기준(WattLineApp 다크 테마, Delivery App v1 밝은 테마)은 더 이상 쓰지 않는다.
 
-> **기준**: WattLine 두 프로그램(WattLineApp, WattLineWeb)은 같은 디자인을 쓴다. 이 문서는 **WattLineApp의 디자인(`docs/WattLineApp-DESIGN.md`)을 기준**으로, 그 색상·글꼴·모서리·아이콘을 웹에 맞게 옮긴 것이다. 앱 디자인이 바뀌면 이 문서도 따라 고친다.
+## 1. 원칙 (src/DESIGN.md 1장)
 
-## 1. 컨셉
+- **어두운 틀, 밝은 작업 영역**: 상단바·사이드바는 짙은 보라, 본문은 밝게.
+- **동작 색은 하나**: 보라(`accent` = 코드의 `blue`)만 주요 버튼·링크·선택에 쓴다. 녹색·주황·빨강은 **상태 표시 전용**이다.
+- **라임(lime)은 셸에서만**: 상단바의 작은 배지(소속 회사)에만 쓴다.
+- **읽기 쉬움 우선**: 모든 글자/배경 조합은 대비 4.5:1 이상. `text-muted`는 placeholder·비활성 글자에만 쓴다. 글자에 투명도를 주지 않는다.
+- **평평하게**: 그림자 대신 1px `line`으로 구분한다.
 
-- **WattLineApp과 같은 다크 테마**: 짙은 남청색 배경 위에 녹색(정상·완료·주요 동작), 파랑(정보·선택), 앰버(경고), 빨강(삭제·오류)을 포인트로 쓴다.
-- 앱은 현장 작업자용 모바일 화면이고, 웹은 회사 담당자용 **데스크톱 관리 도구**다. 그래서 색·글꼴·모서리는 앱과 맞추고, 레이아웃은 표와 데이터 편집에 맞게 넓게 쓴다.
-- 화려한 장식보다 표·데이터 가독성과 정확성을 우선한다.
+## 2. 토큰 구현 (`src/index.css`)
 
-## 2. 로고 / 아이콘 (`icons/`)
+src/DESIGN.md 8장 코드를 그대로 옮겼다. 코드 클래스명은 기존 이름을 유지한다.
 
-| 파일 | 크기 | 용도 |
+| 코드 클래스 | 본문 값 | src/DESIGN.md 토큰 |
 |---|---|---|
-| `icons/icon-192.png` | 192×192 | 파비콘, 헤더 로고, 로그인 화면 로고 |
-| `icons/icon-512.png` | 512×512 | 큰 로고가 필요한 곳 (예비) |
-| `icons/logo-app.png` | 512×512 | 원본 로고 이미지 |
-| `icons/logo-app.psd` | — | 로고 원본 편집 파일 (코드에서 쓰지 않음) |
+| `bg-bg` | `#F4F1F8` | bg |
+| `bg-panel` | `#FFFFFF` | panel |
+| `bg-panel-2` | `#ECE6F4` | panel-2 (표 헤더, hover, 중립 칩) |
+| `border-line` | `#E3DCEC` | line |
+| `text-text` | `#1E1433` | text |
+| `text-text-soft` | `#5E5373` | text-soft |
+| `text-text-muted` | `#8C80A0` | text-muted (placeholder·비활성만) |
+| `bg-blue` / `text-blue` | `#7203FF` | **accent** (주요 버튼·링크·선택) |
+| `bg-blue-hover` | `#5E00D6` | accent-hover |
+| `bg-violet-soft` | `#EEE4FF` | accent-soft |
+| `green` / `amber` / `red` | `#05704A` / `#9A5700` / `#BE2537` | 상태: 완료 / 미완료·주의 / 오류·삭제 |
+| `bg-bg-2` | `#2D0C57` (상단바), `#24104A` (사이드바) | shell-top / shell-side |
 
-- 로고는 WattLineApp과 같은 이미지다(전주·버킷 작업자·수목, 파랑→녹색 그라디언트 배경의 둥근 사각형).
-- 코드에서는 `import logoUrl from "../../icons/icon-192.png"`처럼 가져와 쓴다. `index.html`의 파비콘은 `/icons/icon-192.png`를 가리킨다. 두 경우 모두 Vite가 빌드 결과물에 포함한다.
-- 로고는 모서리를 둥글게(`rounded-lg`) 표시하고, 로고 위에 다른 아이콘을 겹치지 않는다.
+### 셸 범위 재정의
+`src/index.css`의 `header { ... }`, `aside { ... }` 규칙이 **셸 안에서만** 토큰 값을 다크용으로 바꾼다(src/DESIGN.md 8장). 그래서 `Sidebar.tsx`는 본문과 같은 클래스(`text-text`, `text-text-soft`, `bg-panel-2`, `border-line`)를 쓰면서도 어두운 배경 위 밝은 글자로 그려진다.
 
-## 3. 색상
-
-WattLineApp의 CSS 토큰(`styles.css :root`)과 **같은 값**을 쓴다. 웹에서는 `src/index.css`의 Tailwind v4 `@theme`에 같은 이름으로 등록한다(예: `bg-panel`, `text-text-soft`).
-
-| 토큰 | 값 | 용도 |
+| 셸 안에서 | 값 | 쓰임 |
 |---|---|---|
-| `bg` | `#07141c` | 페이지 전체 배경 |
-| `bg-2` | `#0b1b28` | 헤더·사이드바 등 보조 배경 |
-| `panel` | `#101f2c` | 카드·표·모달 등 기본 패널 |
-| `panel-2` | `#132a3c` | 강조 패널, 표 헤더, 입력창, hover 배경 |
-| `line` | `rgba(151, 189, 216, 0.18)` | 외곽선·구분선 |
-| `text` | `#edf8ff` | 제목·본문 |
-| `text-soft` | `#9ab2c2` | 보조 텍스트, 라벨, 설명 |
-| `green` | `#47d9a3` | 정상·완료, **주요 동작 버튼**, 높은 정확도 |
-| `green-strong` | `#1ecf8f` | 주요 버튼 hover, 강조 정상 상태 |
-| `blue` | `#4ea8ff` | 정보·선택된 메뉴·링크, 중간 정확도 |
-| `amber` | `#ffbf6a` | 경고·주의, 미완료, 안전거리 |
-| `red` | `#ff7e7e` | 삭제·오류·실패, 낮은 정확도 |
+| `text-text` | `#F4EEFF` | 앱 이름, 사용자명, hover·선택된 메뉴 글자 |
+| `text-text-soft` | `#B9ACD3` | 메뉴 기본 글자, 부제, 아이콘 |
+| `bg-panel-2` | 흰색 6~8% | 메뉴·아이콘 버튼 hover |
+| `bg-violet-soft` (header) + `text-blue` | 라임 16% 배경 + `#CBF265` | 소속 회사 배지 |
+| `bg-violet-soft` (aside) | `rgba(155,107,255,.24)` | 선택된 메뉴 배경 |
 
-- 옅은 배경이 필요하면 새 색을 만들지 않고 투명도를 쓴다(예: `bg-green/15`, `bg-red/15`, `border-blue/30`).
-- 녹색·파랑처럼 밝은 배경 위의 글자는 어두운 `bg`색(`text-bg`)으로 쓴다(대비 확보).
-- 정확도 표시: 90% 이상 `green`, 70% 이상 `blue`, 그 미만 `red`.
-- 상태 배지: 완료 `green`, 미완료/주의 `amber`, 실패/삭제 `red`, 안내 `blue`.
+⚠️ **본문 컴포넌트에서 `<header>`, `<aside>` 태그를 쓰지 않는다.** 쓰면 그 안이 다크 셸 색이 된다(필요하면 `<div>` 사용).
 
-## 4. 타이포그래피
+- 정확도 막대: 90%↑ `green`, 70%↑ `blue`, 미만 `red`.
 
-- 글꼴: Google Fonts **`Inter`** (`index.html`에서 로드). 한글은 시스템 글꼴(맑은 고딕 등)로 대체된다.
-- 기본 글자색 `text`(`#edf8ff`), 보조 글자색 `text-soft`(`#9ab2c2`).
-- 제목과 버튼 글자는 굵게(`font-bold`~`font-extrabold`, 700~800).
-- 작은 상태 라벨은 대문자 표기와 자간(`tracking-wide`)으로 구분한다(앱과 동일).
-- **웹 전용 규칙**: `src/index.css`에서 `text-xs`~`text-lg`와 임의 크기를 모두 14px로 통일한다. 크기 대신 굵기와 색으로 위계를 만든다.
+## 3. 글꼴
 
-## 5. 모서리 / 간격
+- **Pretendard** (`index.html`에서 jsDelivr CDN으로 로드), 없으면 SF Pro → Inter → Segoe UI → 맑은 고딕.
+- 크기: src/DESIGN.md 3장은 12~18px를 쓴다. 이 웹은 `src/index.css`에서 `text-xs`~`text-lg`를 모두 **14px**(`table`/`label` 크기)로 통일해 두었다(기존 사용자 요청). 위계는 굵기와 색(`text` / `text-soft`)으로 만든다.
 
-앱의 값을 그대로 쓴다.
+## 4. 모서리 / 그림자
 
 | 요소 | 값 | Tailwind |
 |---|---|---|
-| 작은 버튼·입력창 | 10px | `rounded-[10px]` |
-| 주요 액션 버튼 | 16px | `rounded-2xl` |
-| 모달·팝업 | 18px | `rounded-[18px]` |
-| 일반 카드·패널 | 22px | `rounded-[22px]` |
-| 카드 내부 패딩 | 16px | `p-4` |
-| 섹션 간격 | 16px | `space-y-4` |
+| 버튼·입력창·카드·메뉴 (기본) | 8px | `rounded-lg` |
+| 칩·배지·아바타 | full | `rounded-full` |
+| 모달 | 24px | `rounded-3xl` |
 
-## 6. 레이아웃 / 셸 구조 (웹 전용)
+- 그림자 기본 없음. 모달·미리보기·드로어만 `shadow-card`(`0 8px 24px rgba(30,20,51,.12)`).
 
-- **상단 고정 헤더**(`h-14`, `bg-bg-2`, 아래 `border-line`) + 그 아래 **좌측 사이드바**(폭 168px, `bg-bg-2`, 오른쪽 `border-line`) + 본문(`bg-bg`). 헤더와 사이드바는 `src/components/Sidebar.tsx`에 있다.
-  - 헤더 왼쪽: 로고(`icons/icon-192.png`) + 앱 이름/부제. 오른쪽: 사용자명(`OOO 님`) + 소속 회사 배지 + 아바타 + 로그아웃.
-  - 사이드바 메뉴 글자는 `text-soft`, hover는 `bg-panel-2 text-text`, **선택된 메뉴는 `bg-blue/15 text-blue`**.
-  - 메뉴 순서: 작업장 목록 → 전지작업 → 작업장(admin·company_admin) → 번호찰추출 → 설정(관리자) 그룹(회사/사용자, admin만) → 하단 메뉴(수목전지 기초, 번호찰이란?, AI 설정) → 버전 표시
-  - 모바일: 헤더 왼쪽 ☰ 버튼 → 슬라이드인 드로어
-- 로그인 화면(`LoginPage.tsx`): 셸 없이 `bg-bg` 위에 중앙 카드 하나(`max-w-sm`, `bg-panel`, `rounded-[22px]`), 카드 위쪽에 로고.
-- 화면 전환은 `App.tsx`의 `view` 상태로 한다(라우터 없음).
+## 5. 레이아웃 (`src/components/Sidebar.tsx`, `App.tsx`)
 
-## 7. 컴포넌트 패턴
+- **상단바**: `h-14`, 고정, `#2D0C57`. 왼쪽 로고 32px + "수목전지 작업관리" / 부제. 오른쪽 사용자명 + 소속 배지(라임) + 아바타 + 로그아웃.
+- **사이드바**: 폭 168px, `#24104A`. 메뉴 기본 `text-soft`, hover `bg-panel-2` + `text`, 선택 `bg-violet-soft` + `text` + 굵게.
+  - 순서: 작업장 목록 → 전지작업 → 작업장(admin·company_admin) → 번호찰추출 → 설정(관리자)(회사/사용자, admin만) → 하단(수목전지 기초, 번호찰이란?, AI 설정) → 버전
+- **본문**: `bg-bg`, 콘텐츠는 `bg-panel` + 1px `line` + `rounded-lg`.
+- **로그인 화면**: 셸 없이 `bg-bg` 위 중앙 카드(`max-w-sm`).
 
-### 카드 / 패널
-```
-rounded-[22px] border border-line bg-panel p-4
-```
+## 6. 컴포넌트 패턴 (src/DESIGN.md 7장)
 
-### 주요 버튼 (저장, 추가, 로그인, 분석 시작 등)
-```
-rounded-2xl bg-green px-4 font-bold text-bg hover:bg-green-strong disabled:opacity-60
-```
+| 패턴 | 클래스 |
+|---|---|
+| 주요 버튼 (화면당 1개 권장) | `rounded-lg bg-blue text-white font-semibold hover:bg-blue-hover` |
+| 보조 버튼 | `rounded-lg border border-line bg-panel text-text hover:bg-panel-2` |
+| 아이콘 버튼 | `rounded-lg border border-line bg-panel text-text-soft` |
+| 입력창·선택창 | `rounded-lg border border-line bg-panel focus:border-blue` |
+| 상태 배지 | `rounded-full px-2 bg-{green|amber|red}/15 text-{green|amber|red} font-semibold` |
+| 중립 칩 (전체 N) | `rounded-full bg-panel-2 text-text` |
+| 표 | 컨테이너 `bg-panel border border-line rounded-lg`, 헤더 `bg-panel-2 text-text-soft font-medium`, 행 `divide-line`, 링크 셀 `text-blue underline` |
+| 모달 | 오버레이 `bg-black/60 backdrop-blur-[3px]` + `rounded-3xl bg-panel border border-line shadow-card`, `role="dialog"` |
 
-### 보조 버튼
-```
-rounded-[10px] border border-line bg-panel-2 text-text hover:border-blue/50
-```
+## 7. 원칙
 
-### 삭제 버튼
-```
-rounded-[10px] bg-red/15 text-red hover:bg-red/25
-```
-
-### 입력창 / 선택창
-```
-rounded-[10px] border border-line bg-panel-2 text-text placeholder:text-text-soft focus:border-blue
-```
-
-### 표(Table)
-- 카드 안에 표를 두고, 위쪽에 검색 입력과 내보내기(TSV/CSV) 버튼을 둔다(`PoleTable`, `PruningTable`, `AdminPanel`, `WorkplaceList`).
-- 헤더 `bg-panel-2 text-text-soft`, 행 구분선 `divide-line`, 행 hover `hover:bg-panel-2`.
-- 가로 스크롤이 생기지 않도록 열이 많으면 행을 나눈다(`PruningTable`의 2단 행 참고).
-
-### 모달
-- 배경: 반투명 어두운 오버레이 + 블러(`bg-black/60 backdrop-blur-[3px]`) — 앱의 분류 팝업과 동일
-- 본문: `rounded-[18px] bg-panel border border-line`, 헤더/하단 영역은 `border-line`으로 구분
-- 삭제 확인은 브라우저 `confirm()` 대신 모달 안의 삭제 버튼으로 받는다.
-- `role="dialog"`, `aria-modal="true"`를 붙인다.
-
-### 모션
-- 로딩 스피너(`animate-spin`) 외의 애니메이션은 최소화한다(데이터 입력 위주 업무 도구 성격).
-
-## 8. 확장 시 원칙
-
-1. 새 색을 즉흥적으로 추가하지 말고 3장 팔레트 안에서 조합한다. 녹색(주요 동작·완료), 앰버(경고), 빨강(삭제·오류)의 의미를 섞어 쓰지 않는다.
-2. 새 화면은 항상 `bg-bg` 배경 위에 7장의 카드 패턴을 쓴다.
-3. 앱과 웹이 같은 색과 로고를 쓰므로, 한쪽을 바꾸면 다른 쪽 `DESIGN.md`에도 반영한다.
-4. 이 문서와 실제 코드가 어긋나면 코드가 우선한다. 변경 시 이 문서도 함께 현행화할 것.
+1. 새 색·모서리·글자 크기를 만들지 않는다. 필요하면 src/DESIGN.md와 이 문서를 먼저 고친다.
+2. 상태는 항상 배지(옅은 배경 + 글자색 + 라벨)로 표시한다. 색만으로 구분하지 않는다.
+3. 코드와 문서가 어긋나면 코드가 우선이며, 바꿀 때 이 문서도 함께 고친다.
