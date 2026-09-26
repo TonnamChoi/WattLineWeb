@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DropZone from "./components/DropZone";
 import PoleDetail from "./components/PoleDetail";
 import PoleTable from "./components/PoleTable";
@@ -6,7 +6,11 @@ import SettingsPanel from "./components/SettingsPanel";
 import AboutPlate from "./components/AboutPlate";
 import TreePruningGuide from "./components/TreePruningGuide";
 import PruningWork from "./components/PruningWork";
-import Sidebar, { ViewId } from "./components/Sidebar";
+import AdminPanel from "./components/AdminPanel";
+import LoginPage from "./components/LoginPage";
+import { AuthUser, clearToken, restoreSession } from "./lib/auth";
+import Sidebar, { HOME_VIEW, ViewId } from "./components/Sidebar";
+import WorkplaceList from "./components/WorkplaceList";
 import { PoleImage } from "./types";
 import { AppSettings, ProviderId, loadSettings, saveSettings } from "./lib/settings";
 import { runWithConcurrency } from "./lib/asyncQueue";
@@ -73,7 +77,24 @@ export default function App() {
   const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [view, setView] = useState<ViewId>("pruning");
+  const [view, setView] = useState<ViewId>(HOME_VIEW);
+  const [pruningWorkplaceId, setPruningWorkplaceId] = useState<string | null>(null);
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    restoreSession().then((user) => {
+      setAuthUser(user);
+      setAuthChecked(true);
+    });
+  }, []);
+
+  const handleLogout = () => {
+    clearToken();
+    setAuthUser(null);
+    setPruningWorkplaceId(null);
+    setView(HOME_VIEW);
+  };
 
   const handleSaveSettings = (next: AppSettings) => {
     setSettings(next);
@@ -206,9 +227,21 @@ export default function App() {
   const idleCount = poles.filter((p) => p.status === "idle").length;
   const pendingCount = idleCount + failedCount;
 
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-6 h-6 animate-spin text-navy" />
+      </div>
+    );
+  }
+  if (!authUser) return <LoginPage onLogin={setAuthUser} />;
+
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 flex font-sans">
+    <div className="min-h-screen bg-background text-gray-900 flex font-sans pt-14">
       <Sidebar
+        currentUser={authUser}
+        isAdmin={authUser.role === "admin"}
+        onLogout={handleLogout}
         view={view}
         onNavigate={setView}
         onOpenSettings={() => setIsSettingsOpen(true)}
@@ -224,36 +257,58 @@ export default function App() {
             view === "pruning" ? "px-1 py-4 md:px-2 md:py-6" : "max-w-7xl p-4 md:p-6"
           }`}
         >
+          {view === "workplaces" && (
+            <WorkplaceList
+              user={authUser}
+              onOpenWorkplace={(id) => {
+                setPruningWorkplaceId(id);
+                setView("pruning");
+              }}
+            />
+          )}
           {view === "about" && <AboutPlate />}
           {view === "pruning-guide" && <TreePruningGuide />}
-          {view === "pruning" && <PruningWork settings={settings} onNeedSettings={() => setIsSettingsOpen(true)} />}
+          {view === "admin-companies" && <AdminPanel entity="companies" />}
+          {view === "admin-users" && <AdminPanel entity="users" />}
+          {view === "admin-workplaces" && <AdminPanel entity="workplaces" />}
+          {view === "pruning" && (
+            // 작업장이 바뀌면 이전 작업장 사진/분석 상태가 섞이지 않도록 새로 마운트한다.
+            <React.Fragment key={pruningWorkplaceId || "none"}>
+              <PruningWork
+                settings={settings}
+                onNeedSettings={() => setIsSettingsOpen(true)}
+                workplaceId={pruningWorkplaceId}
+                onChangeWorkplace={setPruningWorkplaceId}
+              />
+            </React.Fragment>
+          )}
           {view === "main" && (
           <>
           {/* Upload */}
-          <div className="bg-white border border-gray-200 rounded-xl p-4">
+          <div className="bg-surface border border-border rounded-xl p-4 shadow-sm">
             <div className="mb-3">
               <h2 className="font-bold text-gray-800 text-sm">이미지 업로드</h2>
-              <p className="text-xs text-gray-400 mt-0.5">전주번호찰 이미지를 선택하거나 드롭 하세요</p>
+              <p className="text-xs text-text3 mt-0.5">전주번호찰 이미지를 선택하거나 드롭 하세요</p>
             </div>
             <DropZone onImagesAdded={handleImagesAdded} uploadedCount={poles.length} />
           </div>
 
           {/* Action bar */}
           {totalCount > 0 && (
-            <div className="bg-white border border-gray-200 px-4 py-3 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="bg-surface border border-border px-4 py-3 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
               <div className="flex flex-wrap items-center gap-2 text-xs">
-                <span className="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 font-semibold">전체 {totalCount}</span>
-                <span className="px-2.5 py-1 rounded-full bg-green-50 text-green-700 font-semibold">완료 {completedCount}</span>
+                <span className="px-2.5 py-1 rounded-full bg-surface2 text-text2 font-semibold">전체 {totalCount}</span>
+                <span className="px-2.5 py-1 rounded-full bg-green-bg text-green font-semibold">완료 {completedCount}</span>
                 {processingCount > 0 && (
-                  <span className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold flex items-center gap-1">
+                  <span className="px-2.5 py-1 rounded-full bg-info-bg text-navy font-semibold flex items-center gap-1">
                     <Loader2 className="w-3 h-3 animate-spin" /> 분석 중 {processingCount}
                   </span>
                 )}
                 {failedCount > 0 && (
-                  <span className="px-2.5 py-1 rounded-full bg-red-50 text-red-700 font-semibold">실패 {failedCount}</span>
+                  <span className="px-2.5 py-1 rounded-full bg-red/10 text-red font-semibold">실패 {failedCount}</span>
                 )}
                 {idleCount > 0 && (
-                  <span className="px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 font-semibold">대기 {idleCount}</span>
+                  <span className="px-2.5 py-1 rounded-full bg-surface2 text-text3 font-semibold">대기 {idleCount}</span>
                 )}
               </div>
 
@@ -261,7 +316,7 @@ export default function App() {
                 <button
                   onClick={handleClearAll}
                   disabled={isBulkProcessing}
-                  className="px-3 py-1.5 text-xs font-semibold text-gray-500 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-40"
+                  className="px-3 py-1.5 text-xs font-semibold text-text3 hover:bg-surface2 rounded-lg transition-colors disabled:opacity-40"
                 >
                   전체 삭제
                 </button>
@@ -270,8 +325,8 @@ export default function App() {
                   disabled={isBulkProcessing || pendingCount === 0}
                   className={`px-4 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${
                     pendingCount === 0
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                      ? "bg-surface2 text-text3 cursor-not-allowed"
+                      : "bg-navy hover:bg-navy-dark text-white"
                   }`}
                 >
                   {isBulkProcessing ? (
@@ -308,7 +363,7 @@ export default function App() {
           )}
         </main>
 
-        <footer className="py-4 text-center text-[11px] text-gray-400 shrink-0">
+        <footer className="py-4 text-center text-[11px] text-text3 shrink-0">
           제작 : therianchoi@gmail.com
         </footer>
       </div>

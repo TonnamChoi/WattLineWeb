@@ -239,6 +239,8 @@ alter table public.photo_uploads enable row level security;
 
 인덱스: `(workplace_name, photo_date)` 복합 인덱스 존재 (작업장·날짜 기준 조회 최적화).
 
+> ⚠️ **2026-09-26 WattLineWeb 쪽 변경**: `workplace_id uuid` 열(nullable, `workplaces(id)` 참조, `on delete set null`)과 인덱스를 추가했다. WattLineWeb 전지작업 화면은 이제 `workplace_name`이 아니라 **`workplace_id`로 사진을 걸러 보여준다.** 기존 10행은 "충주대로 20경간" 작업장에 연결했다. WattLineApp이 새로 올리는 사진에 `workplace_id`를 넣지 않으면 웹 화면에 나오지 않으므로, 앱에서 작업장을 선택해 `workplace_id`를 함께 저장하도록 수정이 필요하다. 상세: WattLineWeb `docs/2026-09-26-admin-schema.md`
+
 ### 8.3 `photos` Storage 버킷
 
 - 이름: `photos`, **private**(공개 아님), 파일 크기 제한 50MB, MIME 제한 없음

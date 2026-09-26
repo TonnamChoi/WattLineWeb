@@ -12,6 +12,8 @@ import {
 } from "./providers/handlePruningRequest";
 import { handlePruningExtractRequest } from "./providers/handlePruningExtractRequest";
 import { listWattlineDbPhotos } from "./providers/handleWattlineDbRequest";
+import { handleAdminRequest, listWorkplacesForUser } from "./providers/handleAdminRequest";
+import { login, getMe } from "./providers/handleAuthRequest";
 
 const app = express();
 const PORT = 4004;
@@ -28,7 +30,7 @@ app.post("/api/extract", async (req, res) => {
 
 // API Routes (mirrors api/pruning.ts, which Vercel uses in production)
 app.get("/api/pruning", async (req, res) => {
-  const { status, body } = await listPruningPhotos();
+  const { status, body } = await listPruningPhotos(req.query.workplaceId);
   res.status(status).json(body);
 });
 app.post("/api/pruning", async (req, res) => {
@@ -48,7 +50,29 @@ app.post("/api/pruning-extract", async (req, res) => {
 
 // API Routes (mirrors api/wattline-db.ts, which Vercel uses in production)
 app.get("/api/wattline-db", async (req, res) => {
-  const { status, body } = await listWattlineDbPhotos();
+  const { status, body } = await listWattlineDbPhotos(req.query.workplaceId);
+  res.status(status).json(body);
+});
+
+// API Routes (mirrors api/auth.ts, which Vercel uses in production)
+app.post("/api/auth", async (req, res) => {
+  const { status, body } = await login(req.body);
+  res.status(status).json(body);
+});
+app.get("/api/auth", async (req, res) => {
+  const { status, body } = await getMe(req.headers.authorization);
+  res.status(status).json(body);
+});
+
+// API Routes (mirrors api/workplaces.ts, which Vercel uses in production)
+app.get("/api/workplaces", async (req, res) => {
+  const { status, body } = await listWorkplacesForUser(req.headers.authorization, req.query.companyId);
+  res.status(status).json(body);
+});
+
+// API Routes (mirrors api/admin.ts, which Vercel uses in production)
+app.all("/api/admin", async (req, res) => {
+  const { status, body } = await handleAdminRequest(req.method, req.query.entity, req.body, req.headers.authorization);
   res.status(status).json(body);
 });
 

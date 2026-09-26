@@ -4,12 +4,22 @@ import { resizeImageFile } from "../lib/resizeImage";
 import { runWithConcurrency } from "../lib/asyncQueue";
 import { AppSettings, ProviderId } from "../lib/settings";
 import { PruningRecord, WattlineCategory } from "../types";
+import { authHeaders } from "../lib/auth";
 import PruningTable from "./PruningTable";
 import PruningDetail from "./PruningDetail";
 
 interface PruningWorkProps {
   settings: AppSettings;
   onNeedSettings: () => void;
+  workplaceId: string | null;
+  onChangeWorkplace: (id: string | null) => void;
+}
+
+interface WorkplaceOption {
+  id: string;
+  name: string;
+  is_completed: boolean;
+  company: { name: string } | null;
 }
 
 const ANALYSIS_CONCURRENCY = 5;
@@ -51,7 +61,7 @@ async function requestPruningExtractionWithRetry(dataUrl: string, mimeType: stri
   throw new Error("분석에 실패했습니다.");
 }
 
-export default function PruningWork({ settings, onNeedSettings }: PruningWorkProps) {
+export default function PruningWork({ settings, onNeedSettings, workplaceId, onChangeWorkplace }: PruningWorkProps) {
   const [records, setRecords] = useState<PruningRecord[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
@@ -60,10 +70,23 @@ export default function PruningWork({ settings, onNeedSettings }: PruningWorkPro
   const [isBulkProcessing, setIsBulkProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [workplaces, setWorkplaces] = useState<WorkplaceOption[]>([]);
+
+  // 선택 가능한 작업장 (작업자는 서버에서 자기 회사 작업장으로 제한됨)
+  useEffect(() => {
+    fetch("/api/workplaces", { headers: authHeaders() })
+      .then((res) => res.json())
+      .then((data) => setWorkplaces(data.items || []))
+      .catch(() => {});
+  }, []);
 
   // 기존에 Blob에 저장된 사진 목록을 불러와 "대기중" 상태의 행으로 보여준다 (AI 분석 결과는 새로고침 시 유지되지 않음).
   useEffect(() => {
-    fetch("/api/pruning")
+    if (!workplaceId) {
+      setIsLoadingList(false);
+      return;
+    }
+    fetch(`/api/pruning?workplaceId=${workplaceId}`)
       .then((res) => res.json())
       .then((data) => {
         const photos = data.photos || [];
@@ -109,7 +132,8 @@ export default function PruningWork({ settings, onNeedSettings }: PruningWorkPro
   // WattLine(모바일 촬영 앱)이 Supabase DB에 저장한 사진 목록을 불러와, 같은 작업 건(작업장+날짜)의
   // 분류별 사진을 한 행에 모아서 "대기중" 상태로 추가한다.
   useEffect(() => {
-    fetch("/api/wattline-db")
+    if (!workplaceId) return;
+    fetch(`/api/wattline-db?workplaceId=${workplaceId}`)
       .then((res) => res.json())
       .then((data) => {
         const photos: {
@@ -270,7 +294,7 @@ export default function PruningWork({ settings, onNeedSettings }: PruningWorkPro
       fetch("/api/pruning", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileName: record.name, mimeType, dataUrl }),
+        body: JSON.stringify({ fileName: record.name, mimeType, dataUrl, workplaceId }),
       })
         .then((res) => res.json())
         .then((data) => {
@@ -341,12 +365,44 @@ export default function PruningWork({ settings, onNeedSettings }: PruningWorkPro
   const totalCount = records.length;
   const pendingCount = records.filter((r) => r.status === "idle" || r.status === "failed").length;
 
+  const workplaceSelector = (
+    <div className="bg-surface border border-border rounded-xl px-4 py-3 shadow-sm flex flex-wrap items-center gap-3">
+      <span className="font-bold text-navy">작업장</span>
+      <select
+        value={workplaceId || ""}
+        onChange={(e) => onChangeWorkplace(e.target.value || null)}
+        className="min-w-64 text-sm border border-border rounded-md px-2 py-2 bg-surface"
+      >
+        <option value="">작업장을 선택하세요</option>
+        {workplaces.map((w) => (
+          <option key={w.id} value={w.id}>
+            {w.company?.name ? `[${w.company.name}] ` : ""}
+            {w.name}
+            {w.is_completed ? " (완료)" : ""}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+
+  if (!workplaceId) {
+    return (
+      <div className="space-y-5">
+        {workplaceSelector}
+        <div className="bg-surface border border-border rounded-xl p-10 shadow-sm text-center text-text3">
+          작업장을 선택하면 해당 작업장의 전지작업 사진과 분석 결과가 표시됩니다.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5">
-      <div className="bg-white border border-gray-200 rounded-xl p-4">
+      {workplaceSelector}
+      <div className="bg-surface border border-border rounded-xl p-4 shadow-sm">
         <div className="mb-3">
           <h2 className="font-bold text-gray-800 text-sm">전지작업 사진 업로드</h2>
-          <p className="text-xs text-gray-400 mt-0.5">전지작업 사진을 선택하거나 드롭하면 AI가 자동으로 분석합니다</p>
+          <p className="text-xs text-text3 mt-0.5">전지작업 사진을 선택하거나 드롭하면 AI가 자동으로 분석합니다</p>
         </div>
 
         <input ref={fileInputRef} type="file" className="hidden" multiple accept="image/*" onChange={handleFileChange} />
@@ -358,18 +414,18 @@ export default function PruningWork({ settings, onNeedSettings }: PruningWorkPro
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
           className={`w-full h-32 border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all duration-200 ${
-            isDragActive ? "border-blue-500 bg-blue-50/50" : "border-gray-300 hover:border-blue-400 bg-gray-50/60 hover:bg-white"
+            isDragActive ? "border-navy-light bg-info-bg/50" : "border-border-strong hover:border-navy-light bg-surface2/60 hover:bg-surface"
           }`}
         >
-          <div className="p-2.5 bg-white rounded border border-gray-200 shadow-xs mb-2 text-blue-600">
+          <div className="p-2.5 bg-surface rounded border border-border shadow-xs mb-2 text-navy">
             <Upload className="w-5 h-5" />
           </div>
           <p className="text-gray-800 font-bold text-xs md:text-sm mb-0.5">여기에 전지작업 사진을 드래그하거나 클릭하여 업로드</p>
-          <p className="text-gray-400 text-[11px]">여러 장의 사진을 동시에 업로드할 수 있습니다. (PNG, JPG, JPEG 지원)</p>
+          <p className="text-text3 text-[11px]">여러 장의 사진을 동시에 업로드할 수 있습니다. (PNG, JPG, JPEG 지원)</p>
         </div>
 
         {errorMsg && (
-          <div className="mt-3 flex items-center gap-2 p-3 bg-red-50 text-red-700 rounded-lg text-sm border border-red-100">
+          <div className="mt-3 flex items-center gap-2 p-3 bg-red/10 text-red rounded-lg text-sm border border-red/20">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{errorMsg}</span>
           </div>
@@ -377,15 +433,15 @@ export default function PruningWork({ settings, onNeedSettings }: PruningWorkPro
       </div>
 
       {totalCount > 0 && (
-        <div className="bg-white border border-gray-200 px-4 py-3 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="bg-surface border border-border px-4 py-3 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 font-semibold">전체 {totalCount}</span>
+            <span className="px-2.5 py-1 rounded-full bg-surface2 text-text2 font-semibold">전체 {totalCount}</span>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handleClearAll}
               disabled={isBulkProcessing}
-              className="px-3 py-1.5 text-xs font-semibold text-gray-500 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-40"
+              className="px-3 py-1.5 text-xs font-semibold text-text3 hover:bg-surface2 rounded-lg transition-colors disabled:opacity-40"
             >
               <span className="inline-flex items-center gap-1">
                 <Trash2 className="w-3.5 h-3.5" />
@@ -396,7 +452,7 @@ export default function PruningWork({ settings, onNeedSettings }: PruningWorkPro
               onClick={handleAnalyzeAll}
               disabled={isBulkProcessing || pendingCount === 0}
               className={`px-4 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors ${
-                pendingCount === 0 ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
+                pendingCount === 0 ? "bg-surface2 text-text3 cursor-not-allowed" : "bg-navy hover:bg-navy-dark text-white"
               }`}
             >
               {isBulkProcessing ? (
@@ -416,7 +472,7 @@ export default function PruningWork({ settings, onNeedSettings }: PruningWorkPro
       )}
 
       {isLoadingList ? (
-        <div className="flex items-center justify-center py-10 text-gray-400 text-sm gap-2">
+        <div className="flex items-center justify-center py-10 text-text3 text-sm gap-2">
           <Loader2 className="w-4 h-4 animate-spin" />
           불러오는 중...
         </div>

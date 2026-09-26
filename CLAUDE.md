@@ -1,6 +1,17 @@
 # CLAUDE.md (WattLineWeb 프로젝트)
 
-전주번호찰(선로 정보) 추출기. Vite + React 프론트엔드, Express/Vercel Serverless 백엔드(`api/extract.ts`, `server.ts`). 배포 대상: https://wattline-web.vercel.app/
+한전 수목전지작업 관리 웹(작업장·전지작업 사진 관리, 전주번호찰 추출). Vite + React 프론트엔드, Express/Vercel Serverless 백엔드(`api/*.ts`, `server.ts`, 공용 로직은 `providers/`). 배포 대상: https://wattline-web.vercel.app/
+
+## 0. 필수 참고: WattLine 프로젝트 구성
+
+WattLine 프로젝트는 한전 수목전지작업 프로젝트이며, GitHub 기준으로 별도 프로그램 2개로 이루어져 있다.
+
+1. **WattLineApp**: 현장 작업자가 현장에 나가 스마트폰 앱으로 작업 사진을 찍고 업로드하는 앱. https://wattline-app.vercel.app/ (로컬 4000 포트)
+2. **WattLineWeb** (이 프로젝트): 각 회사(한전 협력사) 담당자가 현장 작업자에게 작업을 지시하고, 업로드된 사진과 전지작업 내용을 편집·관리해 한전에 보낼 엑셀 자료를 만드는 프로그램. https://wattline-web.vercel.app/ (로컬 4004 포트)
+3. 프론트엔드는 따로지만 **DB는 같은 Supabase 프로젝트 `WattLine`**(`yipfgjuuzskwlqnllunc`)을 함께 쓴다.
+
+- DB 테이블·Storage 버킷을 추가·변경·삭제하거나 기존 데이터를 수정할 때는 **WattLineApp에 미치는 영향을 먼저 확인하고 사용자에게 알린다.** (예: `photo_uploads` 테이블과 `photos` 버킷은 WattLineApp이 쓰고 이 프로젝트는 읽는다.)
+- 기능을 설계할 때는 "현장 작업자는 앱, 회사 담당자는 웹"이라는 역할 구분을 전제로 한다.
 
 ## 1. 배포 전 반드시 문의할 것
 
@@ -9,7 +20,9 @@
 
 ## 2. 반드시 한글로 답변할 것
 
-- 사용자가 명시적으로 영문으로 요청하지 않는 한, 모든 대화·질문·답변은 한글로 한다.
+- 사용자가 명시적으로 다른 언어를 요청하지 않는 한, **항상** 한글로 대화한다.
+- 대화 중 모든 출력이 대상이다: 답변, 질문, 계획·설계 제안, 진행 상황 보고, 도구 호출 사이의 짧은 안내 문장까지 예외 없이 한글로 쓴다.
+- 대화가 길어지거나 영어 자료(코드, 로그, 문서)를 많이 다룬 뒤에도 영어로 전환하지 않는다. 코드 식별자·명령어·파일 경로는 원문 그대로 두되, 설명 문장은 한글로 쓴다.
 
 ## 3. 배포 완료 후 카카오톡 나챗으로 보고
 

@@ -1,5 +1,40 @@
 @import "tailwindcss";
 
+/* 디자인 토큰 — 값과 용도는 DESIGN.md 2장 참고 */
+@theme {
+  --font-sans: "Geist", ui-sans-serif, system-ui, "Malgun Gothic", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+
+  --color-navy: #0d3b66;
+  --color-navy-dark: #082a4d;
+  --color-navy-light: #1a5290;
+  --color-amber: #f4a228;
+  --color-amber-dark: #d4861a;
+  --color-amber-light: #fef3dc;
+  --color-surface: #ffffff;
+  --color-surface2: #f7f9fc;
+  --color-border: #d1dce8;
+  --color-border-strong: #a8bece;
+  --color-text2: #4a5568;
+  --color-text3: #718096;
+  --color-green: #276749;
+  --color-green-bg: #eaf5ef;
+  --color-red: #9b2335;
+  --color-info: #1a5290;
+  --color-info-bg: #ebf4ff;
+  --color-background: #f0f4f8;
+  --color-accent-from: #2fb8c6;
+  --color-accent-to: #2e6ff2;
+}
+
+body {
+  background-color: var(--color-background);
+}
+
+.gradient-accent {
+  background-image: linear-gradient(to right, var(--color-accent-from), var(--color-accent-to));
+}
+
 /* 화면의 모든 텍스트 크기를 '이미지 업로드' 제목 크기(text-sm, 14px)로 통일 */
 .text-\[7px\],
 .text-\[9px\],

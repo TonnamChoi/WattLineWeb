@@ -10,7 +10,11 @@ const MISSING_CREDS_MESSAGE =
 
 const SIGNED_URL_TTL_SECONDS = 60 * 10;
 
-export async function listWattlineDbPhotos(): Promise<HandlerResult> {
+export async function listWattlineDbPhotos(workplaceId: unknown): Promise<HandlerResult> {
+  if (typeof workplaceId !== "string" || !workplaceId) {
+    return { status: 400, body: { error: "작업장을 먼저 선택하세요." } };
+  }
+
   const url = process.env.SUPABASE_URL;
   const secretKey = process.env.SUPABASE_SECRET_KEY;
 
@@ -24,6 +28,7 @@ export async function listWattlineDbPhotos(): Promise<HandlerResult> {
     const { data: rows, error } = await supabase
       .from("photo_uploads")
       .select("*")
+      .eq("workplace_id", workplaceId)
       .order("created_at", { ascending: false })
       .limit(200);
 

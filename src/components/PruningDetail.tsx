@@ -66,10 +66,10 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
 
   if (!record) {
     return (
-      <div className="bg-white border border-gray-200 rounded-lg flex flex-col items-center justify-center p-8 text-center text-gray-400">
-        <MapPin className="w-10 h-10 mb-2 stroke-1 text-gray-300" />
-        <h4 className="font-extrabold text-gray-700 text-xs uppercase tracking-wider mb-1">상세 정보 패널</h4>
-        <p className="text-[11px] text-gray-400 max-w-[280px] leading-relaxed">
+      <div className="bg-surface border border-border rounded-lg flex flex-col items-center justify-center p-8 text-center text-text3">
+        <MapPin className="w-10 h-10 mb-2 stroke-1 text-border-strong" />
+        <h4 className="font-extrabold text-text2 text-xs uppercase tracking-wider mb-1">상세 정보 패널</h4>
+        <p className="text-[11px] text-text3 max-w-[280px] leading-relaxed">
           목록에서 전지작업 사진을 선택하면 상세 정보 및 분석 결과가 여기에 표시됩니다.
         </p>
       </div>
@@ -136,33 +136,33 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
   };
 
   const getConfidenceColor = (score: number | null) => {
-    if (!score) return "bg-gray-200";
-    if (score >= 90) return "bg-green-500";
-    if (score >= 70) return "bg-blue-500";
-    return "bg-red-500";
+    if (!score) return "bg-border";
+    if (score >= 90) return "bg-green";
+    if (score >= 70) return "bg-info";
+    return "bg-red";
   };
 
   const getConfidenceBg = (score: number | null) => {
-    if (!score) return "bg-gray-100 text-gray-700";
-    if (score >= 90) return "bg-green-50 text-green-700 border-green-100";
-    if (score >= 70) return "bg-blue-50 text-blue-700 border-blue-100";
-    return "bg-red-50 text-red-700 border-red-100";
+    if (!score) return "bg-surface2 text-text2";
+    if (score >= 90) return "bg-green-bg text-green border-green/20";
+    if (score >= 70) return "bg-info-bg text-navy border-border";
+    return "bg-red/10 text-red border-red/20";
   };
 
   const inputClassName =
-    "w-full min-w-0 text-xs font-mono font-bold outline-none p-2 rounded transition-all border text-blue-700 bg-white border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-100";
+    "w-full min-w-0 text-xs font-mono font-bold outline-none p-2 rounded transition-all border text-navy bg-surface border-border-strong hover:border-border-strong focus:border-navy-light focus:ring-1 focus:ring-info-bg";
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col">
-      <div className="p-3 border-b border-gray-200 bg-gray-50 flex justify-between items-center shrink-0">
+    <div className="bg-surface border border-border rounded-lg overflow-hidden flex flex-col">
+      <div className="p-3 border-b border-border bg-surface2 flex justify-between items-center shrink-0">
         <div className="min-w-0">
-          <h3 className="font-extrabold text-gray-900 text-xs md:text-sm truncate" title={record.name}>
+          <h3 className="font-extrabold text-navy text-xs md:text-sm truncate" title={record.name}>
             {record.name}
           </h3>
-          <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mt-0.5">전지작업 상세 분석 및 수기 검증</p>
+          <p className="text-[10px] text-text3 font-semibold uppercase tracking-wider mt-0.5">전지작업 상세 분석 및 수기 검증</p>
         </div>
         {onClose && (
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 p-1 hover:bg-gray-100 rounded" title="닫기">
+          <button onClick={onClose} className="text-text3 hover:text-text2 p-1 hover:bg-surface2 rounded" title="닫기">
             <X className="w-4 h-4" />
           </button>
         )}
@@ -170,11 +170,11 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
 
       <div className="p-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          <div className="lg:col-span-5 flex flex-col items-center justify-center bg-gray-50 rounded p-2.5 border border-gray-200 relative group h-48 lg:h-auto min-h-[200px]">
+          <div className="lg:col-span-5 flex flex-col items-center justify-center bg-surface2 rounded p-2.5 border border-border relative group h-48 lg:h-auto min-h-[200px]">
             <img
               src={croppedUrl || record.url}
               alt={record.name}
-              className="max-w-full max-h-full object-contain rounded border border-gray-200 shadow-2xs bg-white relative transition-transform duration-300 ease-out cursor-zoom-in group-hover:scale-200 group-hover:z-20 group-hover:shadow-lg"
+              className="max-w-full max-h-full object-contain rounded border border-border shadow-2xs bg-surface relative transition-transform duration-300 ease-out cursor-zoom-in group-hover:scale-200 group-hover:z-20 group-hover:shadow-lg"
               referrerPolicy="no-referrer"
             />
             <div className="absolute bottom-2 left-2 bg-black/75 text-[9px] font-semibold text-white px-1.5 py-0.5 rounded uppercase tracking-wider">
@@ -185,14 +185,14 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
           <div className="lg:col-span-7 flex flex-col justify-between">
             {record.status === "idle" && (
               <div className="flex-1 flex flex-col items-center justify-center text-center p-4">
-                <Sparkles className="w-8 h-8 mb-2 text-blue-600 animate-pulse" />
+                <Sparkles className="w-8 h-8 mb-2 text-navy animate-pulse" />
                 <h4 className="font-extrabold text-gray-800 text-xs uppercase tracking-wider">아직 분석되지 않은 사진</h4>
-                <p className="text-[11px] text-gray-400 mt-1 max-w-[240px] leading-relaxed">
+                <p className="text-[11px] text-text3 mt-1 max-w-[240px] leading-relaxed">
                   AI를 가동하여 나무 종류, 굵기 구간, 작업강도 등을 검출해보세요.
                 </p>
                 <button
                   onClick={() => onAnalyze(record.id)}
-                  className="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                  className="mt-3 px-4 py-2 bg-navy hover:bg-navy-dark text-white font-bold text-xs rounded shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
                 >
                   <Play className="w-3 h-3 fill-current" />
                   AI 분석 시작하기
@@ -203,8 +203,8 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
             {record.status === "processing" && (
               <div className="flex-1 flex flex-col items-center justify-center text-center p-4">
                 <div className="relative mb-3">
-                  <div className="w-10 h-10 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin" />
-                  <Sparkles className="w-4 h-4 text-blue-600 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                  <div className="w-10 h-10 rounded-full border-4 border-border border-t-blue-600 animate-spin" />
+                  <Sparkles className="w-4 h-4 text-navy absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
                 </div>
                 <h4 className="font-extrabold text-gray-800 text-xs uppercase tracking-wider">AI 사진 판독 중...</h4>
               </div>
@@ -212,14 +212,14 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
 
             {record.status === "failed" && (
               <div className="flex-1 flex flex-col items-center justify-center text-center p-4">
-                <ShieldAlert className="w-10 h-10 text-red-500 mb-2" />
-                <h4 className="font-extrabold text-red-800 text-xs uppercase tracking-wider">전지작업 정보 추출 실패</h4>
-                <p className="text-[11px] text-red-600 mt-1 max-w-[240px] leading-relaxed font-semibold">
+                <ShieldAlert className="w-10 h-10 text-red mb-2" />
+                <h4 className="font-extrabold text-red text-xs uppercase tracking-wider">전지작업 정보 추출 실패</h4>
+                <p className="text-[11px] text-red mt-1 max-w-[240px] leading-relaxed font-semibold">
                   {record.error || "사진이 흐리거나 나무가 확인되지 않아 정보를 추출할 수 없었습니다."}
                 </p>
                 <button
                   onClick={() => onAnalyze(record.id)}
-                  className="mt-3 px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-800 font-bold text-[11px] rounded transition-colors"
+                  className="mt-3 px-3 py-1.5 bg-red/15 hover:bg-red/25 text-red font-bold text-[11px] rounded transition-colors"
                 >
                   다시 분석하기
                 </button>
@@ -229,13 +229,13 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
             {record.status === "completed" && (
               <div className="flex-1 flex flex-col justify-between space-y-3">
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between bg-gray-50 p-2 rounded border border-gray-200">
-                    <div className="flex items-center gap-1.5 text-[11px] text-gray-500 font-bold uppercase tracking-wider">
-                      <Zap className="w-3.5 h-3.5 text-blue-600" />
+                  <div className="flex items-center justify-between bg-surface2 p-2 rounded border border-border">
+                    <div className="flex items-center gap-1.5 text-[11px] text-text3 font-bold uppercase tracking-wider">
+                      <Zap className="w-3.5 h-3.5 text-navy" />
                       AI 신뢰도 지수
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-20 bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                      <div className="w-20 bg-border rounded-full h-1.5 overflow-hidden">
                         <div className={`h-full ${getConfidenceColor(record.confidence)}`} style={{ width: `${record.confidence || 0}%` }} />
                       </div>
                       <span className={`text-[10px] font-extrabold border px-1.5 py-0.2 rounded ${getConfidenceBg(record.confidence)}`}>
@@ -246,22 +246,22 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="flex items-center gap-2">
-                      <label className="text-[11px] font-normal text-gray-500 shrink-0 whitespace-nowrap w-16">전주(시작)</label>
+                      <label className="text-[11px] font-normal text-text3 shrink-0 whitespace-nowrap w-16">전주(시작)</label>
                       <input type="text" value={poleStart} onChange={(e) => setPoleStart(e.target.value)} placeholder="예: 80R29L1" className={inputClassName} />
                     </div>
                     <div className="flex items-center gap-2">
-                      <label className="text-[11px] font-normal text-gray-500 shrink-0 whitespace-nowrap w-16">전주(끝)</label>
+                      <label className="text-[11px] font-normal text-text3 shrink-0 whitespace-nowrap w-16">전주(끝)</label>
                       <input type="text" value={poleEnd} onChange={(e) => setPoleEnd(e.target.value)} placeholder="예: 80R29L2" className={inputClassName} />
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <label className="text-[11px] font-normal text-gray-500 shrink-0 whitespace-nowrap w-16">수목종류</label>
+                    <label className="text-[11px] font-normal text-text3 shrink-0 whitespace-nowrap w-16">수목종류</label>
                     <input type="text" value={treeSpecies} onChange={(e) => setTreeSpecies(e.target.value)} placeholder="예: 느티나무" className={inputClassName} />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] font-normal text-gray-500 block uppercase tracking-wider">준공내역 (굵기별 본수)</label>
+                    <label className="text-[11px] font-normal text-text3 block uppercase tracking-wider">준공내역 (굵기별 본수)</label>
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-1.5">
                       {([
                         ["under10", "10미만"],
@@ -272,13 +272,13 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
                         ["total", "합계"],
                       ] as [keyof DiameterCounts, string][]).map(([field, label]) => (
                         <div key={field} className="flex flex-col items-center">
-                          <span className="text-[9px] text-gray-400">{label}</span>
+                          <span className="text-[9px] text-text3">{label}</span>
                           <input
                             type="number"
                             min={0}
                             value={counts[field]}
                             onChange={(e) => handleCountChange(field, e.target.value)}
-                            className="w-full text-center text-xs font-mono font-bold p-1 rounded border border-gray-300 focus:border-blue-500 outline-none"
+                            className="w-full text-center text-xs font-mono font-bold p-1 rounded border border-border-strong focus:border-navy-light outline-none"
                           />
                         </div>
                       ))}
@@ -287,42 +287,42 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="flex items-center gap-2">
-                      <label className="text-[11px] font-normal text-gray-500 shrink-0 whitespace-nowrap w-16">작업강도</label>
+                      <label className="text-[11px] font-normal text-text3 shrink-0 whitespace-nowrap w-16">작업강도</label>
                       <input type="text" value={workIntensity} onChange={(e) => setWorkIntensity(e.target.value)} placeholder="강전지/약전지" className={inputClassName} />
                     </div>
                     <div className="flex items-center gap-2">
-                      <label className="text-[11px] font-normal text-gray-500 shrink-0 whitespace-nowrap w-16">나무분류</label>
+                      <label className="text-[11px] font-normal text-text3 shrink-0 whitespace-nowrap w-16">나무분류</label>
                       <input type="text" value={treeClassification} onChange={(e) => setTreeClassification(e.target.value)} placeholder="낙엽수/상록수" className={inputClassName} />
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] font-normal text-gray-500 block uppercase tracking-wider">경간구분</label>
+                    <label className="text-[11px] font-normal text-text3 block uppercase tracking-wider">경간구분</label>
                     <input type="text" value={spanDescription} onChange={(e) => setSpanDescription(e.target.value)} placeholder="예: 금가간 80R29L1 ~ 80R29L2" className={inputClassName} />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] font-normal text-gray-500 block uppercase tracking-wider">작업내용</label>
+                    <label className="text-[11px] font-normal text-text3 block uppercase tracking-wider">작업내용</label>
                     <input type="text" value={workContent} onChange={(e) => setWorkContent(e.target.value)} placeholder="예: 느티나무 40cm이상 1주 (강전지)" className={inputClassName} />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] font-normal text-gray-500 block uppercase tracking-wider">비고</label>
+                    <label className="text-[11px] font-normal text-text3 block uppercase tracking-wider">비고</label>
                     <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="비고" className={inputClassName} />
                   </div>
 
                   {record.reasoning && (
-                    <div className="bg-blue-50/40 border border-blue-100 rounded p-2.5 space-y-1">
-                      <h5 className="text-[9px] font-extrabold text-blue-800 flex items-center gap-1 uppercase tracking-wider">
+                    <div className="bg-info-bg/40 border border-border rounded p-2.5 space-y-1">
+                      <h5 className="text-[9px] font-extrabold text-navy flex items-center gap-1 uppercase tracking-wider">
                         <Sparkles className="w-3 h-3" />
                         AI 분석 근거
                       </h5>
-                      <p className="text-[11px] text-gray-600 leading-normal font-medium">{record.reasoning}</p>
+                      <p className="text-[11px] text-text2 leading-normal font-medium">{record.reasoning}</p>
                     </div>
                   )}
 
                   <div className="space-y-1.5">
-                    <label className="text-[11px] font-normal text-gray-500 block uppercase tracking-wider">참고 사진 (최대 2장)</label>
+                    <label className="text-[11px] font-normal text-text3 block uppercase tracking-wider">참고 사진 (최대 2장)</label>
                     <input
                       ref={extraPhotoInputRef}
                       type="file"
@@ -333,7 +333,7 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
                     />
                     <div className="flex items-center gap-2 flex-wrap">
                       {record.extraPhotoUrls.map((url) => (
-                        <div key={url} className="relative w-14 h-14 rounded border border-gray-200 overflow-hidden group">
+                        <div key={url} className="relative w-14 h-14 rounded border border-border overflow-hidden group">
                           <img src={url} alt="참고 사진" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                           <button
                             onClick={() => handleRemoveExtraPhoto(url)}
@@ -348,7 +348,7 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
                         <button
                           onClick={() => extraPhotoInputRef.current?.click()}
                           disabled={isUploadingExtra}
-                          className="w-14 h-14 rounded border border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-400 transition-colors disabled:opacity-50"
+                          className="w-14 h-14 rounded border border-dashed border-border-strong flex items-center justify-center text-text3 hover:text-navy hover:border-navy-light transition-colors disabled:opacity-50"
                           title="참고 사진 추가"
                         >
                           {isUploadingExtra ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
@@ -358,12 +358,12 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
                   </div>
                 </div>
 
-                <div className="pt-2 shrink-0 border-t border-gray-200 flex items-center gap-2 justify-end">
-                  <span className="text-[9px] text-gray-400 mr-auto font-medium">* 판독 오류 발생 시 값을 수정한 후 저장할 수 있습니다.</span>
+                <div className="pt-2 shrink-0 border-t border-border flex items-center gap-2 justify-end">
+                  <span className="text-[9px] text-text3 mr-auto font-medium">* 판독 오류 발생 시 값을 수정한 후 저장할 수 있습니다.</span>
                   <button
                     onClick={handleSave}
                     className={`px-3 py-1.5 font-bold text-xs rounded flex items-center gap-1.5 transition-all shadow-xs cursor-pointer ${
-                      isSaved ? "bg-green-600 hover:bg-green-700 text-white" : "bg-[#1A1C1E] hover:bg-black text-white"
+                      isSaved ? "bg-green hover:bg-green/90 text-white" : "bg-navy hover:bg-navy-dark text-white"
                     }`}
                   >
                     {isSaved ? (

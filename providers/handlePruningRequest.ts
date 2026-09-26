@@ -13,6 +13,10 @@ interface HandlerResult {
 const MISSING_CREDS_MESSAGE =
   "파일 저장소(Supabase Storage)가 연결되어 있지 않습니다. SUPABASE_URL, SUPABASE_SECRET_KEY 환경변수를 설정하세요.";
 
+// 작업장 ID(uuid)만 폴더명으로 허용해 임의 경로 접근을 막는다.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const MISSING_WORKPLACE_MESSAGE = "작업장을 먼저 선택하세요.";
+
 function getClient() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SECRET_KEY;
@@ -20,17 +24,20 @@ function getClient() {
   return createClient(url, key);
 }
 
-export async function listPruningPhotos(): Promise<HandlerResult> {
+export async function listPruningPhotos(workplaceId: unknown): Promise<HandlerResult> {
+  if (typeof workplaceId !== "string" || !UUID_RE.test(workplaceId)) {
+    return { status: 400, body: { error: MISSING_WORKPLACE_MESSAGE } };
+  }
   const supabase = getClient();
   if (!supabase) return { status: 500, body: { error: MISSING_CREDS_MESSAGE } };
 
   try {
-    const { data: files, error } = await supabase.storage.from(BUCKET).list("", {
+    const { data: files, error } = await supabase.storage.from(BUCKET).list(workplaceId, {
       sortBy: { column: "created_at", order: "desc" },
     });
     if (error) throw error;
 
-    const paths = (files || []).map((f) => f.name);
+    const paths = (files || []).map((f) => `${workplaceId}/${f.name}`);
     if (paths.length === 0) {
       return { status: 200, body: { photos: [] } };
     }
@@ -44,8 +51,8 @@ export async function listPruningPhotos(): Promise<HandlerResult> {
 
     const photos = (files || [])
       .map((f) => ({
-        url: urlByPath.get(f.name) || null,
-        pathname: f.name,
+        url: urlByPath.get(`${workplaceId}/${f.name}`) || null,
+        pathname: `${workplaceId}/${f.name}`,
         uploadedAt: f.created_at || new Date().toISOString(),
       }))
       .filter((p) => p.url);
@@ -58,9 +65,12 @@ export async function listPruningPhotos(): Promise<HandlerResult> {
 }
 
 export async function uploadPruningPhoto(reqBody: any): Promise<HandlerResult> {
-  const { fileName, mimeType, dataUrl } = reqBody || {};
+  const { fileName, mimeType, dataUrl, workplaceId } = reqBody || {};
   if (!fileName || !mimeType || !dataUrl) {
     return { status: 400, body: { error: "파일 정보가 올바르지 않습니다." } };
+  }
+  if (typeof workplaceId !== "string" || !UUID_RE.test(workplaceId)) {
+    return { status: 400, body: { error: MISSING_WORKPLACE_MESSAGE } };
   }
 
   const supabase = getClient();
@@ -71,7 +81,7 @@ export async function uploadPruningPhoto(reqBody: any): Promise<HandlerResult> {
     const buffer = Buffer.from(base64, "base64");
     const safeName = String(fileName).replace(/[^\w.\-가-힣]/g, "_");
     const randomSuffix = Math.random().toString(36).slice(2, 8);
-    const pathname = `${Date.now()}-${randomSuffix}-${safeName}`;
+    const pathname = `${workplaceId}/${Date.now()}-${randomSuffix}-${safeName}`;
 
     const { error } = await supabase.storage.from(BUCKET).upload(pathname, buffer, {
       contentType: mimeType,

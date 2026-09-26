@@ -7,7 +7,7 @@ import {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === "GET") {
-    const { status, body } = await listPruningPhotos();
+    const { status, body } = await listPruningPhotos(req.query.workplaceId);
     return res.status(status).json(body);
   }
 

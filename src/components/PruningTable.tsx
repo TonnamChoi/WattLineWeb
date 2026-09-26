@@ -32,7 +32,7 @@ function EditableText({
       onChange={(e) => onChange(e.target.value)}
       onClick={(e) => e.stopPropagation()}
       placeholder="-"
-      className={`w-full min-w-[60px] bg-transparent outline-none rounded px-1 py-0.5 hover:bg-gray-50 focus:bg-white focus:ring-1 focus:ring-blue-400 ${
+      className={`w-full min-w-[60px] bg-transparent outline-none rounded px-1 py-0.5 hover:bg-surface2 focus:bg-surface focus:ring-1 focus:ring-navy-light ${
         align === "center" ? "text-center" : ""
       } ${className}`}
     />
@@ -47,7 +47,7 @@ function EditableCount({ value, onChange }: { value: number; onChange: (value: n
       value={value}
       onChange={(e) => onChange(Number(e.target.value) || 0)}
       onClick={(e) => e.stopPropagation()}
-      className="w-12 bg-transparent outline-none text-center font-mono rounded px-0.5 py-0.5 hover:bg-gray-50 focus:bg-white focus:ring-1 focus:ring-blue-400"
+      className="w-12 bg-transparent outline-none text-center font-mono rounded px-0.5 py-0.5 hover:bg-surface2 focus:bg-surface focus:ring-1 focus:ring-navy-light"
     />
   );
 }
@@ -68,7 +68,7 @@ function HoverPreview({ src, alt, children }: { src: string | null; alt: string;
       {children}
       {pos && (
         <div
-          className="fixed z-50 pointer-events-none p-1 bg-white border border-gray-200 rounded-lg shadow-2xl"
+          className="fixed z-50 pointer-events-none p-1 bg-surface border border-border rounded-lg shadow-2xl"
           style={{
             left: Math.min(pos.x + 16, window.innerWidth - 320),
             top: Math.min(pos.y + 16, window.innerHeight - 320),
@@ -89,19 +89,19 @@ function HoverPreview({ src, alt, children }: { src: string | null; alt: string;
 function PhotoThumb({ url }: { url?: string | null }) {
   if (!url) {
     return (
-      <div className="w-8 h-11 inline-flex items-center justify-center text-gray-300">
+      <div className="w-8 h-11 inline-flex items-center justify-center text-border-strong">
         <ImageOff className="w-3.5 h-3.5" />
       </div>
     );
   }
   return (
-    <div className="w-8 h-11 rounded bg-gray-100 border border-gray-200 overflow-hidden inline-flex items-center justify-center">
+    <div className="w-8 h-11 rounded bg-surface2 border border-border overflow-hidden inline-flex items-center justify-center">
       <img src={url} alt="참고 사진" className="object-cover w-full h-full" referrerPolicy="no-referrer" />
     </div>
   );
 }
 
-const TH = "py-2 px-3 text-center border-r border-b border-green-200 bg-green-50 whitespace-nowrap";
+const TH = "py-2 px-3 text-center border-r border-b border-green/20 bg-green-bg whitespace-nowrap";
 
 const PHOTO_CATEGORIES: WattlineCategory[] = ["시작전주", "종료전주", "작업전", "흉고직경", "작업후", "기타"];
 
@@ -210,12 +210,12 @@ export default function PruningTable({
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-2xs">
-      <div className="p-3.5 border-b border-gray-200 bg-gray-50 space-y-2.5">
+    <div className="bg-surface border border-border rounded-lg overflow-hidden shadow-2xs">
+      <div className="p-3.5 border-b border-border bg-surface2 space-y-2.5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <h3 className="font-extrabold text-gray-700 text-xs uppercase tracking-wider">전지작업 분석 결과</h3>
-            <span className="text-[11px] bg-blue-100 text-blue-700 font-extrabold px-2 py-0.5 rounded font-mono">
+            <h3 className="font-extrabold text-text2 text-xs uppercase tracking-wider">전지작업 분석 결과</h3>
+            <span className="text-[11px] bg-info-bg text-navy font-extrabold px-2 py-0.5 rounded font-mono">
               {records.length}건 로드됨
             </span>
           </div>
@@ -224,16 +224,16 @@ export default function PruningTable({
             <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={handleCopyToClipboard}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-surface hover:bg-surface2 border border-border text-text2 rounded transition-colors cursor-pointer"
               >
                 {isCopied ? (
                   <>
-                    <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-green" />
                     클립보드 복사됨!
                   </>
                 ) : (
                   <>
-                    <Clipboard className="w-3.5 h-3.5 text-gray-500" />
+                    <Clipboard className="w-3.5 h-3.5 text-text3" />
                     엑셀용 복사 (TSV)
                   </>
                 )}
@@ -241,7 +241,7 @@ export default function PruningTable({
 
               <button
                 onClick={handleDownloadCSV}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[#1A1C1E] hover:bg-black text-white rounded transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-navy hover:bg-navy-dark text-white rounded transition-colors cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 엑셀 다운로드 (.csv)
@@ -249,7 +249,7 @@ export default function PruningTable({
 
               <button
                 onClick={onClearAll}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold hover:bg-red-50 text-red-600 border border-transparent rounded transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold hover:bg-red/10 text-red border border-transparent rounded transition-colors cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 목록 비우기
@@ -260,27 +260,27 @@ export default function PruningTable({
 
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative max-w-[200px] w-full">
-            <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 transform -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-text3 absolute left-2.5 top-1/2 transform -translate-y-1/2" />
             <input
               type="text"
               placeholder="수목종류, 전주번호, 파일명 검색..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-8 pr-2.5 py-1 w-full text-xs border border-gray-300 rounded outline-none hover:border-gray-400 focus:border-blue-500 transition-all bg-white font-medium"
+              className="pl-8 pr-2.5 py-1 w-full text-xs border border-border-strong rounded outline-none hover:border-border-strong focus:border-navy-light transition-all bg-surface font-medium"
             />
           </div>
         </div>
       </div>
 
       {filteredRecords.length === 0 ? (
-        <div className="py-12 text-center text-gray-400 text-[11px]">
+        <div className="py-12 text-center text-text3 text-[11px]">
           {searchTerm ? "검색 결과와 일치하는 데이터가 없습니다." : "표시할 분석 결과 데이터가 없습니다."}
         </div>
       ) : (
         <>
           {/* 1행: 전주번호/수목종류/준공내역/비고/작업강도/나무분류/경간구분/작업내용 */}
           <table className="w-full text-left border-collapse">
-            <thead className="text-gray-600 font-bold text-[10px] uppercase tracking-wider">
+            <thead className="text-text2 font-bold text-[10px] uppercase tracking-wider">
               <tr>
                 <th className={TH} colSpan={2} rowSpan={1}>전주번호</th>
                 <th className={TH} rowSpan={2}>수목종류</th>
@@ -302,7 +302,7 @@ export default function PruningTable({
                 <th className={`${TH} w-12`}>합계</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 font-medium">
+            <tbody className="divide-y divide-border font-medium">
               {filteredRecords.map((record) => {
                 const isSelected = record.id === selectedId;
                 const d = record.diameterCounts;
@@ -310,53 +310,53 @@ export default function PruningTable({
                   <tr
                     key={record.id}
                     onClick={() => onSelect(record.id)}
-                    className={`text-[12px] hover:bg-blue-50/50 transition-colors cursor-pointer ${
-                      isSelected ? "bg-blue-50/30 font-bold" : ""
+                    className={`text-[12px] hover:bg-info-bg/50 transition-colors cursor-pointer ${
+                      isSelected ? "bg-info-bg/30 font-bold" : ""
                     }`}
                   >
-                    <td className="py-1 px-1 border-r border-gray-100 font-mono">
+                    <td className="py-1 px-1 border-r border-border font-mono">
                       <EditableText value={record.poleStart} onChange={(v) => onUpdate(record.id, { poleStart: v })} align="center" />
                     </td>
-                    <td className="py-1 px-1 border-r border-gray-100 font-mono">
+                    <td className="py-1 px-1 border-r border-border font-mono">
                       <EditableText value={record.poleEnd} onChange={(v) => onUpdate(record.id, { poleEnd: v })} align="center" />
                     </td>
-                    <td className="py-1 px-1 border-r border-gray-100">
+                    <td className="py-1 px-1 border-r border-border">
                       <EditableText
                         value={record.treeSpecies}
                         onChange={(v) => onUpdate(record.id, { treeSpecies: v })}
-                        className="font-extrabold text-blue-700 font-sans"
+                        className="font-extrabold text-navy font-sans"
                       />
                     </td>
-                    <td className="py-1 px-1 text-center border-r border-gray-100 font-mono">
+                    <td className="py-1 px-1 text-center border-r border-border font-mono">
                       <EditableCount value={d?.under10 ?? 0} onChange={(v) => handleCountChange(record, "under10", v)} />
                     </td>
-                    <td className="py-1 px-1 text-center border-r border-gray-100 font-mono">
+                    <td className="py-1 px-1 text-center border-r border-border font-mono">
                       <EditableCount value={d?.over10 ?? 0} onChange={(v) => handleCountChange(record, "over10", v)} />
                     </td>
-                    <td className="py-1 px-1 text-center border-r border-gray-100 font-mono">
+                    <td className="py-1 px-1 text-center border-r border-border font-mono">
                       <EditableCount value={d?.over20 ?? 0} onChange={(v) => handleCountChange(record, "over20", v)} />
                     </td>
-                    <td className="py-1 px-1 text-center border-r border-gray-100 font-mono">
+                    <td className="py-1 px-1 text-center border-r border-border font-mono">
                       <EditableCount value={d?.over30 ?? 0} onChange={(v) => handleCountChange(record, "over30", v)} />
                     </td>
-                    <td className="py-1 px-1 text-center border-r border-gray-100 font-mono">
+                    <td className="py-1 px-1 text-center border-r border-border font-mono">
                       <EditableCount value={d?.over40 ?? 0} onChange={(v) => handleCountChange(record, "over40", v)} />
                     </td>
-                    <td className="py-2 px-3 text-center border-r border-gray-100 font-mono font-extrabold">{d?.total ?? 0}</td>
-                    <td className="py-1 px-1 border-r border-gray-100">
-                      <EditableText value={record.note} onChange={(v) => onUpdate(record.id, { note: v })} className="text-gray-500" />
+                    <td className="py-2 px-3 text-center border-r border-border font-mono font-extrabold">{d?.total ?? 0}</td>
+                    <td className="py-1 px-1 border-r border-border">
+                      <EditableText value={record.note} onChange={(v) => onUpdate(record.id, { note: v })} className="text-text3" />
                     </td>
-                    <td className="py-1 px-1 border-r border-gray-100">
+                    <td className="py-1 px-1 border-r border-border">
                       <EditableText value={record.workIntensity} onChange={(v) => onUpdate(record.id, { workIntensity: v })} align="center" />
                     </td>
-                    <td className="py-1 px-1 border-r border-gray-100">
+                    <td className="py-1 px-1 border-r border-border">
                       <EditableText value={record.treeClassification} onChange={(v) => onUpdate(record.id, { treeClassification: v })} align="center" />
                     </td>
-                    <td className="py-1 px-1 border-r border-gray-100">
-                      <EditableText value={record.spanDescription} onChange={(v) => onUpdate(record.id, { spanDescription: v })} className="text-gray-500" />
+                    <td className="py-1 px-1 border-r border-border">
+                      <EditableText value={record.spanDescription} onChange={(v) => onUpdate(record.id, { spanDescription: v })} className="text-text3" />
                     </td>
-                    <td className="py-1 px-1 border-r border-gray-100">
-                      <EditableText value={record.workContent} onChange={(v) => onUpdate(record.id, { workContent: v })} className="text-gray-500" />
+                    <td className="py-1 px-1 border-r border-border">
+                      <EditableText value={record.workContent} onChange={(v) => onUpdate(record.id, { workContent: v })} className="text-text3" />
                     </td>
                   </tr>
                 );
@@ -365,8 +365,8 @@ export default function PruningTable({
           </table>
 
           {/* 2행: 사진/기타 세부정보/정확도/판독상태/작업/삭제 */}
-          <table className="w-full text-left border-collapse border-t-2 border-gray-200">
-            <thead className="text-gray-600 font-bold text-[10px] uppercase tracking-wider">
+          <table className="w-full text-left border-collapse border-t-2 border-border">
+            <thead className="text-text2 font-bold text-[10px] uppercase tracking-wider">
               <tr>
                 <th className={TH} colSpan={6}>사진</th>
                 <th className={TH} rowSpan={2}>기타 세부<br />정보</th>
@@ -384,7 +384,7 @@ export default function PruningTable({
                 <th className={TH}>기타</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 font-medium">
+            <tbody className="divide-y divide-border font-medium">
               {filteredRecords.map((record) => {
                 const isSelected = record.id === selectedId;
                 const isCompleted = record.status === "completed";
@@ -392,30 +392,30 @@ export default function PruningTable({
                   <tr
                     key={record.id}
                     onClick={() => onSelect(record.id)}
-                    className={`text-[12px] hover:bg-blue-50/50 transition-colors cursor-pointer ${
-                      isSelected ? "bg-blue-50/30 font-bold" : ""
+                    className={`text-[12px] hover:bg-info-bg/50 transition-colors cursor-pointer ${
+                      isSelected ? "bg-info-bg/30 font-bold" : ""
                     }`}
                   >
                     {PHOTO_CATEGORIES.map((category) => {
                       const photoUrl = getCategoryPhotoUrl(record, category);
                       return (
-                        <td key={category} className="py-1 px-3 text-center border-r border-gray-100">
+                        <td key={category} className="py-1 px-3 text-center border-r border-border">
                           <HoverPreview src={photoUrl} alt={category}>
                             <PhotoThumb url={photoUrl} />
                           </HoverPreview>
                         </td>
                       );
                     })}
-                    <td className="py-2 px-3 text-gray-500 truncate max-w-[160px] border-r border-gray-100" title={record.reasoning || ""}>
+                    <td className="py-2 px-3 text-text3 truncate max-w-[160px] border-r border-border" title={record.reasoning || ""}>
                       {isCompleted ? record.reasoning || "-" : "-"}
                     </td>
-                    <td className="py-2 px-3 text-center border-r border-gray-100">
+                    <td className="py-2 px-3 text-center border-r border-border">
                       {isCompleted && record.confidence ? (
                         <div className="flex items-center gap-1.5 justify-center">
-                          <div className="w-12 bg-gray-200 h-1 rounded-full overflow-hidden hidden sm:block">
+                          <div className="w-12 bg-border h-1 rounded-full overflow-hidden hidden sm:block">
                             <div
                               className={`h-full ${
-                                record.confidence >= 90 ? "bg-green-500" : record.confidence >= 70 ? "bg-blue-500" : "bg-red-500"
+                                record.confidence >= 90 ? "bg-green" : record.confidence >= 70 ? "bg-info" : "bg-red"
                               }`}
                               style={{ width: `${record.confidence}%` }}
                             />
@@ -423,22 +423,22 @@ export default function PruningTable({
                           <span
                             className={`inline-block text-[10px] font-extrabold font-mono px-1 py-0.2 rounded ${
                               record.confidence >= 90
-                                ? "bg-green-50 text-green-700"
+                                ? "bg-green-bg text-green"
                                 : record.confidence >= 70
-                                ? "bg-blue-50 text-blue-700"
-                                : "bg-red-50 text-red-700"
+                                ? "bg-info-bg text-navy"
+                                : "bg-red/10 text-red"
                             }`}
                           >
                             {record.confidence}%
                           </span>
                         </div>
                       ) : (
-                        <span className="text-gray-400 italic font-mono">-</span>
+                        <span className="text-text3 italic font-mono">-</span>
                       )}
                     </td>
-                    <td className="py-2 px-3 text-center border-r border-gray-100">
+                    <td className="py-2 px-3 text-center border-r border-border">
                       {record.status === "completed" && (
-                        <span className="inline-block text-[10px] bg-green-50 text-green-700 rounded px-1.5 py-0.5 font-extrabold tracking-wider">
+                        <span className="inline-block text-[10px] bg-green-bg text-green rounded px-1.5 py-0.5 font-extrabold tracking-wider">
                           추출완료
                         </span>
                       )}
@@ -446,34 +446,34 @@ export default function PruningTable({
                         <button
                           onClick={(e) => handleCopyError(record, e)}
                           title={record.error ? `${record.error}\n(클릭하여 실패 사유 복사)` : "실패"}
-                          className="inline-block bg-red-50 hover:bg-red-100 text-red-700 rounded px-1.5 py-0.5 font-extrabold tracking-wider cursor-pointer"
+                          className="inline-block bg-red/10 hover:bg-red/15 text-red rounded px-1.5 py-0.5 font-extrabold tracking-wider cursor-pointer"
                         >
                           {copiedErrorId === record.id ? "복사됨!" : "실패"}
                         </button>
                       )}
                       {record.status === "processing" && (
-                        <span className="inline-block text-[10px] bg-blue-50 text-blue-700 rounded px-1.5 py-0.5 font-extrabold tracking-wider animate-pulse">
+                        <span className="inline-block text-[10px] bg-info-bg text-navy rounded px-1.5 py-0.5 font-extrabold tracking-wider animate-pulse">
                           분석중
                         </span>
                       )}
                       {record.status === "idle" && (
-                        <span className="inline-block text-[10px] bg-gray-100 text-gray-500 rounded px-1.5 py-0.5 font-bold tracking-wider">
+                        <span className="inline-block text-[10px] bg-surface2 text-text3 rounded px-1.5 py-0.5 font-bold tracking-wider">
                           대기중
                         </span>
                       )}
                     </td>
-                    <td className="py-2 px-3 border-r border-gray-100" onClick={(e) => e.stopPropagation()}>
+                    <td className="py-2 px-3 border-r border-border" onClick={(e) => e.stopPropagation()}>
                       <div className="flex flex-col items-stretch gap-1 w-full min-w-[110px]">
                         <button
                           onClick={() => onOpenDetail(record.id)}
                           title="상세 및 수정"
-                          className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-gray-900 hover:bg-black text-white rounded font-bold whitespace-nowrap text-sm"
+                          className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-navy hover:bg-navy-dark text-white rounded font-bold whitespace-nowrap text-sm"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           상세보기
                         </button>
                         {record.status === "processing" ? (
-                          <span className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-50 text-blue-400 rounded font-bold whitespace-nowrap text-sm">
+                          <span className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-info-bg text-navy-light rounded font-bold whitespace-nowrap text-sm">
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
                             분석 중...
                           </span>
@@ -481,7 +481,7 @@ export default function PruningTable({
                           <button
                             onClick={() => onAnalyze(record.id)}
                             title={record.status === "completed" ? "재분석" : "분석 시작"}
-                            className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded border border-blue-200 font-bold whitespace-nowrap text-sm"
+                            className="w-full inline-flex items-center justify-center gap-1 px-2 py-1 bg-info-bg hover:bg-info-bg text-navy rounded border border-border font-bold whitespace-nowrap text-sm"
                           >
                             <Play className="w-3.5 h-3.5 fill-current" />
                             {record.status === "completed" ? "재분석" : "분석 시작"}
@@ -492,7 +492,7 @@ export default function PruningTable({
                     <td className="py-2 px-3 text-center" onClick={(e) => e.stopPropagation()}>
                       <button
                         onClick={() => onRemove(record.id)}
-                        className="p-1 text-gray-400 hover:text-red-600 rounded hover:bg-red-50 transition-colors"
+                        className="p-1 text-text3 hover:text-red rounded hover:bg-red/10 transition-colors"
                         title="삭제"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
