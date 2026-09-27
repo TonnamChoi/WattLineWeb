@@ -1,4 +1,6 @@
 import { extractPruning } from "./pruningExtract.js";
+import { extractDiameter } from "./diameterExtract.js";
+import { ImageLoadError, loadImageAsBase64 } from "./loadImage.js";
 import type { PruningExtractionResult } from "./pruningTypes.js";
 import type { BoundingBox, Provider } from "./types.js";
 
@@ -34,7 +36,8 @@ function normalizeBoundingBox(box: unknown): BoundingBox | null {
 }
 
 export async function handlePruningExtractRequest(body: any): Promise<PruningExtractRequestResult> {
-  const { provider, apiKey, image, mimeType } = body ?? {};
+  // mode: "diameter"면 흉고직경 사진에서 cm만 읽는다. 없으면 기존 전지작업 전체 분석.
+  const { provider, apiKey, image, mimeType, mode } = body ?? {};
 
   if (!provider || !VALID_PROVIDERS.includes(provider)) {
     return { status: 400, body: { error: "지원하지 않는 프로바이더입니다." } };
@@ -47,12 +50,17 @@ export async function handlePruningExtractRequest(body: any): Promise<PruningExt
   }
 
   try {
-    const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+    const loaded = await loadImageAsBase64(image, mimeType);
+
+    if (mode === "diameter") {
+      const diameter = await extractDiameter(provider as Provider, { apiKey, base64Data: loaded.base64Data, mimeType: loaded.mimeType });
+      return { status: 200, body: diameter };
+    }
 
     const result = await extractPruning(provider as Provider, {
       apiKey,
-      base64Data,
-      mimeType: mimeType || "image/jpeg",
+      base64Data: loaded.base64Data,
+      mimeType: loaded.mimeType,
     });
 
     const body: PruningExtractionResult = {
@@ -63,6 +71,11 @@ export async function handlePruningExtractRequest(body: any): Promise<PruningExt
     return { status: 200, body };
   } catch (error: any) {
     console.error("Pruning Extraction Error:", error);
+
+    // 사진 불러오기 단계의 오류만 그대로 전달한다 (AI 프로바이더 오류는 아래에서 처리).
+    if (error instanceof ImageLoadError) {
+      return { status: error.status, body: { error: error.message } };
+    }
 
     const errorMessage = typeof error.message === "string" ? error.message : "";
     const isAuthError =

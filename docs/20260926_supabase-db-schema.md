@@ -1,6 +1,6 @@
 # WattLine Supabase DB 구조 (WattLineApp 연동용)
 
-> 기준일: 2026-09-26 (실제 DB에서 직접 조회해 작성)
+> 기준일: 2026-09-27 (실제 DB에서 직접 조회해 현행화)
 > 대상: WattLineApp(현장 작업자용 모바일 앱) 개발자
 > 이 문서는 WattLineWeb 저장소의 `docs/`에 있다. WattLineApp 쪽에서 쓰려면 이 파일을 복사해 가면 된다. DB 구조가 바뀌면 WattLineWeb에서 이 문서를 먼저 고친다.
 
@@ -27,11 +27,13 @@ companies (한전 협력사)
   ├─< app_users        (company_id, ON DELETE RESTRICT)
   └─< workplaces       (company_id, ON DELETE RESTRICT)
          ├─< workplace_workers >─ app_users   (작업장 ↔ 작업자 N:M, 양쪽 모두 ON DELETE CASCADE)
-         └─< photo_uploads                    (workplace_id, ON DELETE SET NULL)
+         ├─< photo_uploads                    (workplace_id, ON DELETE SET NULL)
+         └── pruning_results                  (workplace_id 1:1, ON DELETE CASCADE)
+                └── updated_by → app_users    (ON DELETE SET NULL)
 ```
 
 - 회사에 사용자나 작업장이 남아 있으면 그 회사는 삭제할 수 없다(RESTRICT).
-- 작업장을 삭제하면 그 작업장의 작업자 배정은 함께 지워진다. 사진(`photo_uploads`)은 남고 `workplace_id`만 비워진다.
+- 작업장을 삭제하면 그 작업장의 작업자 배정과 전지작업 결과(`pruning_results`)는 함께 지워진다. 사진(`photo_uploads`)은 남고 `workplace_id`만 비워진다.
 
 ## 3. 테이블 상세
 
@@ -96,6 +98,10 @@ companies (한전 협력사)
 
 ### 3.5 `photo_uploads` — WattLineApp이 올린 현장 사진 메타데이터
 
+> **2026-09-27 추가**: WattLineWeb도 이 테이블의 행을 **추가·삭제**한다.
+> - 삭제: 전지작업 표의 분류 칸 사진을 지우면(`DELETE /api/wattline-db`) 행과 `photos` 파일이 함께 삭제된다. 관리자는 전체, 회사관리자는 소속 회사 작업장 사진만 삭제할 수 있다.
+> - 추가:  전지작업 화면에서 웹으로 올린 사진(`pruning-photos`)을 표의 분류 칸으로 끌어다 놓으면, 서버(`PATCH /api/pruning`)가 파일을 `photos` 버킷 `{오늘 KST 날짜}/{uuid}.{ext}`로 복사하고 WattLineApp과 같은 형식의 행(`workplace_id`, `workplace_name`, `category`, `photo_date`, `file_name`, `storage_path`)을 추가한 뒤 원본을 지운다. 따라서 `photo_uploads`에는 앱 촬영 사진과 웹에서 옮긴 사진이 섞여 있을 수 있다(구분 열은 없다).
+
 | 컬럼 | 타입 | 필수 | 기본값 | 설명 |
 |---|---|---|---|---|
 | `id` | uuid (PK) | ✔ | `gen_random_uuid()` | |
@@ -106,6 +112,34 @@ companies (한전 협력사)
 | `storage_path` | text | ✔ | | `photos` 버킷 내 실제 경로 `{photo_date}/{uuid}.{ext}` (ASCII만) |
 | `created_at` / `received_at` | timestamptz | ✔ | `now()` | |
 | **`workplace_id`** | uuid → `workplaces.id` | | | **2026-09-26 추가.** 사진이 속한 작업장 |
+
+### 3.6 `pruning_results` — 전지작업 분석 결과 (WattLineWeb 전용, 작업장당 1행)
+
+WattLineWeb 전지작업 화면의 **저장** 버튼으로 저장한 값이다. 화면을 열면 이 값을 불러와 표를 채운다. WattLineApp은 읽거나 쓸 필요가 없다.
+
+| 컬럼 | 타입 | 필수 | 기본값 | 설명 |
+|---|---|---|---|---|
+| `id` | uuid (PK) | ✔ | `gen_random_uuid()` | |
+| `workplace_id` | uuid → `workplaces.id`, **unique** | ✔ | | 작업장 (작업장 삭제 시 함께 삭제) |
+| `pole_start` / `pole_end` | text | | | 전주번호 시작 / 끝 (시작·종료전주 사진 AI 판독 또는 직접 입력) |
+| `tree_species` | text | | | 수목종류 |
+| `dia_under10` ~ `dia_over40` | integer | ✔ | `0` | 준공내역: 흉고직경 구간별 본수 (10cm 미만 / 10·20·30·40cm 이상) |
+| `dia_total` | integer | ✔ | `0` | 준공내역 합계 |
+| `note` | text | | | 비고 |
+| `work_intensity` | text | | | 작업강도 (강전지/약전지) |
+| `tree_classification` | text | | | 나무분류 (낙엽수/상록수) |
+| `span_description` | text | | | 경간구분 |
+| `work_content` | text | | | 작업내용 |
+| `confidence` | integer | | | 정확도 (판독된 사진들의 평균, 0~100) |
+| `reasoning` | text | | | 기타 세부 정보 (예: "사진 5장 중 4장 판독") |
+| `photo_analysis` | jsonb | ✔ | `'{}'` | 사진별 분석 상태. 키는 `photo_uploads.id`, 값은 `{ status, message, value?, diameterCm?, confidence? }` (status: `completed`/`failed`/`unreadable`) |
+| `photo_order` | jsonb | ✔ | `'{}'` | 분류 칸별 사진 순서. `{ "시작전주": [photo_uploads.id, ...], ... }` (사진 2장 이상인 칸만). 화면에서 끌어다 놓아 바꾼 순서 |
+| `updated_by` | uuid → `app_users.id` | | | 마지막으로 저장한 사용자 |
+| `created_at` / `updated_at` | timestamptz | ✔ | `now()` | |
+
+- API: `GET /api/pruning-results?workplaceId=` (조회), `PUT /api/pruning-results` (저장, `workplace_id` 기준 upsert). 로그인 필요, 관리자는 전체·회사관리자는 소속 회사 작업장만.
+- 분석은 시작전주·종료전주·흉고직경 칸마다 **맨 첫 번째 사진만** 한다 (`photo_order` 순서 기준).
+- 재분석할 때 `photo_analysis`에서 `completed`인 사진은 다시 분석하지 않는다.
 
 ## 4. WattLineApp이 해야 할 일 (연동 규칙)
 
@@ -186,3 +220,6 @@ function verifyPassword(stored: string, password: string) {
 | 2026-09-26 | `photo_uploads.workplace_id` 추가, 기존 10행을 "충주대로 20경간"에 연결 | `photo_uploads_add_workplace_id` |
 | 2026-09-26 | `app_users.role`에 `company_admin` 추가 (3단계 권한) | `app_users_add_company_admin_role` |
 | 2026-09-26 | `pruning-photos`를 작업장별 폴더 구조로 변경 (기존 루트 사진 1장 삭제) | (Storage) |
+| 2026-09-27 | WattLineWeb이 `photo_uploads`에 행 추가(웹 사진을 분류 칸으로 이동)·삭제(분류 칸 사진 삭제) 시작 | (코드) |
+| 2026-09-27 | `pruning_results` 테이블 생성 (전지작업 분석 결과 저장) | `create_pruning_results` |
+| 2026-09-27 | `pruning_results.photo_order` 추가 (칸별 사진 순서) | `pruning_results_add_photo_order` |

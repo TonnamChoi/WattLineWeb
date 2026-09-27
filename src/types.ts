@@ -44,6 +44,16 @@ export interface DiameterCounts {
 
 export type WattlineCategory = "시작전주" | "종료전주" | "작업전" | "흉고직경" | "작업후" | "기타";
 
+// 분류 칸 사진 한 장의 분석 상태 (분석 시작 시 시작전주·종료전주·흉고직경 사진만 분석)
+export interface PhotoAnalysis {
+  status: "processing" | "completed" | "failed" | "unreadable";
+  message: string | null; // 완료: 읽은 값, 에러·판독불가: 사유 (라벨 클릭 시 팝업)
+  // 완료된 사진의 판독값 (재분석 때 다시 분석하지 않고 표 반영에 재사용)
+  value?: string; // 시작·종료전주: 전주번호
+  diameterCm?: number; // 흉고직경
+  confidence?: number;
+}
+
 export interface PruningRecord {
   id: string;
   name: string;
@@ -54,6 +64,10 @@ export interface PruningRecord {
 
   // WattLine(모바일 촬영 앱) DB에서 불러온 작업 건인 경우, 분류별 사진 URL 목록(촬영 순). 수동 업로드 사진에는 없음.
   wattlineCategoryPhotos?: Partial<Record<WattlineCategory, string[]>>;
+  // 위 사진 URL → photo_uploads.id (삭제할 때 사용)
+  wattlinePhotoIds?: Record<string, string>;
+  // 사진 URL → 분석 상태
+  photoAnalysis?: Record<string, PhotoAnalysis>;
 
   poleStart: string | null;
   poleEnd: string | null;
@@ -71,3 +85,7 @@ export interface PruningRecord {
   extraPhotoUrls: string[];
   uploadedAt: string;
 }
+
+// 작업강도 선택지 (기본: 약전지)
+export const WORK_INTENSITY_OPTIONS = ["약전지", "강전지", "순치기", "벌목"];
+export const DEFAULT_WORK_INTENSITY = "약전지";

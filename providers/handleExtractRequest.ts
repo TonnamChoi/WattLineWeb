@@ -1,4 +1,5 @@
 import { extract } from "./index.js";
+import { ImageLoadError, loadImageAsBase64 } from "./loadImage.js";
 import type { BoundingBox, ExtractionResult, Provider } from "./types.js";
 
 const VALID_PROVIDERS: Provider[] = ["gemini", "claude", "openai"];
@@ -46,12 +47,13 @@ export async function handleExtractRequest(body: any): Promise<ExtractRequestRes
   }
 
   try {
-    const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+    // dataURL뿐 아니라 저장소 signed URL(전지작업 시작·종료전주 사진)도 받는다.
+    const loaded = await loadImageAsBase64(image, mimeType);
 
     const result = await extract(provider as Provider, {
       apiKey,
-      base64Data,
-      mimeType: mimeType || "image/jpeg",
+      base64Data: loaded.base64Data,
+      mimeType: loaded.mimeType,
     });
 
     const body: ExtractionResult = {
@@ -62,6 +64,10 @@ export async function handleExtractRequest(body: any): Promise<ExtractRequestRes
     return { status: 200, body };
   } catch (error: any) {
     console.error("Extraction Error:", error);
+
+    if (error instanceof ImageLoadError) {
+      return { status: error.status, body: { error: error.message } };
+    }
 
     const errorMessage = typeof error.message === "string" ? error.message : "";
     const isAuthError =

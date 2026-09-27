@@ -9,11 +9,13 @@ import {
   listPruningPhotos,
   uploadPruningPhoto,
   deletePruningPhoto,
+  movePruningPhotoToCategory,
 } from "./providers/handlePruningRequest";
 import { handlePruningExtractRequest } from "./providers/handlePruningExtractRequest";
-import { listWattlineDbPhotos } from "./providers/handleWattlineDbRequest";
+import { listWattlineDbPhotos, deleteWattlineDbPhoto } from "./providers/handleWattlineDbRequest";
 import { handleAdminRequest, listWorkplacesForUser } from "./providers/handleAdminRequest";
 import { login, getMe } from "./providers/handleAuthRequest";
+import { handlePruningResultsRequest } from "./providers/handlePruningResultsRequest";
 
 const app = express();
 const PORT = 4004;
@@ -42,6 +44,11 @@ app.delete("/api/pruning", async (req, res) => {
   res.status(status).json(body);
 });
 
+app.patch("/api/pruning", async (req, res) => {
+  const { status, body } = await movePruningPhotoToCategory(req.body, req.headers.authorization);
+  res.status(status).json(body);
+});
+
 // API Routes (mirrors api/pruning-extract.ts, which Vercel uses in production)
 app.post("/api/pruning-extract", async (req, res) => {
   const { status, body } = await handlePruningExtractRequest(req.body);
@@ -49,6 +56,16 @@ app.post("/api/pruning-extract", async (req, res) => {
 });
 
 // API Routes (mirrors api/wattline-db.ts, which Vercel uses in production)
+// API Routes (mirrors api/pruning-results.ts, which Vercel uses in production)
+app.all("/api/pruning-results", async (req, res) => {
+  const { status, body } = await handlePruningResultsRequest(req.method, req.query.workplaceId, req.body, req.headers.authorization);
+  res.status(status).json(body);
+});
+
+app.delete("/api/wattline-db", async (req, res) => {
+  const { status, body } = await deleteWattlineDbPhoto(req.body, req.headers.authorization);
+  res.status(status).json(body);
+});
 app.get("/api/wattline-db", async (req, res) => {
   const { status, body } = await listWattlineDbPhotos(req.query.workplaceId);
   res.status(status).json(body);

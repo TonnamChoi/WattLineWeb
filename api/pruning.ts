@@ -3,6 +3,7 @@ import {
   listPruningPhotos,
   uploadPruningPhoto,
   deletePruningPhoto,
+  movePruningPhotoToCategory,
 } from "../providers/handlePruningRequest.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -18,6 +19,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method === "DELETE") {
     const { status, body } = await deletePruningPhoto(req.body);
+    return res.status(status).json(body);
+  }
+
+  // PATCH: 웹 업로드 사진을 WattLineApp 분류 사진으로 옮기기
+  if (req.method === "PATCH") {
+    const { status, body } = await movePruningPhotoToCategory(req.body, req.headers.authorization);
     return res.status(status).json(body);
   }
 

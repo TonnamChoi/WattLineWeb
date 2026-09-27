@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* 디자인 토큰 — 기준: src/DESIGN.md (Deep Violet Admin v2) 8장. 적용 규칙은 루트 DESIGN.md 참고. */
+/* 디자인 토큰 — 기준: 루트 DESIGN.md (Deep Violet Admin v2) 2장. 값을 바꾸면 DESIGN.md도 함께 고친다. */
 @theme {
   --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Segoe UI", Roboto, "Malgun Gothic", sans-serif;
 
@@ -17,6 +17,7 @@
   --color-blue: #7203ff;          /* accent: 주요 버튼·링크·선택 */
   --color-blue-hover: #5e00d6;
   --color-violet-soft: #eee4ff;   /* accent-soft: 선택된 행·필터 칩 */
+  --color-input: #faf4e6;         /* 표 안 입력칸 바탕 (베이지) */
 
   /* Status (상태 표시 전용) */
   --color-green: #05704a;
@@ -75,4 +76,21 @@ aside {
 .text-base,
 .text-lg {
   font-size: 0.875rem;
+}
+
+/* 클릭할 수 있는 요소(링크·버튼)에 마우스를 올리면 손가락 커서.
+   Tailwind v4는 버튼 커서를 기본 화살표로 두므로 base 레이어에서 되돌린다.
+   (base 레이어라 cursor-default·cursor-not-allowed 같은 클래스가 있으면 그쪽이 우선) */
+@layer base {
+  a[href],
+  button:not(:disabled),
+  [role="button"],
+  label[for],
+  select,
+  summary {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
 }

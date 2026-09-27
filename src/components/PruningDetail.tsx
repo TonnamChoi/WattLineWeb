@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { PruningRecord, DiameterCounts } from "../types";
+import { PruningRecord, DiameterCounts, PhotoAnalysis, WORK_INTENSITY_OPTIONS, DEFAULT_WORK_INTENSITY } from "../types";
 import { cropToBoundingBox } from "../lib/cropImage";
 import { resizeImageFile } from "../lib/resizeImage";
 import {
@@ -11,11 +11,13 @@ interface PruningDetailProps {
   onAnalyze: (id: string) => void;
   onUpdateInfo: (id: string, updatedFields: Partial<PruningRecord>) => void;
   onClose?: () => void;
+  // 표에서 클릭한 사진: 있으면 이 사진과 사진별 분석 결과를 보여준다
+  photo?: { url: string; category: string; analysis?: PhotoAnalysis };
 }
 
 const EMPTY_COUNTS: DiameterCounts = { under10: 0, over10: 0, over20: 0, over30: 0, over40: 0, total: 0 };
 
-export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose }: PruningDetailProps) {
+export default function PruningDetail({ record, photo, onAnalyze, onUpdateInfo, onClose }: PruningDetailProps) {
   const [poleStart, setPoleStart] = useState("");
   const [poleEnd, setPoleEnd] = useState("");
   const [treeSpecies, setTreeSpecies] = useState("");
@@ -37,7 +39,7 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
       setTreeSpecies(record.treeSpecies || "");
       setCounts(record.diameterCounts || EMPTY_COUNTS);
       setNote(record.note || "");
-      setWorkIntensity(record.workIntensity || "");
+      setWorkIntensity(record.workIntensity || DEFAULT_WORK_INTENSITY);
       setTreeClassification(record.treeClassification || "");
       setSpanDescription(record.spanDescription || "");
       setWorkContent(record.workContent || "");
@@ -149,6 +151,15 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
     return "bg-red/10 text-red border-red/20";
   };
 
+  // 클릭한 사진 분류에 맞는 칸만 보여준다 (시작전주: 전주(시작), 종료전주: 전주(끝), 흉고직경: 준공내역·작업강도·나무분류)
+  const only = photo?.category;
+  const show = {
+    poleStart: !only || only === "시작전주" || !["종료전주", "흉고직경"].includes(only),
+    poleEnd: !only || only === "종료전주" || !["시작전주", "흉고직경"].includes(only),
+    diameter: !only || !["시작전주", "종료전주"].includes(only),
+    rest: !only || !["시작전주", "종료전주", "흉고직경"].includes(only),
+  };
+
   const inputClassName =
     "w-full min-w-0 text-xs font-mono font-bold outline-none p-2 rounded-lg transition-all border text-blue bg-panel border-text-soft/40 hover:border-text-soft/40 focus:border-blue focus:ring-1 focus:ring-blue/20";
 
@@ -172,13 +183,13 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div className="lg:col-span-5 flex flex-col items-center justify-center bg-panel-2 rounded-lg p-2.5 border border-line relative group h-48 lg:h-auto min-h-[200px]">
             <img
-              src={croppedUrl || record.url}
+              src={photo?.url || croppedUrl || record.url}
               alt={record.name}
               className="max-w-full max-h-full object-contain rounded-lg border border-line bg-panel relative transition-transform duration-300 ease-out cursor-zoom-in group-hover:scale-200 group-hover:z-20 group-hover:shadow-card"
               referrerPolicy="no-referrer"
             />
             <div className="absolute bottom-2 left-2 bg-black/75 text-[9px] font-semibold text-white px-1.5 py-0.5 rounded-lg uppercase tracking-wider">
-              대표 사진 미리보기
+              {photo ? `${photo.category} 사진` : "대표 사진 미리보기"}
             </div>
           </div>
 
@@ -229,6 +240,20 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
             {record.status === "completed" && (
               <div className="flex-1 flex flex-col justify-between space-y-3">
                 <div className="space-y-3">
+                  {photo?.analysis && (
+                    <div className="bg-violet-soft border border-line rounded-lg p-2.5 space-y-1">
+                      <h5 className="text-[11px] font-extrabold text-text flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" />
+                        {photo.category} 사진 분석 결과
+                        {photo.analysis.confidence != null && (
+                          <span className="ml-auto text-[10px] font-extrabold text-green">정확도 {photo.analysis.confidence}%</span>
+                        )}
+                      </h5>
+                      <p className="text-[11px] text-text leading-normal font-medium whitespace-pre-line">
+                        {photo.analysis.message || "자세한 내용이 없습니다."}
+                      </p>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between bg-panel-2 p-2 rounded-lg border border-line">
                     <div className="flex items-center gap-1.5 text-[11px] text-text-soft font-bold uppercase tracking-wider">
                       <Zap className="w-3.5 h-3.5 text-blue" />
@@ -244,22 +269,31 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="flex items-center gap-2">
-                      <label className="text-[11px] font-normal text-text-soft shrink-0 whitespace-nowrap w-16">전주(시작)</label>
-                      <input type="text" value={poleStart} onChange={(e) => setPoleStart(e.target.value)} placeholder="예: 80R29L1" className={inputClassName} />
+                  {(show.poleStart || show.poleEnd) && (
+                    <div className="grid grid-cols-2 gap-3">
+                      {show.poleStart && (
+                        <div className="flex items-center gap-2">
+                          <label className="text-[11px] font-normal text-text-soft shrink-0 whitespace-nowrap w-16">전주(시작)</label>
+                          <input type="text" value={poleStart} onChange={(e) => setPoleStart(e.target.value)} placeholder="예: 80R29L1" className={inputClassName} />
+                        </div>
+                      )}
+                      {show.poleEnd && (
+                        <div className="flex items-center gap-2">
+                          <label className="text-[11px] font-normal text-text-soft shrink-0 whitespace-nowrap w-16">전주(끝)</label>
+                          <input type="text" value={poleEnd} onChange={(e) => setPoleEnd(e.target.value)} placeholder="예: 80R29L2" className={inputClassName} />
+                        </div>
+                      )}
                     </div>
+                  )}
+
+                  {show.rest && (
                     <div className="flex items-center gap-2">
-                      <label className="text-[11px] font-normal text-text-soft shrink-0 whitespace-nowrap w-16">전주(끝)</label>
-                      <input type="text" value={poleEnd} onChange={(e) => setPoleEnd(e.target.value)} placeholder="예: 80R29L2" className={inputClassName} />
+                      <label className="text-[11px] font-normal text-text-soft shrink-0 whitespace-nowrap w-16">수목종류</label>
+                      <input type="text" value={treeSpecies} onChange={(e) => setTreeSpecies(e.target.value)} placeholder="예: 느티나무" className={inputClassName} />
                     </div>
-                  </div>
+                  )}
 
-                  <div className="flex items-center gap-2">
-                    <label className="text-[11px] font-normal text-text-soft shrink-0 whitespace-nowrap w-16">수목종류</label>
-                    <input type="text" value={treeSpecies} onChange={(e) => setTreeSpecies(e.target.value)} placeholder="예: 느티나무" className={inputClassName} />
-                  </div>
-
+                  {show.diameter && (
                   <div className="space-y-1">
                     <label className="text-[11px] font-normal text-text-soft block uppercase tracking-wider">준공내역 (굵기별 본수)</label>
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-1.5">
@@ -284,17 +318,29 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
                       ))}
                     </div>
                   </div>
+                  )}
 
+                  {show.diameter && (
                   <div className="grid grid-cols-2 gap-3">
                     <div className="flex items-center gap-2">
                       <label className="text-[11px] font-normal text-text-soft shrink-0 whitespace-nowrap w-16">작업강도</label>
-                      <input type="text" value={workIntensity} onChange={(e) => setWorkIntensity(e.target.value)} placeholder="강전지/약전지" className={inputClassName} />
+                      <select value={workIntensity} onChange={(e) => setWorkIntensity(e.target.value)} className={inputClassName}>
+                        {(WORK_INTENSITY_OPTIONS.includes(workIntensity) ? WORK_INTENSITY_OPTIONS : [...WORK_INTENSITY_OPTIONS, workIntensity]).map((o) => (
+                          <option key={o} value={o}>
+                            {o}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div className="flex items-center gap-2">
                       <label className="text-[11px] font-normal text-text-soft shrink-0 whitespace-nowrap w-16">나무분류</label>
                       <input type="text" value={treeClassification} onChange={(e) => setTreeClassification(e.target.value)} placeholder="낙엽수/상록수" className={inputClassName} />
                     </div>
                   </div>
+                  )}
+
+                  {show.rest && (
+                  <>
 
                   <div className="space-y-1">
                     <label className="text-[11px] font-normal text-text-soft block uppercase tracking-wider">경간구분</label>
@@ -356,6 +402,8 @@ export default function PruningDetail({ record, onAnalyze, onUpdateInfo, onClose
                       )}
                     </div>
                   </div>
+                  </>
+                  )}
                 </div>
 
                 <div className="pt-2 shrink-0 border-t border-line flex items-center gap-2 justify-end">
