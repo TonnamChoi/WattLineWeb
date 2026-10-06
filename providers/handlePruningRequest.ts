@@ -81,9 +81,10 @@ export async function uploadPruningPhoto(reqBody: any): Promise<HandlerResult> {
   try {
     const base64 = String(dataUrl).split(",").pop() || "";
     const buffer = Buffer.from(base64, "base64");
-    const safeName = String(fileName).replace(/[^\w.\-가-힣]/g, "_");
+    // Supabase Storage 키는 ASCII만 허용한다(한글 등은 Invalid key). 원본 이름은 화면에 쓰지 않으므로 확장자만 남긴다.
+    const ext = (String(fileName).match(/\.([A-Za-z0-9]{1,5})$/)?.[1] || "jpg").toLowerCase();
     const randomSuffix = Math.random().toString(36).slice(2, 8);
-    const pathname = `${workplaceId}/${Date.now()}-${randomSuffix}-${safeName}`;
+    const pathname = `${workplaceId}/${Date.now()}-${randomSuffix}.${ext}`;
 
     const { error } = await supabase.storage.from(BUCKET).upload(pathname, buffer, {
       contentType: mimeType,
